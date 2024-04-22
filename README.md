@@ -1,6 +1,6 @@
 # Ezee Planter Boxes E-commerce Website
 
-This repository contains the code for the Ezee Planter Boxes e-commerce website, a full-stack application built with React and Node.js, designed to provide a seamless online shopping experience.
+This repository contains the code for the Ezee Planter Boxes e-commerce website, a full-stack web application built with React and Node.js, designed to provide a seamless online shopping experience.
 
 ## Features
 
