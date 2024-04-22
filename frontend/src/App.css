@@ -1,0 +1,38 @@
+/* Reset some styles */
+* {
+  box-sizing: border-box;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Header styles */
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 10px 5%;
+}
+
+/* Main product container styles */
+.product-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  padding: 20px;
+}
+
+/* Footer styles */
+.site-footer {
+  text-align: center;
+  padding: 10px;
+  background-color: #343a40;
+  color: white;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}

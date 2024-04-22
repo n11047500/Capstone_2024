@@ -1,0 +1,20 @@
+/* Header styles */
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8f9fa;
+    padding: 10px 5%;
+  }
+  
+  .site-header .menu-icon,
+  .site-header .cart-icon {
+    font-size: 1.5em;
+    cursor: pointer;
+  }
+  
+  .site-header .logo {
+    font-size: 1.5em;
+    color: #007bff; /* Adjust the color to match your branding */
+  }
+  
