@@ -5,16 +5,14 @@ import Footer from './components/Footer';
 import './App.css';
 
 function App() {
-  // Sample products data
   const products = [
     { id: 1, title: 'Product Title', price: 'Price' },
     { id: 2, title: 'Product Title', price: 'Price' },
     { id: 3, title: 'Product Title', price: 'Price' },
-    // Add more products as needed
   ];
 
   return (
-    <div className="App">
+    <div className="App">  {/* Make sure this class matches your CSS for full height and flex settings */}
       <Header />
       <div className="product-container">
         {products.map(product => (

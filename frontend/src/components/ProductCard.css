@@ -1,26 +1,32 @@
+.product-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  padding: 20px;
+}
+
 .product-card {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    text-align: center;
-    width: 200px; /* Adjust the width as necessary */
-    margin: 10px;
-  }
-  
-  .product-image {
-    height: 150px; /* Adjust height as needed */
-    background-color: #f3f3f3; /* Placeholder color */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .product-title {
-    font-weight: bold;
-    padding: 5px 0;
-  }
-  
-  .product-price {
-    color: #333;
-    padding: 0 0 10px;
-  }
-  
+  flex-basis: 30%; /* Adjusts the width of each card */
+  box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Optional: Adds shadow for better visibility */
+  margin: 10px; /* Adds space around each card */
+  text-align: center; /* Aligns the text inside the card to the center */
+  padding: 20px; /* Adds padding inside each card */
+  background: #fff; /* Optional: Sets a background color */
+}
+
+.product-image {
+  height: 200px; /* Sets a fixed height for the image container */
+  background-color: #eee; /* Gives a placeholder background where the image would go */
+  margin-bottom: 10px; /* Space below the image */
+}
+
+.product-title {
+  font-size: 1.2em; /* Larger font size for the title */
+  color: #333; /* Dark grey color for text */
+  margin-bottom: 5px; /* Space below the title */
+}
+
+.product-price {
+  font-size: 1.1em; /* Slightly larger font size for price */
+  color: #666; /* Lighter text color for price */
+}

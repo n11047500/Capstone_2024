@@ -1,11 +1,42 @@
-/* Footer styles */
 .site-footer {
-    text-align: center;
-    padding: 10px;
-    background-color: #343a40;
-    color: white;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-  }
-  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 3%;
+  background-color: #eec4ff;
+  color: black;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.footer-logo, .footer-links, .footer-contact, .footer-businesses {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers content horizontally */
+  justify-content: center; /* Centers content vertically if needed */
+  text-align: center; /* Ensures text within is centered */
+  padding: 10px; /* Optional: adds padding around the content */
+}
+
+.footer-logo img {
+  width: 180px;  /* Adjust size accordingly */
+  height: auto;
+}
+
+/* Ensuring that each section takes up equal space */
+.footer-logo, .footer-links, .footer-contact, .footer-businesses {
+  flex: 1;
+  padding: 0 10px; /* Adds padding for spacing between sections */
+}
+
+.footer-links ul, .footer-contact p, .footer-businesses div {
+  list-style: none;  /* Removes list styling */
+  padding: 0;
+  margin: 0;
+}
+
+.footer-businesses img {
+  width: 100px; /* Adjust width as necessary to make logos smaller */
+  padding: 5px; /* Adds space around each logo */
+  height: auto; /* Adjust height automatically to maintain aspect ratio */
+}
