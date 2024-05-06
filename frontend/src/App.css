@@ -32,23 +32,13 @@ body, html {
   background: #fff;
 }
 
-/* Responsive styles */
-@media (max-width: 1024px) {
-  .product-card {
-    flex-basis: 50%;
-  }
+.product-card img {
+  height: auto;
+  transition: transform 0.3s ease-in-out;
 }
 
-@media (max-width: 768px) {
-  .product-card {
-    flex-basis: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .product-card {
-    padding: 10px;
-  }
+.product-card:hover img {
+  transform: scale(1.1);
 }
 
 .sort-dropdown {
@@ -71,3 +61,23 @@ body, html {
   background: white;
   color: black;
 }
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .product-card {
+    flex-basis: 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-card {
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-card {
+    padding: 10px;
+  }
+}
+
