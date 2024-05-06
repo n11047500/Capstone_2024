@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Header from './components/Header';
 import ProductCard from './components/ProductCard';
 import Footer from './components/Footer';
@@ -21,6 +21,8 @@ import trellis from './assets/trellis.jpg';
 
 
 function App() {
+  const [sortType, setSortType] = useState('');
+
   const products = [
     { id : 1, title: 'Mini Standard Planter Box', price: '$290.00', image: mini_standard_planter_box},
     { id : 2, title: 'Small Standard Planter Box', price: '$350.00', image: small_standard_planter_box},
@@ -39,15 +41,35 @@ function App() {
     { id : 15, title: 'Trellis', price: '$110.00', image: trellis }
   ];
 
+  const sortedProducts = products.sort((a, b) => {
+    if (sortType === 'title') {
+      return a.title.localeCompare(b.title);
+    } else if (sortType === 'price') {
+      return parseFloat(a.price.substring(1)) - parseFloat(b.price.substring(1));
+    }
+    return 0;
+  });
+
+
+
   return (
-    <div className="App"> 
-      <Header />
+    <div className="App">
+      <Header/>
+      <div className="header-bar">
+        <div className="sort-container">
+          <select className="sort-dropdown" value={sortType} onChange={e => setSortType(e.target.value)}>
+            <option value="">Featured</option>
+            <option value="title">Title</option>
+            <option value="price">Price</option>
+          </select>
+        </div>
+      </div>
       <div className="product-container">
-        {products.map(product => (
+        {sortedProducts.map(product => (
           <ProductCard key={product.id} title={product.title} price={product.price} image={product.image} />
         ))}
       </div>
-      <Footer />
+      <Footer/>
     </div>
   );
 }

@@ -6,7 +6,16 @@ body, html {
   background-color: rgba(113, 211, 71, 0.2);
 }
 
-/* Component-specific styles */
+.header-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 20px;
+}
+
+.sort-container {
+  margin-right: 24px; 
+}
+
 .product-container {
   display: flex;
   justify-content: space-around;
@@ -40,4 +49,25 @@ body, html {
   .product-card {
     padding: 10px;
   }
+}
+
+.sort-dropdown {
+  padding: 8px 16px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  outline: none;
+}
+
+.sort-dropdown:hover,
+.sort-dropdown:focus {
+  border-color: #888;
+}
+
+.sort-dropdown option {
+  padding: 10px;
+  background: white;
+  color: black;
 }
