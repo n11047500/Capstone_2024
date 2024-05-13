@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './Header.css';
 import logoImage from '../assets/logo.png';
+import { NavLink } from 'react-router-dom';
 
 function Header() {
   const [isOpen, setIsOpen] = useState(false);  // State to manage menu visibility
@@ -14,10 +15,8 @@ function Header() {
       {isOpen && (
         <nav>
           <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Products</a></li>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Contact</a></li>
+            <li><NavLink to="/">Home</NavLink></li>
+            <li><NavLink to="/browse">Browse</NavLink></li>
           </ul>
         </nav>
       )}
