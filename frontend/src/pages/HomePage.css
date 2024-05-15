@@ -3,7 +3,7 @@ body, html {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
-  background-color: rgba(113, 211, 71, 0.2);
+  background-color: #EDF1EC;
 }
 
 .header-bar {
@@ -12,24 +12,48 @@ body, html {
   padding: 10px 20px;
 }
 
-.sort-container {
-  margin-right: 24px; 
-}
-
-.product-container {
+.home_porduct_container {
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
   padding: 20px;
+  margin-top: 10%;
 }
 
-.product-card {
+.home_product-card {
   flex-basis: 30%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   margin: 10px;
   text-align: center;
   padding: 20px;
   background: #fff;
+}
+
+.motto_section{
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-top: 7.5%;
+  width: 70%;
+
+}
+
+.motto_text{
+  font-size: 3vw;
+  text-align: center;
+  position: relative;
+}
+
+.landpage_image{
+  display: flex;
+  border-radius: 0% 0% 50% 50%; 
+  width: 30%;
+  height: 60% ;
+  z-index: 2;
+  object-fit: none;
+  position: absolute;
+  top: 0px;
+  right: 0px;
 }
 
 .product-card img {
@@ -39,27 +63,6 @@ body, html {
 
 .product-card:hover img {
   transform: scale(1.1);
-}
-
-.sort-dropdown {
-  padding: 8px 16px;
-  font-size: 16px;
-  border: 2px solid #ccc;
-  border-radius: 4px;
-  background-color: white;
-  cursor: pointer;
-  outline: none;
-}
-
-.sort-dropdown:hover,
-.sort-dropdown:focus {
-  border-color: #888;
-}
-
-.sort-dropdown option {
-  padding: 10px;
-  background: white;
-  color: black;
 }
 
 /* Responsive styles */

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './Header.css';
 import logoImage from '../assets/logo.png';
 import { NavLink } from 'react-router-dom';
+import shoppingCart from '../assets/ShoppingCart.png';
 
 function Header() {
   const [isOpen, setIsOpen] = useState(false);  // State to manage menu visibility
@@ -25,7 +26,7 @@ function Header() {
       <img src={logoImage} alt="EZee Planter Boxes" className="logo" />
 
       {/* Shopping cart icon */}
-      <div className="cart-icon">🛒</div>
+      <div className="cart-icon"><img src={shoppingCart}></img></div>
     </header>
   );
 }

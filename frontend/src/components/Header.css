@@ -3,8 +3,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #eec4ff;
-    padding: 10px 5%;
+    background-color: rgba(237, 241, 236, 1);
+    padding: 10px 3%;
+    width: 100%;
+    z-index: 1;
   }
   
   .site-header .menu-icon,
@@ -13,6 +15,13 @@
     cursor: pointer;
   }
   
+  .cart-icon {
+    font-size: 2.5em;
+    cursor: pointer;
+    z-index: 5;
+    position: relative;
+  }
+
   .site-header .logo {
     font-size: 1.5em;
     color: #B553DB; /* Adjust the color to match your branding */
@@ -27,6 +36,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    z-index: 1000;
   }
 
   nav ul {
@@ -48,7 +58,7 @@
   }
 
   nav ul li a:hover {
-    background-color: #bffba3;
+    background-color: #EDF1EC;
   }
 
   
