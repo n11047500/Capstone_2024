@@ -12,7 +12,6 @@ code {
     monospace;
 }
 
-/* Basic reset for margin and padding */
 * {
   margin: 0;
   padding: 0;
