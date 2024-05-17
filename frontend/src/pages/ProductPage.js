@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
-import ProductCard from '../components/ProductCard';
 import Footer from '../components/Footer';
-import './Browse.css';
+import './ProductPage.css';
+
 import large_planter_tray from '../assets/large_planter_tray.jpg';
 import desktop_planter_box from '../assets/desktop_planter_box.jpg';
 import accessibility_planter_box from '../assets/accessibility_planter_box.jpg';
@@ -37,66 +38,57 @@ const imageMap = {
   'Trellis': trellis,
 };
 
-function Browse() {
-  const [products, setProducts] = useState([]);
-  const [sortType, setSortType] = useState('');
+const ProductPage = () => {
+  const { productId } = useParams();
+  const [product, setProduct] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:3001/products')
-      .then(response => response.json())
-      .then(data => {
-        const productsWithImages = data.map(product => ({
-          ...product,
-          image: imageMap[product.Product_Name] || ''
-        }));
-        setProducts(productsWithImages);
-      })
-      .catch(error => console.error('Error fetching products:', error));
-  }, []);
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/products/${productId}`);
+        const data = await response.json();
+        console.log('Fetched product data:', data); // Log fetched data
+        setProduct(data);
+      } catch (error) {
+        console.error('Error fetching product:', error);
+      }
+    };
 
-  const sortedProducts = [...products].sort((a, b) => {
-    switch (sortType) {
-      case 'priceDesc':
-        return parseFloat(b.Product_Price) - parseFloat(a.Product_Price);
-      case 'priceAsc':
-        return parseFloat(a.Product_Price) - parseFloat(b.Product_Price);
-      case 'nameAsc':
-        return a.Product_Name.localeCompare(b.Product_Name);
-      case 'nameDesc':
-        return b.Product_Name.localeCompare(a.Product_Name);
-      default:
-        return 0;
-    }
-  });
+    fetchProduct();
+  }, [productId]);
+
+  if (!product) {
+    return <div>Loading...</div>;
+  }
+
+  const productImage = imageMap[product.Product_Name];
 
   return (
-    <div className="browse-page">
+    <>
       <Header />
-      <div className="browse-header-bar">
-        <div className="browse-sort-container">
-          <select className="browse-sort-dropdown" value={sortType} onChange={e => setSortType(e.target.value)}>
-            <option value="">Featured</option>
-            <option value="priceAsc">Price: Low to High</option>
-            <option value="priceDesc">Price: High to Low</option>
-            <option value="nameAsc">Name: A-Z</option>
-            <option value="nameDesc">Name: Z-A</option>
-          </select>
+      <div className="product-page">
+        <div className="product-container">
+          <div className="product-image">
+            {productImage && <img src={productImage} alt={product.Product_Name} />}
+          </div>
+          <div className="product-details">
+            <h1>{product.Product_Name}</h1>
+            <p>{product.Description}</p>
+            <p className="product-price">${product.Product_Price}</p>
+            <div className="product-reviews">
+              <span className="star">⭐</span> 4.9 · <a href="#reviews">142 reviews</a>
+            </div>
+            <select className="product-options">
+              <option value="">Options</option>
+              {/* Add more options as needed */}
+            </select>
+            <button className="add-to-cart">Add to Cart</button>
+          </div>
         </div>
       </div>
-      <div className="browse-product-container">
-        {sortedProducts.map(product => (
-          <ProductCard
-            key={product.Product_ID}
-            productId={product.Product_ID}
-            title={product.Product_Name}
-            price={`$${product.Product_Price}`}
-            image={product.image}
-          />
-        ))}
-      </div>
       <Footer />
-    </div>
+    </>
   );
-}
+};
 
-export default Browse;
+export default ProductPage;

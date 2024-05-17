@@ -1,83 +1,68 @@
-/* Global styles */
-body, html {
-  margin: 0;
-  padding: 0;
+/* Browse.css */
+
+.browse-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #f5f7f6;
   font-family: Arial, sans-serif;
-  background-color: #EDF1EC;
 }
 
-.header-bar {
+.browse-header-bar {
+  width: 100%;
   display: flex;
   justify-content: flex-end;
-  padding: 10px 20px;
+  padding: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
-.sort-container {
-  margin-right: 24px; 
-}
-
-.product-container {
+.browse-sort-container {
   display: flex;
-  justify-content: space-around;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.browse-sort-dropdown {
+  padding: 5px;
+  font-size: 16px;
+}
+
+.browse-product-container {
+  display: flex;
   flex-wrap: wrap;
-  padding: 20px;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
 }
 
 .product-card {
-  flex-basis: 30%;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin: 10px;
+  flex: 1 1 calc(33.333% - 20px);
+  box-sizing: border-box;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
   text-align: center;
-  padding: 20px;
-  background: #fff;
+  margin-bottom: 20px;
 }
 
 .product-card img {
+  width: 100%;
   height: auto;
-  transition: transform 0.3s ease-in-out;
 }
 
-.product-card:hover img {
-  transform: scale(1.1);
+.product-card-title {
+  font-size: 18px;
+  margin: 10px 0;
+  color: #5a3d5c;
+  text-decoration: none;
 }
 
-.sort-dropdown {
-  padding: 8px 16px;
+.product-card-price {
   font-size: 16px;
-  border: 2px solid #ccc;
-  border-radius: 4px;
-  background-color: white;
-  cursor: pointer;
-  outline: none;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
-
-.sort-dropdown:hover,
-.sort-dropdown:focus {
-  border-color: #888;
-}
-
-.sort-dropdown option {
-  padding: 10px;
-  background: white;
-  color: black;
-}
-
-/* Responsive styles */
-@media (max-width: 1024px) {
-  .product-card {
-    flex-basis: 50%;
-  }
-}
-
-@media (max-width: 768px) {
-  .product-card {
-    flex-basis: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .product-card {
-    padding: 10px;
-  }
-}
-
