@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { CartContext } from '../context/CartContext';
 import './ProductPage.css';
 
 import large_planter_tray from '../assets/large_planter_tray.jpg';
@@ -40,6 +41,7 @@ const imageMap = {
 
 const ProductPage = () => {
   const { productId } = useParams();
+  const { addToCart } = useContext(CartContext);
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
@@ -48,7 +50,6 @@ const ProductPage = () => {
       try {
         const response = await fetch(`http://localhost:3001/products/${productId}`);
         const data = await response.json();
-        console.log('Fetched product data:', data); // Log fetched data
         setProduct(data);
       } catch (error) {
         console.error('Error fetching product:', error);
@@ -64,11 +65,8 @@ const ProductPage = () => {
 
   const productImage = imageMap[product.Product_Name];
 
-  const handleQuantityChange = (e) => {
-    const value = parseInt(e.target.value, 10);
-    if (value > 0) {
-      setQuantity(value);
-    }
+  const handleAddToCart = () => {
+    addToCart(product, quantity);
   };
 
   return (
@@ -98,11 +96,13 @@ const ProductPage = () => {
                 name="quantity"
                 min="1"
                 value={quantity}
-                onChange={handleQuantityChange}
+                onChange={(e) => setQuantity(parseInt(e.target.value))}
                 className="quantity-input product-page"
               />
             </div>
-            <button className="add-to-cart product-page">Add to Cart</button>
+            <button className="add-to-cart product-page" onClick={handleAddToCart}>
+              Add to Cart
+            </button>
           </div>
         </div>
       </div>
