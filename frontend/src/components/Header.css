@@ -1,63 +1,78 @@
+/* src/components/Header.css */
+
 .site-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #edf1ec ;
-    padding: 10px 3%;
-    width: 100%;
-    z-index: 1;
-  }
-  
-  .site-header .menu-icon,
-  .site-header .cart-icon {
-    font-size: 2.5em;
-    cursor: pointer;
-  }
-  
-  .cart-icon {
-    font-size: 2.5em;
-    cursor: pointer;
-    z-index: 5;
-    position: relative;
-  }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #edf1ec;
+  padding: 10px 3%;
+  width: 100%;
+  z-index: 1;
+}
 
-  .site-header .logo {
-    font-size: 1.5em;
-    color: #B553DB;
-  }
+.site-header .menu-icon,
+.site-header .cart-icon {
+  font-size: 2.5em;
+  cursor: pointer;
+}
 
-  nav {
-    position: absolute;
-    background-color: #eec4ff;
-    width: 70%;
-    top: 107px;
-    left: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 1000;
-  }
+.cart-icon {
+  font-size: 2.5em;
+  cursor: pointer;
+  z-index: 5;
+  position: relative;
+}
 
-  nav ul {
-    list-style-type: none;
-    width: 100%;
-    padding: 0;
-  }
+.site-header .logo {
+  font-size: 1.5em;
+  color: #eec4ff;
+}
 
-  nav ul li {
-    width: 100%;
-  }
+/* Sidebar styles */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 250px;
+  height: 100%;
+  background: #eec4ff;
+  color: #fff;
+  transition: left 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 60px;
+}
 
-  nav ul li a {
-    display: block;
-    padding: 10px;
-    text-decoration: none;
-    color: black;
-    text-align: center;
-  }
+.sidebar.open {
+  left: 0;
+}
 
-  nav ul li a:hover {
-    background-color: #EDF1EC;
-  }
+.sidebar .close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #000;
+  cursor: pointer;
+}
 
-  
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sidebar-nav a {
+  color: #000000;
+  text-decoration: none;
+  margin: 15px 0;
+  font-size: 18px;
+}
+
+.sidebar-nav a:hover {
+  text-decoration: underline;
+}

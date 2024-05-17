@@ -41,6 +41,7 @@ const imageMap = {
 const ProductPage = () => {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -63,26 +64,45 @@ const ProductPage = () => {
 
   const productImage = imageMap[product.Product_Name];
 
+  const handleQuantityChange = (e) => {
+    const value = parseInt(e.target.value, 10);
+    if (value > 0) {
+      setQuantity(value);
+    }
+  };
+
   return (
     <>
       <Header />
-      <div className="product-page">
-        <div className="product-container">
-          <div className="product-image">
+      <div className="product-page-container">
+        <div className="product-container product-page">
+          <div className="product-image product-page">
             {productImage && <img src={productImage} alt={product.Product_Name} />}
           </div>
-          <div className="product-details">
-            <h1>{product.Product_Name}</h1>
-            <p>{product.Description}</p>
-            <p className="product-price">${product.Product_Price}</p>
-            <div className="product-reviews">
-              <span className="star">⭐</span> 4.9 · <a href="#reviews">142 reviews</a>
+          <div className="product-details product-page">
+            <h1 className="product-title product-page">{product.Product_Name}</h1>
+            <p className="product-description product-page">{product.Description}</p>
+            <p className="product-price product-page">${product.Product_Price}</p>
+            <div className="product-reviews product-page">
+              <span className="star product-page">⭐</span> 4.9 · <a href="#reviews" className="product-page">142 reviews</a>
             </div>
-            <select className="product-options">
+            <select className="product-options product-page">
               <option value="">Options</option>
               {/* Add more options as needed */}
             </select>
-            <button className="add-to-cart">Add to Cart</button>
+            <div className="quantity-container product-page">
+              <label htmlFor="quantity" className="product-page">Quantity:</label>
+              <input
+                type="number"
+                id="quantity"
+                name="quantity"
+                min="1"
+                value={quantity}
+                onChange={handleQuantityChange}
+                className="quantity-input product-page"
+              />
+            </div>
+            <button className="add-to-cart product-page">Add to Cart</button>
           </div>
         </div>
       </div>

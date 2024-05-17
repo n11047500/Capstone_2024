@@ -34,11 +34,13 @@ body, html {
 
 .browse-product-card img {
   height: auto;
+  border-radius: 8px;
   transition: transform 0.3s ease-in-out;
 }
 
 .browse-product-card:hover img {
   transform: scale(1.03);
+  border-radius: 8px;
 }
 
 .browse-sort-dropdown {
