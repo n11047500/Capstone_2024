@@ -1,68 +1,82 @@
-/* Browse.css */
-
-.browse-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  background-color: #f5f7f6;
-  font-family: Arial, sans-serif;
+/* Global styles */
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: #EDF1EC;
 }
 
 .browse-header-bar {
-  width: 100%;
   display: flex;
   justify-content: flex-end;
-  padding: 10px;
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+  padding: 10px 20px;
+  padding-right: 50px;
 }
 
 .browse-sort-container {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-}
-
-.browse-sort-dropdown {
-  padding: 5px;
-  font-size: 16px;
+  margin-right: 24px; 
 }
 
 .browse-product-container {
   display: flex;
+  justify-content: space-around;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  width: 100%;
-  max-width: 1200px;
+  padding: 20px;
 }
 
-.product-card {
-  flex: 1 1 calc(33.333% - 20px);
-  box-sizing: border-box;
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 10px;
+.browse-product-card {
+  flex-basis: 30%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: 10px;
   text-align: center;
-  margin-bottom: 20px;
+  padding: 20px;
+  background: #fff;
 }
 
-.product-card img {
-  width: 100%;
+.browse-product-card img {
   height: auto;
+  transition: transform 0.3s ease-in-out;
 }
 
-.product-card-title {
-  font-size: 18px;
-  margin: 10px 0;
-  color: #5a3d5c;
-  text-decoration: none;
+.browse-product-card:hover img {
+  transform: scale(1.03);
 }
 
-.product-card-price {
+.browse-sort-dropdown {
+  padding: 8px 16px;
   font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 10px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  outline: none;
+}
+
+.browse-sort-dropdown:hover,
+.browse-sort-dropdown:focus {
+  border-color: #888;
+}
+
+.browse-sort-dropdown option {
+  padding: 10px;
+  background: white;
+  color: black;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .browse-product-card {
+    flex-basis: 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  .browse-product-card {
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .browse-product-card {
+    padding: 10px;
+  }
 }

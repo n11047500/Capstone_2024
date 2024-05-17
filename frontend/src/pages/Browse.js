@@ -91,6 +91,7 @@ function Browse() {
             title={product.Product_Name}
             price={`$${product.Product_Price}`}
             image={product.image}
+            className="browse-product-card"
           />
         ))}
       </div>

@@ -1,9 +1,8 @@
-/* Header styles */
 .site-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: rgba(237, 241, 236, 1);
+    background-color: #edf1ec ;
     padding: 10px 3%;
     width: 100%;
     z-index: 1;
@@ -24,14 +23,14 @@
 
   .site-header .logo {
     font-size: 1.5em;
-    color: #B553DB; /* Adjust the color to match your branding */
+    color: #B553DB;
   }
 
   nav {
     position: absolute;
     background-color: #eec4ff;
     width: 70%;
-    top: 107px;  /* Adjust based on your header's height */
+    top: 107px;
     left: 0;
     display: flex;
     flex-direction: column;
