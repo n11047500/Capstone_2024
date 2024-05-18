@@ -51,7 +51,6 @@ function Header() {
           <NavLink to="/" onClick={() => setIsOpen(false)}>
             <img src={logoImage} alt="EZee Planter Boxes" className="logo" />
           </NavLink>
-        </nav>
 
         {/* Shopping cart icon */}
         <NavLink to="/cart" className="cart-link">
@@ -69,6 +68,7 @@ function Header() {
           <NavLink to="/" onClick={() => setIsOpen(false)}>Home</NavLink>
           <NavLink to="/browse" onClick={() => setIsOpen(false)}>Browse</NavLink>
           <NavLink to="/aboutus" onClick={() => setIsOpen(false)}>About Us</NavLink>
+          <NavLink to="/gallery" onClick={() => setIsOpen(false)}>Gallery</NavLink>
         </nav>
       </div>
     </>

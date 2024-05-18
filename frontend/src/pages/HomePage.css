@@ -17,6 +17,7 @@ body, html {
   flex-wrap: wrap;
   padding: 20px;
   margin-top: 12%;
+  z-index: 3;
 }
 
 .home_product-card {
