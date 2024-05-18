@@ -51,6 +51,7 @@ function Header() {
           <NavLink to="/" onClick={() => setIsOpen(false)}>
             <img src={logoImage} alt="EZee Planter Boxes" className="logo" />
           </NavLink>
+          </nav>
 
         {/* Shopping cart icon */}
         <NavLink to="/cart" className="cart-link">
