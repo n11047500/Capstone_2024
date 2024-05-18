@@ -41,7 +41,6 @@ function Browse() {
   const [products, setProducts] = useState([]);
   const [sortType, setSortType] = useState('');
 
-
   useEffect(() => {
     fetch('http://localhost:3001/products')
       .then(response => response.json())
@@ -66,18 +65,16 @@ function Browse() {
       case 'nameDesc':
         return b.Product_Name.localeCompare(a.Product_Name);
       default:
-        return products;
+        return 0;
     }
   });
 
-
-
   return (
-    <div className="Browse">
-      <Header/>
-      <div className="header-bar">
-        <div className="sort-container">
-          <select className="sort-dropdown" value={sortType} onChange={e => setSortType(e.target.value)}>
+    <div className="browse-page">
+      <Header />
+      <div className="browse-header-bar">
+        <div className="browse-sort-container">
+          <select className="browse-sort-dropdown" value={sortType} onChange={e => setSortType(e.target.value)}>
             <option value="">Featured</option>
             <option value="priceAsc">Price: Low to High</option>
             <option value="priceDesc">Price: High to Low</option>
@@ -86,17 +83,19 @@ function Browse() {
           </select>
         </div>
       </div>
-      <div className="product-container">
+      <div className="browse-product-container">
         {sortedProducts.map(product => (
           <ProductCard
             key={product.Product_ID}
+            productId={product.Product_ID}
             title={product.Product_Name}
             price={`$${product.Product_Price}`}
             image={product.image}
+            className="browse-product-card"
           />
         ))}
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 }
