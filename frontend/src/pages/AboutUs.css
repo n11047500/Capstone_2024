@@ -12,57 +12,41 @@ body, html {
   padding: 10px 20px;
 }
 
-.home_porduct_container {
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  padding: 20px;
-  margin-top: 12%;
+.about_section{
+  float : left;
+  margin-top: 5%;
+  margin-left: 5%;
+  padding-left: 3%;
 }
 
-.home_product-card {
-  flex-basis: 30%;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin: 10px;
+.about_section h1{
+  font-size:  4.5vh;
+  margin-bottom: 20px;
+  width: 45%;
   text-align: center;
-  padding: 20px;
-  background: #fff;
 }
 
-.motto_section{
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  margin-top: 7.5%;
-  width: 70%;
-
-}
-
-.motto_text{
-  font-size: 3vw;
+.about_section h2{
+  font-size:  3.5vh;
+  margin-bottom: 20px;
   text-align: center;
-  position: relative;
+  width: 45%;
 }
 
-.landpage_image{
-  display: flex;
-  border-radius: 0% 0% 50% 50%; 
-  width: 30%;
-  height: 60% ;
-  z-index: 2;
-  object-fit: none;
-  position: absolute;
-  top: 0px;
-  right: 0px;
+.about_section p{
+  font-size: 2.5vh;
+  margin-bottom: 20px;
+  text-align: center;
+  width: 45%;
 }
 
-.product-card img {
-  height: auto;
-  transition: transform 0.3s ease-in-out;
-}
-
-.product-card:hover img {
-  transform: scale(1.1);
+.aboutus_image{
+  float: right;
+  margin-top: -20px;
+  width: 50vh;
+  height: 35vw;
+  margin-right: 12%;
+  padding-bottom: 50px;
 }
 
 /* Responsive styles */

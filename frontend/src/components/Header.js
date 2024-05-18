@@ -30,6 +30,7 @@ function Header() {
             <li><NavLink to="/">Home</NavLink></li>
             <li><NavLink to="/browse">Browse</NavLink></li>
             <li><NavLink to="/aboutus">About Us</NavLink></li>
+            <li><NavLink to="/gallery">Gallery</NavLink></li>
           </ul>
         </nav>
       )}
