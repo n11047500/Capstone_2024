@@ -9,17 +9,17 @@ function Footer() {
   return (
     <footer className="site-footer">
       <div className="footer-logo">
-          <img src={logoImage} alt="EZee Planter Boxes" sizes='150px'/>
+        <img src={logoImage} alt="EZee Planter Boxes" sizes='150px'/>
         <p>Ranging from mini garden size right through to our large garden, our aluminium planter boxes won't rust or bend and come with a full manufacturing guarantee.</p>
       </div>
       <div className="footer-links">
         <h4>Explore</h4>
         <ul>
-          <li><a href="#">Home</a></li>
-          <li><a href="#">Shopping</a></li>
-          <li><a href="#">About Us</a></li>
-          <li><a href="#">Gallery</a></li>
-          <li><a href="#">Contact Us</a></li>
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/browse">Shopping</Link></li>
+          <li><Link to="/aboutus">About Us</Link></li>
+          <li><Link to="/gallery">Gallery</Link></li>
+          <li><Link to="/contactus">Contact Us</Link></li>
         </ul>
       </div>
       <div className="footer-contact">
@@ -30,10 +30,12 @@ function Footer() {
       </div>
       <div className="footer-businesses">
         <h4>Other EZee Businesses</h4>
-        <a href="https://www.ezeeindustries.com.au" target='_blank' rel="noopener norefferer">
+        <a href="https://www.ezeeindustries.com.au" target='_blank' rel="noopener noreferrer">
           <img src={ezeeind} alt="EZee Industries"/>
         </a>
+        <a href="https://www.ezeefencing.com.au" target='_blank' rel="noopener noreferrer">
           <img src={ezeefencing} alt="EZee Fencing"/>
+        </a>
       </div>
       <div className="footer-payments">
         {/* Payment method logos */}
