@@ -5,19 +5,26 @@ import './Header.css';
 import logoImage from '../assets/logo.png';
 import shoppingCart from '../assets/ShoppingCart.png';
 import shoppingCartBlack from '../assets/ShoppingCartBlack.png';
+import userIcon from '../assets/UserIcon.png';
+import userIconBlack from '../assets/UserIconBlack.png';
 
 function Header() {
   const { cart } = useContext(CartContext);
-  const [isOpen, setIsOpen] = useState(false);
-  const sidebarRef = useRef(null); 
+  const [isOpen, setIsOpen] = useState(false); 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const sidebarRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   const currentPage = window.location.pathname;
 
   let shoppingCartImage;
+  let userIconImage;
   if (currentPage === "/") {
     shoppingCartImage = shoppingCart;
+    userIconImage = userIcon;
   } else {
     shoppingCartImage = shoppingCartBlack;
+    userIconImage = userIconBlack;
   }
 
   useEffect(() => {
@@ -25,9 +32,12 @@ function Header() {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
         setIsOpen(false);
       }
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
     };
 
-    if (isOpen) {
+    if (isOpen || isDropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     } else {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -36,7 +46,7 @@ function Header() {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, isDropdownOpen]);
 
   const totalItemsInCart = cart.reduce((total, item) => total + item.quantity, 0);
 
@@ -51,15 +61,28 @@ function Header() {
           <NavLink to="/" onClick={() => setIsOpen(false)}>
             <img src={logoImage} alt="EZee Planter Boxes" className="logo" />
           </NavLink>
-          </nav>
+        </nav>
 
-        {/* Shopping cart icon */}
-        <NavLink to="/cart" className="cart-link">
-          <div className="cart-icon">
-            <img src={shoppingCartImage} alt='Shopping Cart' />
-            {totalItemsInCart > 0 && <div className="cart-counter">{totalItemsInCart}</div>}
+        <div className="right-icons">
+          {/* User icon with dropdown */}
+          <div className="user-icon-container" ref={dropdownRef}>
+            <img src={userIconImage} alt="User Icon" className="user-icon" onClick={() => setIsDropdownOpen(!isDropdownOpen)} />
+            {isDropdownOpen && (
+              <div className="dropdown-menu">
+                <NavLink to="/login" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>Login</NavLink>
+                <NavLink to="/signup" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>Sign Up</NavLink>
+              </div>
+            )}
           </div>
-        </NavLink>
+
+          {/* Shopping cart icon */}
+          <NavLink to="/cart" className="cart-link">
+            <div className="cart-icon">
+              <img src={shoppingCartImage} alt='Shopping Cart' />
+              {totalItemsInCart > 0 && <div className="cart-counter">{totalItemsInCart}</div>}
+            </div>
+          </NavLink>
+        </div>
       </header>
 
       {/* Sidebar */}

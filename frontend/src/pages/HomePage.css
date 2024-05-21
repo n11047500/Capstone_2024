@@ -52,7 +52,7 @@ body, html {
   height: 60%;
   z-index: 2;
   object-fit: none;
-  position: absolute;
+  position: fixed;
   top: 0px;
   right: 0px;
 }

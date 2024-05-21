@@ -1,91 +1,27 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-* {
+body, html {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Arial', sans-serif;
-}
-
-header {
-  background-color: #f8f9fa;
-  padding: 20px 10%;
+  height: 100%;
   display: flex;
-  justify-content: space-between;
+  overflow-x: auto;
+  flex-direction: column;
+  max-width: 100%;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 100%;  /* Prevent overflow */
+  display: flex;
+  flex-direction: column;
   align-items: center;
-}
-
-nav ul {
-  list-style: none;
-  display: flex;
-}
-
-nav ul li {
-  margin-left: 20px;
-}
-
-nav ul li a {
-  text-decoration: none;
-  color: #333;
-}
-
-.hero-section {
-  background-color: #007bff;
-  color: white;
-  text-align: center;
-  padding: 50px 10%;
-}
-
-.hero-section h2 {
-  font-size: 2.5em;
-}
-
-.hero-section p {
-  font-size: 1.2em;
-  margin-top: 10px;
-}
-
-.hero-section button {
-  padding: 10px 20px;
-  font-size: 1em;
-  color: white;
-  background-color: #0069d9;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 20px;
-}
-
-.featured-products {
-  background-color: #f8f9fa;
-  padding: 20px 10%;
-  text-align: center;
-}
-
-.featured-products h3 {
-  font-size: 1.5em;
-  color: #333;
-}
-
-.featured-products div {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 20px;
+  box-sizing: border-box;
 }
 
 footer {
@@ -93,8 +29,33 @@ footer {
   color: white;
   text-align: center;
   padding: 10px 10%;
-  position: relative;
-  bottom: 0;
   width: 100%;
+  max-width: 100%;  /* Prevent overflow */
+  align-items: center;
 }
 
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #edf1ec;
+  padding: 10px 3%;
+  width: 100%;
+  max-width: 100%;  /* Prevent overflow */
+  box-sizing: border-box;
+  z-index: 1;
+}
+
+.cart-page-container, .login-page-container, .product-page-container {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;  /* Prevent overflow */
+}
+
+.cart-table, .login-form {
+  width: 100%;
+  max-width: 100%;  /* Prevent overflow */
+  box-sizing: border-box;
+}

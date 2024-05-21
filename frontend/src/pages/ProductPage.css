@@ -1,8 +1,5 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #EDF1EC;
-  margin: 0;
-  padding: 0;
 }
 
 .product-page-container {
@@ -55,6 +52,12 @@ body {
   margin-bottom: 20px;
   color: #666;
   line-height: 1.6;
+}
+
+.product-dimensions.product-page {
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #333;
 }
 
 .product-price.product-page {
@@ -118,6 +121,7 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Responsive Design */
 @media (min-width: 768px) {
   .product-container.product-page {
     flex-direction: row;

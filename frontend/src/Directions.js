@@ -6,10 +6,12 @@ import AboutUs from "./pages/AboutUs";
 import Gallery from "./pages/Gallery";
 import ProductPage from './pages/ProductPage';
 import CartPage from './pages/CartPage';
+import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
 import { CartProvider } from './context/CartContext';
 
 const Directions = () => {
-    return(
+    return (
       <CartProvider>
         <Routes>
             <Route path="/" element={<HomePage />} />
@@ -18,9 +20,11 @@ const Directions = () => {
             <Route path="/gallery" element={<Gallery />}/>
             <Route path="/product/:productId" element={<ProductPage />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
         </Routes>
       </CartProvider>
-    )
+    );
 }
 
 export { Directions };
