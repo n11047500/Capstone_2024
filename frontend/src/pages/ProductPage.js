@@ -44,6 +44,7 @@ const ProductPage = () => {
   const { addToCart } = useContext(CartContext);
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [selectedOption, setSelectedOption] = useState('');
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -66,7 +67,11 @@ const ProductPage = () => {
   const productImage = imageMap[product.Product_Name];
 
   const handleAddToCart = () => {
-    addToCart(product, quantity);
+    if (!selectedOption && product.Product_Options.length > 0) {
+      alert('Please select an option');
+      return;
+    }
+    addToCart({ ...product, selectedOption }, quantity);
   };
 
   return (
@@ -84,10 +89,18 @@ const ProductPage = () => {
             <div className="product-reviews product-page">
               <span className="star product-page">⭐</span> 4.9 · <a href="#reviews" className="product-page">142 reviews</a>
             </div>
-            <select className="product-options product-page">
-              <option value="">Options</option>
-              {/* Add more options as needed */}
-            </select>
+            {product.Product_Options.length > 0 && (
+              <select
+                className="product-options product-page"
+                value={selectedOption}
+                onChange={(e) => setSelectedOption(e.target.value)}
+              >
+                <option value="">Select an option</option>
+                {product.Product_Options.map((option, index) => (
+                  <option key={index} value={option}>{option}</option>
+                ))}
+              </select>
+            )}
             <div className="quantity-container product-page">
               <label htmlFor="quantity" className="product-page">Quantity:</label>
               <input

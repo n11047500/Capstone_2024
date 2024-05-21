@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -40,9 +41,14 @@ const imageMap = {
 
 const CartPage = () => {
   const { cart, removeFromCart, updateQuantity, clearCart } = useContext(CartContext);
+  const navigate = useNavigate();
 
   const calculateTotal = () => {
-    return cart.reduce((total, item) => total + item.product.Product_Price * item.quantity, 0);
+    return cart.reduce((total, item) => total + item.Product_Price * item.quantity, 0).toFixed(2);
+  };
+
+  const handleContinueShopping = () => {
+    navigate('/browse'); // Adjust the path as needed
   };
 
   return (
@@ -64,25 +70,32 @@ const CartPage = () => {
               </tr>
             </thead>
             <tbody>
-              {cart.map((item) => (
-                <tr key={item.product.Product_ID}>
+              {cart.map((item, index) => (
+                <tr key={index}>
                   <td className="cart-item">
-                    <img src={imageMap[item.product.Product_Name]} alt={item.product.Product_Name} className="cart-item-image" />
-                    <span>{item.product.Product_Name}</span>
+                    <Link to={`/product/${item.Product_ID}`}>
+                      <img src={imageMap[item.Product_Name]} alt={item.Product_Name} className="cart-item-image" />
+                    </Link>
+                    <div>
+                      <Link to={`/product/${item.Product_ID}`} className="cart-item-link">
+                        <span>{item.Product_Name}</span>
+                      </Link>
+                      {item.selectedOption && <p className="cart-item-option">{item.selectedOption}</p>}
+                    </div>
                   </td>
-                  <td>${item.product.Product_Price}</td>
+                  <td>${item.Product_Price.toFixed(2)}</td>
                   <td>
                     <input 
                       type="number" 
                       min="1" 
                       value={item.quantity} 
-                      onChange={(e) => updateQuantity(item.product.Product_ID, parseInt(e.target.value))} 
+                      onChange={(e) => updateQuantity(item.Product_ID, item.selectedOption, parseInt(e.target.value))} 
                       className="quantity-input"
                     />
                   </td>
-                  <td>${item.product.Product_Price * item.quantity}</td>
+                  <td>${(item.Product_Price * item.quantity).toFixed(2)}</td>
                   <td>
-                    <button onClick={() => removeFromCart(item.product.Product_ID)} className="remove-button">✖</button>
+                    <button onClick={() => removeFromCart(item.Product_ID, item.selectedOption)} className="remove-button">✖</button>
                   </td>
                 </tr>
               ))}
@@ -91,10 +104,10 @@ const CartPage = () => {
         )}
         <div className="cart-summary">
           <p>Subtotal: ${calculateTotal()}</p>
-          <button className="clear-cart-button" onClick={() => clearCart()}>Clear Cart</button>
+          <button className="clear-cart-button" onClick={clearCart}>Clear Cart</button>
         </div>
         <div className="cart-actions">
-          <button className="continue-shopping-button">Continue Shopping</button>
+          <button className="continue-shopping-button" onClick={handleContinueShopping}>Continue Shopping</button>
           <button className="checkout-button">Checkout</button>
         </div>
       </div>
