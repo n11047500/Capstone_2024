@@ -54,7 +54,6 @@ app.post('/register', (req, res) => {
   const { firstName, lastName, email, password, mobileNumber, dateOfBirth } = req.body;
   console.log('Received registration data:', req.body);
 
-  // Check if user already exists
   const checkQuery = 'SELECT * FROM users WHERE email = ?';
   db.query(checkQuery, [email], (err, results) => {
     if (err) {
@@ -67,7 +66,6 @@ app.post('/register', (req, res) => {
       return res.status(400).json({ error: 'User already exists.' });
     }
 
-    // Hash password before storing in the database
     bcrypt.hash(password, 10, (err, hash) => {
       if (err) {
         console.error('Error hashing password:', err);
@@ -137,6 +135,27 @@ app.get('/user/:email', (req, res) => {
     }
 
     res.status(200).json(results[0]);
+  });
+});
+
+app.put('/user/:email', (req, res) => {
+  const email = req.params.email;
+  const { firstName, lastName, mobileNumber, dateOfBirth } = req.body;
+  console.log('Updating user with email:', email);
+
+  const query = 'UPDATE users SET first_name = ?, last_name = ?, mobile_number = ?, date_of_birth = ? WHERE email = ?';
+  db.query(query, [firstName, lastName, mobileNumber, dateOfBirth, email], (err, result) => {
+    if (err) {
+      console.error('Error updating user:', err);
+      return res.status(500).json({ error: 'Failed to update user information.' });
+    }
+
+    if (result.affectedRows === 0) {
+      console.log('User not found for update:', email);
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    res.status(200).json({ message: 'User information updated successfully.' });
   });
 });
 

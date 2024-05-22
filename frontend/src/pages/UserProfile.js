@@ -7,33 +7,32 @@ import './UserProfile.css';
 const UserProfile = () => {
   const { email } = useParams();
   const [user, setUser] = useState(null);
-  const [error, setError] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
-    mobile_number: '',
-    date_of_birth: ''
+    firstName: '',
+    lastName: '',
+    mobileNumber: '',
+    dateOfBirth: '',
   });
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const response = await fetch(`http://localhost:3001/user/${email}`);
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data);
-          setFormData({
-            first_name: data.first_name,
-            last_name: data.last_name,
-            mobile_number: data.mobile_number,
-            date_of_birth: data.date_of_birth
-          });
-        } else {
-          setError('User not found');
+        if (!response.ok) {
+          throw new Error('User not found');
         }
+        const data = await response.json();
+        setUser(data);
+        setFormData({
+          firstName: data.first_name,
+          lastName: data.last_name,
+          mobileNumber: data.mobile_number,
+          dateOfBirth: data.date_of_birth,
+        });
       } catch (error) {
-        setError('An error occurred. Please try again.');
+        console.error('Error fetching user:', error);
+        setMessage('Failed to load user information.');
       }
     };
 
@@ -41,10 +40,11 @@ const UserProfile = () => {
   }, [email]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleUpdate = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch(`http://localhost:3001/user/${email}`, {
@@ -55,58 +55,67 @@ const UserProfile = () => {
         body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
-        setUser({ ...user, ...formData });
-        setIsEditing(false);
-      } else {
-        setError('Failed to update user information');
+      if (!response.ok) {
+        throw new Error('Failed to update user information.');
       }
+
+      const data = await response.json();
+      setMessage(data.message);
     } catch (error) {
-      setError('An error occurred. Please try again.');
+      console.error('Error updating user information:', error);
+      setMessage('Failed to update user information.');
     }
   };
-
-  if (!user) {
-    return (
-      <div>
-        <Header />
-        <main className="main-content">
-          <p>Loading...</p>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <>
       <Header />
-      <main className="main-content">
+      <main>
         <div className="profile-container">
           <h1>User Profile</h1>
-          {error && <p className="error-message">{error}</p>}
-          {!isEditing ? (
-            <div>
-              <p><strong>First Name:</strong> {user.first_name}</p>
-              <p><strong>Last Name:</strong> {user.last_name}</p>
-              <p><strong>Email:</strong> {user.email}</p>
-              <p><strong>Mobile Number:</strong> {user.mobile_number}</p>
-              <p><strong>Date of Birth:</strong> {user.date_of_birth}</p>
-              <button onClick={() => setIsEditing(true)} className="edit-button">Edit Profile</button>
-            </div>
-          ) : (
-            <form onSubmit={handleUpdate}>
-              <label>First Name:</label>
-              <input type="text" name="first_name" value={formData.first_name} onChange={handleChange} required />
-              <label>Last Name:</label>
-              <input type="text" name="last_name" value={formData.last_name} onChange={handleChange} required />
-              <label>Mobile Number:</label>
-              <input type="text" name="mobile_number" value={formData.mobile_number} onChange={handleChange} />
-              <label>Date of Birth:</label>
-              <input type="date" name="date_of_birth" value={formData.date_of_birth} onChange={handleChange} />
-              <button type="submit" className="save-button">Save</button>
-              <button onClick={() => setIsEditing(false)} className="cancel-button">Cancel</button>
+          {message && <p className="message">{message}</p>}
+          {user ? (
+            <form onSubmit={handleSubmit}>
+              <label htmlFor="firstName">First Name:</label>
+              <input
+                type="text"
+                id="firstName"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+              />
+
+              <label htmlFor="lastName">Last Name:</label>
+              <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+              />
+
+              <label htmlFor="mobileNumber">Mobile Number:</label>
+              <input
+                type="text"
+                id="mobileNumber"
+                name="mobileNumber"
+                value={formData.mobileNumber}
+                onChange={handleChange}
+              />
+
+              <label htmlFor="dateOfBirth">Date of Birth:</label>
+              <input
+                type="date"
+                id="dateOfBirth"
+                name="dateOfBirth"
+                value={formData.dateOfBirth}
+                onChange={handleChange}
+              />
+
+              <button type="submit" className="update-button">Update Profile</button>
             </form>
+          ) : (
+            <p>Loading...</p>
           )}
         </div>
       </main>
