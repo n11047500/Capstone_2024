@@ -3,7 +3,7 @@ body, html {
   padding: 0;
   height: 100%;
   display: flex;
-  overflow-x: auto;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
   flex-direction: column;
   max-width: 100%;
 }
@@ -17,7 +17,7 @@ body, html {
 main {
   flex: 1;
   width: 100%;
-  max-width: 100%;  /* Prevent overflow */
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -25,13 +25,15 @@ main {
 }
 
 footer {
-  background-color: #343a40;
-  color: white;
-  text-align: center;
-  padding: 10px 10%;
-  width: 100%;
-  max-width: 100%;  /* Prevent overflow */
+  display: flex;
+  justify-content: space-between;
   align-items: center;
+  background-color: #edf1ec;
+  padding: 10px 3%;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  z-index: 1;
 }
 
 .site-header {
@@ -41,7 +43,7 @@ footer {
   background-color: #edf1ec;
   padding: 10px 3%;
   width: 100%;
-  max-width: 100%;  /* Prevent overflow */
+  max-width: 100%;
   box-sizing: border-box;
   z-index: 1;
 }
@@ -51,11 +53,11 @@ footer {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
-  box-sizing: border-box;  /* Prevent overflow */
+  box-sizing: border-box;
 }
 
 .cart-table, .login-form {
   width: 100%;
-  max-width: 100%;  /* Prevent overflow */
+  max-width: 100%;
   box-sizing: border-box;
 }
