@@ -1,114 +1,115 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './SignUpPage.css';
 
 const SignUpPage = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [mobileNumber, setMobileNumber] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    mobileNumber: '',
+    dateOfBirth: '',
+  });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      alert('Passwords do not match');
-      return;
-    }
-
     try {
-      const response = await fetch('http://localhost:3001/signup', {
+      const response = await fetch('http://localhost:3001/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ firstName, lastName, email, mobileNumber, password }),
+        body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
-      if (response.ok) {
-        alert('User created successfully');
-        // Redirect to login page or do something else
-      } else {
-        alert(data.error);
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Error creating user. Please try again.');
       }
+
+      const data = await response.json();
+      console.log('User created successfully:', data);
+      navigate(`/user/${formData.email}`);
     } catch (error) {
-      alert('An error occurred. Please try again.');
+      console.error('Error creating user:', error);
+      setError(error.message);
     }
   };
 
   return (
     <>
       <Header />
-      <div className="signup-container">
-        <h1>Sign Up</h1>
-        <form className="signup-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="first-name">First name: *</label>
+      <main>
+        <div className="signup-container">
+          <h1>Sign Up</h1>
+          {error && <p className="error-message">{error}</p>}
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="firstName">First Name:</label>
             <input
               type="text"
-              id="first-name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              id="firstName"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleChange}
               required
             />
-          </div>
-          <div className="form-group">
-            <label htmlFor="last-name">Last name: *</label>
+            <label htmlFor="lastName">Last Name:</label>
             <input
               type="text"
-              id="last-name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              id="lastName"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleChange}
               required
             />
-          </div>
-          <div className="form-group">
-            <label htmlFor="email">Email: *</label>
+            <label htmlFor="email">Email:</label>
             <input
               type="email"
               id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               required
             />
-          </div>
-          <div className="form-group">
-            <label htmlFor="mobile-number">Mobile number:</label>
-            <input
-              type="tel"
-              id="mobile-number"
-              value={mobileNumber}
-              onChange={(e) => setMobileNumber(e.target.value)}
-              placeholder="(optional)"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Password: *</label>
+            <label htmlFor="password">Password:</label>
             <input
               type="password"
               id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               required
             />
-          </div>
-          <div className="form-group">
-            <label htmlFor="confirm-password">Confirm password: *</label>
+            <label htmlFor="mobileNumber">Mobile Number:</label>
             <input
-              type="password"
-              id="confirm-password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
+              type="text"
+              id="mobileNumber"
+              name="mobileNumber"
+              value={formData.mobileNumber}
+              onChange={handleChange}
             />
-          </div>
-          <button type="submit" className="signup-button">Sign Up</button>
-        </form>
-        <p className="signup-footer">Already have an account? <a href="/login">Login</a></p>
-      </div>
+            <label htmlFor="dateOfBirth">Date of Birth:</label>
+            <input
+              type="date"
+              id="dateOfBirth"
+              name="dateOfBirth"
+              value={formData.dateOfBirth}
+              onChange={handleChange}
+            />
+            <button type="submit" className="signup-button">Sign Up</button>
+          </form>
+        </div>
+      </main>
       <Footer />
     </>
   );

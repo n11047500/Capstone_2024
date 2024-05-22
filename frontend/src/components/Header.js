@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
 import './Header.css';
 import logoImage from '../assets/logo.png';
@@ -14,6 +14,7 @@ function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const sidebarRef = useRef(null);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   const currentPage = window.location.pathname;
 
@@ -50,6 +51,13 @@ function Header() {
 
   const totalItemsInCart = cart.reduce((total, item) => total + item.quantity, 0);
 
+  const handleLogout = () => {
+    localStorage.removeItem('userEmail');
+    navigate('/');
+  };
+
+  const userEmail = localStorage.getItem('userEmail');
+
   return (
     <>
       <header className="site-header">
@@ -69,8 +77,17 @@ function Header() {
             <img src={userIconImage} alt="User Icon" className="user-icon" onClick={() => setIsDropdownOpen(!isDropdownOpen)} />
             {isDropdownOpen && (
               <div className="dropdown-menu">
-                <NavLink to="/login" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>Login</NavLink>
-                <NavLink to="/signup" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>Sign Up</NavLink>
+                {userEmail ? (
+                  <>
+                    <NavLink to={`/user/${userEmail}`} className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>Profile</NavLink>
+                    <div className="dropdown-item" onClick={handleLogout}>Log Out</div>
+                  </>
+                ) : (
+                  <>
+                    <NavLink to="/login" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>Login</NavLink>
+                    <NavLink to="/signup" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>Sign Up</NavLink>
+                  </>
+                )}
               </div>
             )}
           </div>

@@ -16,34 +16,32 @@ main {
   justify-content: center;
 }
 
-.signup-container {
-  background-color: #EDF1EC;
+.profile-container {
+  background-color: #fff;
   padding: 40px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   text-align: center;
-  max-width: 400px;
+  max-width: 600px;
   width: 100%;
   margin: 20px;
 }
 
-.signup-container h1 {
+.profile-container h1 {
   font-size: 24px;
   margin-bottom: 20px;
   color: #333;
 }
 
-.signup-container label {
+.profile-container label {
   font-size: 16px;
   color: #666;
   display: block;
   margin-bottom: 5px;
 }
 
-.signup-container input[type="text"],
-.signup-container input[type="email"],
-.signup-container input[type="password"],
-.signup-container input[type="date"] {
+.profile-container input[type="text"],
+.profile-container input[type="date"] {
   width: 100%;
   padding: 10px;
   font-size: 16px;
@@ -52,24 +50,38 @@ main {
   margin-bottom: 20px;
 }
 
-.signup-container .signup-button {
+.edit-button,
+.save-button,
+.cancel-button {
   width: 100%;
   padding: 15px;
-  font-size: 20px;
+  font-size: 18px;
   color: white;
   background-color: #4CAF50;
   border: none;
-  border-radius: 100px;
+  border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
+  margin-top: 10px;
 }
 
-.signup-container .signup-button:hover {
+.cancel-button {
+  background-color: #f44336;
+}
+
+.edit-button:hover,
+.save-button:hover {
   background-color: #45a049;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.signup-container .error-message {
+.cancel-button:hover {
+  background-color: #d32f2f;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.error-message {
   color: red;
-  margin-top: 10px;
+  font-size: 14px;
+  margin-bottom: 20px;
 }
