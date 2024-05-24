@@ -12,27 +12,29 @@ const UserProfile = () => {
     lastName: '',
     mobileNumber: '',
     dateOfBirth: '',
+    shippingAddress: '',
+    billingAddress: ''
   });
+  const [sameAddress, setSameAddress] = useState(false);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const response = await fetch(`http://localhost:3001/user/${email}`);
-        if (!response.ok) {
-          throw new Error('User not found');
-        }
         const data = await response.json();
         setUser(data);
         setFormData({
           firstName: data.first_name,
           lastName: data.last_name,
           mobileNumber: data.mobile_number,
-          dateOfBirth: data.date_of_birth,
+          dateOfBirth: data.date_of_birth ? data.date_of_birth.split('T')[0] : '',
+          shippingAddress: data.shippingAddress || '',
+          billingAddress: data.billingAddress || ''
         });
+        setSameAddress(data.shippingAddress === data.billingAddress);
       } catch (error) {
         console.error('Error fetching user:', error);
-        setMessage('Failed to load user information.');
       }
     };
 
@@ -41,7 +43,21 @@ const UserProfile = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+      ...(name === 'shippingAddress' && sameAddress ? { billingAddress: value } : {})
+    }));
+  };
+
+  const handleCheckboxChange = (e) => {
+    setSameAddress(e.target.checked);
+    if (e.target.checked) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        billingAddress: prevFormData.shippingAddress
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -49,10 +65,8 @@ const UserProfile = () => {
     try {
       const response = await fetch(`http://localhost:3001/user/${email}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
       });
 
       if (!response.ok) {
@@ -110,6 +124,34 @@ const UserProfile = () => {
                 name="dateOfBirth"
                 value={formData.dateOfBirth}
                 onChange={handleChange}
+              />
+
+              <label htmlFor="shippingAddress">Shipping Address:</label>
+              <input
+                type="text"
+                id="shippingAddress"
+                name="shippingAddress"
+                value={formData.shippingAddress}
+                onChange={handleChange}
+              />
+
+              <label>
+                <input
+                  type="checkbox"
+                  checked={sameAddress}
+                  onChange={handleCheckboxChange}
+                />
+                Billing address is the same as shipping address
+              </label>
+
+              <label htmlFor="billingAddress">Billing Address:</label>
+              <input
+                type="text"
+                id="billingAddress"
+                name="billingAddress"
+                value={formData.billingAddress}
+                onChange={handleChange}
+                disabled={sameAddress}
               />
 
               <button type="submit" className="update-button">Update Profile</button>

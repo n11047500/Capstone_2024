@@ -122,29 +122,56 @@ app.get('/user/:email', (req, res) => {
   const email = req.params.email;
   console.log('Fetching user with email:', email);
 
-  const query = 'SELECT first_name, last_name, email, mobile_number, date_of_birth FROM users WHERE email = ?';
-  db.query(query, [email], (err, results) => {
+  const userQuery = 'SELECT user_id, first_name, last_name, email, mobile_number, date_of_birth FROM users WHERE email = ?';
+  const addressesQuery = 'SELECT type, address FROM addresses WHERE user_id = ?';
+
+  db.query(userQuery, [email], (err, userResults) => {
     if (err) {
       console.error('Error fetching user from database:', err);
       return res.status(500).json({ error: 'An error occurred. Please try again.' });
     }
 
-    if (results.length === 0) {
+    if (userResults.length === 0) {
       console.log('User not found:', email);
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.status(200).json(results[0]);
+    const user = userResults[0];
+
+    db.query(addressesQuery, [user.user_id], (err, addressResults) => {
+      if (err) {
+        console.error('Error fetching addresses from database:', err);
+        return res.status(500).json({ error: 'An error occurred. Please try again.' });
+      }
+
+      const addresses = {
+        shippingAddress: '',
+        billingAddress: '',
+      };
+
+      addressResults.forEach((address) => {
+        if (address.type === 'shipping') {
+          addresses.shippingAddress = address.address;
+        } else if (address.type === 'billing') {
+          addresses.billingAddress = address.address;
+        }
+      });
+
+      res.status(200).json({ ...user, ...addresses });
+    });
   });
 });
 
 app.put('/user/:email', (req, res) => {
   const email = req.params.email;
-  const { firstName, lastName, mobileNumber, dateOfBirth } = req.body;
+  const { firstName, lastName, mobileNumber, dateOfBirth, shippingAddress, billingAddress } = req.body;
   console.log('Updating user with email:', email);
 
-  const query = 'UPDATE users SET first_name = ?, last_name = ?, mobile_number = ?, date_of_birth = ? WHERE email = ?';
-  db.query(query, [firstName, lastName, mobileNumber, dateOfBirth, email], (err, result) => {
+  const updateUserQuery = 'UPDATE users SET first_name = ?, last_name = ?, mobile_number = ?, date_of_birth = ? WHERE email = ?';
+  const getUserIDQuery = 'SELECT user_id FROM users WHERE email = ?';
+  const updateAddressQuery = 'INSERT INTO addresses (user_id, type, address) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE address = VALUES(address)';
+
+  db.query(updateUserQuery, [firstName, lastName, mobileNumber, dateOfBirth, email], (err, result) => {
     if (err) {
       console.error('Error updating user:', err);
       return res.status(500).json({ error: 'Failed to update user information.' });
@@ -155,7 +182,30 @@ app.put('/user/:email', (req, res) => {
       return res.status(404).json({ error: 'User not found.' });
     }
 
-    res.status(200).json({ message: 'User information updated successfully.' });
+    db.query(getUserIDQuery, [email], (err, userIDResults) => {
+      if (err) {
+        console.error('Error fetching user ID:', err);
+        return res.status(500).json({ error: 'Failed to update user information.' });
+      }
+
+      const userId = userIDResults[0].user_id;
+
+      db.query(updateAddressQuery, [userId, 'shipping', shippingAddress], (err) => {
+        if (err) {
+          console.error('Error updating shipping address:', err);
+          return res.status(500).json({ error: 'Failed to update user information.' });
+        }
+
+        db.query(updateAddressQuery, [userId, 'billing', billingAddress], (err) => {
+          if (err) {
+            console.error('Error updating billing address:', err);
+            return res.status(500).json({ error: 'Failed to update user information.' });
+          }
+
+          res.status(200).json({ message: 'User information updated successfully.' });
+        });
+      });
+    });
   });
 });
 
