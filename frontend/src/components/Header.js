@@ -70,6 +70,7 @@ function Header() {
           <NavLink to="/browse" onClick={() => setIsOpen(false)}>Browse</NavLink>
           <NavLink to="/aboutus" onClick={() => setIsOpen(false)}>About Us</NavLink>
           <NavLink to="/gallery" onClick={() => setIsOpen(false)}>Gallery</NavLink>
+          <NavLink to="/contactus" onClick={() => setIsOpen(false)}>Contact Us</NavLink>
         </nav>
       </div>
     </>
