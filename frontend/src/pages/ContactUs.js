@@ -14,6 +14,10 @@ function ContactUs() {
       <div className="ContactUs">
         <Header />
         <div className='contact_section'>
+            <h1>
+                Contact Us
+            </h1>
+            <h2> We'd love to hear all general enquiries you may have about Ezee Planter Boxes. Contact us via the form below, call our office on 07 3284 8180, or drop in for a chat at our office at: 21 Huntington Street, Clontarf QLD 4019 </h2>
           <div className='contact-flexbox'>
   
         <div class ="contact-flexbox left-box"> 
@@ -26,7 +30,7 @@ function ContactUs() {
   
           
           <form target="_blank" action="https://formsubmit.co/ezeeplanterbox@gmail.com" method="POST" class ="contact-form"> 
-            <table class >
+            <table class="form-table">
 
                 <tr>
                     <td><label for="fname">First Name:</label><br/>
@@ -39,14 +43,15 @@ function ContactUs() {
                 </tr>
                 <tr>
                     <td><label for="email">Email:</label><br/>
-                    <input type="text" id="email" name="email" placeholder="Your Email..." /><br/><br /></td>
+                    <input type="text" id="email" name="email" placeholder="Your Email..." /><br/></td>
                     <td><label for="phone">Mobile Number:</label><br/>
-                    <input type="text" id="mobile" name="mobile" placeholder="(optional)" /><br/><br /></td>
+                    <input type="text" id="mobile" name="mobile" placeholder="(optional)" /><br/></td>
                 </tr>
                 <tr>
-                    <td> 
+                    <td colspan="2"> 
                     <label for="inquiry">Enquiry:</label><br/>
-                    <input type="text" id="inquiry" name="inquiry" placeholder="Write your inquiry here..." /><br/><br />
+                    <textarea id="inquiry" name="inquiry" placeholder="Write your inquiry here..." > </textarea>
+                    {/* <input type="text" id="inquiry" name="inquiry" placeholder="Write your inquiry here..." /><br/><br /> */}
                     </td>
                 </tr>
                 </table>

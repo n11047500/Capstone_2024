@@ -57,10 +57,12 @@ body, html {
     flex: 3; /* Flex-grow, flex-shrink, and flex-basis */
     flex-direction: column; /* Ensures children are arranged in a column */
     width: 40%;
-    background-color: #20c146; /* Green background */  
+    background-color: none; /* Green background */  
 
   }
-  
+  .form-table {
+    width: 100%;
+  }
 
   
   .contact_section p{
@@ -72,7 +74,8 @@ body, html {
 
 
   .contact-form {
-    font-size: 2vw;;
+    font-size: 1.5vw;
+    width: 100%;
   }
   
   .contact_image{
@@ -111,10 +114,82 @@ body, html {
     background-color: #45a049;
   }
   
+  textarea {
+    height: 5vw; /* Adjust height as needed */
+    width: 100%;
+    resize: none; /* Prevent resizing by user */
+    font-family: Arial, sans-serif;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1vw;
+  }
 
-    /* .contact_section h2{
-    font-size:  3.5vh;
-    margin-bottom: 20px;
-    text-align: center;
-    width: 45%;
-  } */
+  h1 {
+    font-size: 2.8vw;
+  }
+  h2 {
+    font-size: 1.4vw;
+  }
+
+
+
+
+  @media only screen and (max-width: 600px) {
+    h1 {
+        font-size: 5.6vw;
+      }
+      h2 {
+        font-size: 4.0vw;
+      }
+
+      .contact-flexbox {
+        display: flex;   
+        flex-direction:  column;
+        font-size: 2vw;
+      }
+      .left-box {
+        flex: 1; 
+        flex-direction: column; 
+        width: 80%;
+        border-radius: 30px;
+        
+        border: 10px solid #20c146;
+        font-size: 2vw;
+    
+      }
+      .left-box p {
+        font-size: 3vw;
+      }
+      .right-box {
+        width: 80%;
+      }
+
+    .contact-form {
+    font-size: 3vw;
+    width: 100%;
+    }
+
+    input[type=text], select {
+        font-size: 2vw;
+        
+      }
+
+
+      textarea {
+        height: 10vw; /* Adjust height as needed */        
+        font-size: 2vw;
+      }
+      .submit-button{
+        background-color: #04AA6D;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        font-size: vw;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+        width: 100%;
+      }
+      
+  }
