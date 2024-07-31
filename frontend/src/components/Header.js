@@ -3,22 +3,12 @@ import { NavLink } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
 import './Header.css';
 import logoImage from '../assets/logo.png';
-import shoppingCart from '../assets/ShoppingCart.png';
-import shoppingCartBlack from '../assets/ShoppingCartBlack.png';
+import shoppingCartImage from '../assets/ShoppingCartBlack.png';
 
 function Header() {
   const { cart } = useContext(CartContext);
   const [isOpen, setIsOpen] = useState(false);
   const sidebarRef = useRef(null); 
-
-  const currentPage = window.location.pathname;
-
-  let shoppingCartImage;
-  if (currentPage === "/") {
-    shoppingCartImage = shoppingCart;
-  } else {
-    shoppingCartImage = shoppingCartBlack;
-  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {

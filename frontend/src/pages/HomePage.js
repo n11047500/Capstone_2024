@@ -59,9 +59,7 @@ function HomePage() {
   return (
     <div className="HomePage">
       <Header />
-      <img src={top_image} alt="planter_box" className="landpage_image" />
       <div className='motto_section'>
-        <img src={home_icon} alt="Planter Icon" className="motto_image" />
         <h1 className='motto_text'>The pain-free gardening solution suitable for everybody.</h1>
       </div>
       <div className="home_product_section">
