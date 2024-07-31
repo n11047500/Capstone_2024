@@ -85,6 +85,7 @@ const ProductPage = () => {
           <div className="product-details product-page">
             <h1 className="product-title product-page">{product.Product_Name}</h1>
             <p className="product-description product-page">{product.Description}</p>
+            <p className="product-dimensions product-page"><strong>Dimensions:</strong> {product.Product_Dimensions}</p>
             <p className="product-price product-page">${product.Product_Price}</p>
             <div className="product-reviews product-page">
               <span className="star product-page">⭐</span> 4.9 · <a href="#reviews" className="product-page">142 reviews</a>

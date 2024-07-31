@@ -8,6 +8,9 @@ import ContactUs from "./pages/ContactUs";
 
 import ProductPage from './pages/ProductPage';
 import CartPage from './pages/CartPage';
+import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
+import UserProfile from './pages/UserProfile';
 import { CartProvider } from './context/CartContext';
 
 const Directions = () => {
@@ -21,9 +24,13 @@ const Directions = () => {
             <Route path="/contactus" element={<ContactUs/>}/>
             <Route path="/product/:productId" element={<ProductPage />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/user/:email" element={<UserProfile />} />
         </Routes>
       </CartProvider>
     )
 }
+
 
 export { Directions };

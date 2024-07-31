@@ -1,5 +1,3 @@
-/* src/pages/HomePage.css */
-
 body, html {
   margin: 0;
   padding: 0;
@@ -68,7 +66,6 @@ body, html {
   font-size: 2vw;
   padding-top: 100px;
 }
-
 
 .testimonial-section {
   text-align: center;

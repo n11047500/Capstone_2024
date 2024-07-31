@@ -9,9 +9,15 @@
 }
 
 .site-header .menu-icon,
-.site-header .cart-icon {
+.site-header .cart-icon,
+.site-header .user-icon-container {
   font-size: 2.5em;
   cursor: pointer;
+}
+
+.right-icons {
+  display: flex;
+  align-items: center;
 }
 
 .cart-icon {
@@ -19,25 +25,58 @@
   cursor: pointer;
   z-index: 5;
   position: relative;
-}
-
-.cart-icon .cart-counter {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  background-color: #000;
-  color: white;
-  border-radius: 50%;
-  padding: 5px 10px;
-  font-size: 14px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  margin-left: 20px;
 }
 
 .site-header .logo {
   font-size: 1.5em;
   color: #eec4ff;
+}
+
+.user-icon-container {
+  position: relative;
+}
+
+.cart-counter {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: black;
+  color: white;
+  border-radius: 50%;
+  padding: 2.5px 5px;
+  font-size: 0.4em;
+}
+
+.user-icon {
+  font-size: 2.5em;
+  cursor: pointer;
+  z-index: 5;
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #eec4ff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  min-width: 120px;
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+  font-size: 14px;
+  text-decoration: none;
+  color: black;
+  display: block;
+}
+
+.dropdown-item:hover {
+  text-decoration: underline;
 }
 
 .sidebar {
