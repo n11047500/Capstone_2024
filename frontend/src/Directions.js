@@ -5,6 +5,7 @@ import Browse from "./pages/Browse";
 import AboutUs from "./pages/AboutUs";
 import Gallery from "./pages/Gallery";
 import ContactUs from "./pages/ContactUs";
+import ReviewPage from "./pages/ReviewPage";
 
 import ProductPage from './pages/ProductPage';
 import CartPage from './pages/CartPage';
@@ -21,6 +22,7 @@ const Directions = () => {
             <Route path="/contactus" element={<ContactUs/>}/>
             <Route path="/product/:productId" element={<ProductPage />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/reviews" element={<ReviewPage />} />
         </Routes>
       </CartProvider>
     )

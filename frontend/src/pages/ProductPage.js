@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { CartContext } from '../context/CartContext';
 import './ProductPage.css';
+import './ReviewPage.css';
+
 
 import large_planter_tray from '../assets/large_planter_tray.jpg';
 import desktop_planter_box from '../assets/desktop_planter_box.jpg';
@@ -39,12 +41,19 @@ const imageMap = {
   'Trellis': trellis,
 };
 
+
 const ProductPage = () => {
   const { productId } = useParams();
   const { addToCart } = useContext(CartContext);
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedOption, setSelectedOption] = useState('');
+  const [isVisible, setIsVisible] = useState(false);
+  const [rating, setRating] = useState(null);
+  const [hover, setHover] = useState(null);
+  const [totalStars, setTotalStars] = useState(5);
+
+  
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -74,7 +83,9 @@ const ProductPage = () => {
     addToCart({ ...product, selectedOption }, quantity);
   };
 
+
   return (
+
     <>
       <Header />
       <div className="product-page-container">
@@ -87,8 +98,9 @@ const ProductPage = () => {
             <p className="product-description product-page">{product.Description}</p>
             <p className="product-price product-page">${product.Product_Price}</p>
             <div className="product-reviews product-page">
-              <span className="star product-page">⭐</span> 4.9 · <a href="#reviews" className="product-page">142 reviews</a>
+              <span className="star product-page">⭐</span> 4.9 · <a href="/reviews" className="product-page">142 reviews</a>
             </div>
+        
             {product.Product_Options.length > 0 && (
               <select
                 className="product-options product-page"
