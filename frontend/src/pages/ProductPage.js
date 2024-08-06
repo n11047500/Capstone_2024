@@ -98,7 +98,9 @@ const ProductPage = () => {
             <p className="product-description product-page">{product.Description}</p>
             <p className="product-price product-page">${product.Product_Price}</p>
             <div className="product-reviews product-page">
-              <span className="star product-page">⭐</span> 4.9 · <a href="/reviews" className="product-page">142 reviews</a>
+              <span className="star product-page">⭐</span> 4.9 · 
+             <Link to={`/reviews/${productId}`} className="product-page">142 reviews</Link>
+
             </div>
         
             {product.Product_Options.length > 0 && (

@@ -22,7 +22,7 @@ const Directions = () => {
             <Route path="/contactus" element={<ContactUs/>}/>
             <Route path="/product/:productId" element={<ProductPage />} />
             <Route path="/cart" element={<CartPage />} />
-            <Route path="/reviews" element={<ReviewPage />} />
+            <Route path="/reviews/:productId" element={<ReviewPage />} />
         </Routes>
       </CartProvider>
     )
