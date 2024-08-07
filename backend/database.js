@@ -1,18 +1,15 @@
+// /backend/database.js
 const mysql = require('mysql');
 
-const connection = mysql.createConnection({
-  host: 'sql12.freesqldatabase.com',
-  user: 'sql12706499',
-  password: 'TApP5UqBDM',
-  database: 'sql12706499'
-});
+function createDBConnection() {
+  const connection = mysql.createConnection({
+    host: 'sql12.freesqldatabase.com',
+    user: 'sql12706499',
+    password: 'TApP5UqBDM',
+    database: 'sql12706499',
+  });
 
-connection.connect((err) => {
-  if (err) {
-    console.error('Error connecting to the database:', err.stack);
-    return;
-  }
-  console.log('Connected to the database.');
-});
+  return connection;
+}
 
-module.exports = connection;
+module.exports = createDBConnection;

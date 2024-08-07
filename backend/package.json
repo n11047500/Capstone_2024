@@ -1,25 +1,26 @@
 {
-  "name": "backend",
+  "name": "ezee-furniture-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Backend server for EZee Furniture application",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "start-frontend": "npm start --prefix ../frontend",
-    "dev": "concurrently \"npm run start-frontend\" \"npm run start\""
+    "test": "jest"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Your Name",
+  "license": "MIT",
   "dependencies": {
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
-    "express": "^4.19.2",
-    "mysql": "^2.18.1",
-    "mysql2": "^3.9.7"
+    "express": "^4.17.1",
+    "mysql": "^2.18.1"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "jest": "^29.6.0",
+    "babel-jest": "^29.6.0",
+    "supertest": "^6.3.0",
+    "@babel/core": "^7.21.4",
+    "@babel/preset-env": "^7.21.4"
   }
 }
