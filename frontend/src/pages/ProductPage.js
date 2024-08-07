@@ -74,6 +74,12 @@ const ProductPage = () => {
     addToCart({ ...product, selectedOption }, quantity);
   };
 
+  var options = product.Product_Options;
+  if (typeof options !== 'string') {
+    options = String(options);}
+  var optionArray = options.split(',');
+  product.Product_Options = optionArray;
+
   return (
     <>
       <Header />
@@ -90,15 +96,14 @@ const ProductPage = () => {
             <div className="product-reviews product-page">
               <span className="star product-page">⭐</span> 4.9 · <a href="#reviews" className="product-page">142 reviews</a>
             </div>
-            {product.Product_Options.length > 0 && (
+            {product.Product_Options.length > 1 && (
               <select
                 className="product-options product-page"
                 value={selectedOption}
-                onChange={(e) => setSelectedOption(e.target.value)}
-              >
+                onChange={(e) => setSelectedOption(e.target.value)}>
                 <option value="">Select an option</option>
                 {product.Product_Options.map((option, index) => (
-                  <option key={index} value={option}>{option}</option>
+                  <option key={option} value={option}>{option}</option>
                 ))}
               </select>
             )}

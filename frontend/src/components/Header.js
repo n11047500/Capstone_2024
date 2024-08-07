@@ -52,7 +52,7 @@ function Header() {
         <div className="menu-icon" onClick={() => setIsOpen(!isOpen)}>☰</div>
 
         {/* Logo */}
-        <nav className='sidebar-nav'>
+        <nav>
           <NavLink to="/" onClick={() => setIsOpen(false)}>
             <img src={logoImage} alt="EZee Planter Boxes" className="logo" />
           </NavLink>
