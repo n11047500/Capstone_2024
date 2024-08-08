@@ -49,7 +49,7 @@ const ProductPage = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/products/${productId}`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/products/${productId}`);
         const data = await response.json();
         setProduct(data);
       } catch (error) {
@@ -76,7 +76,7 @@ const ProductPage = () => {
 
   var options = product.Product_Options;
   if (typeof options !== 'string') {
-    options = String(options);}
+    options = String(options); }
   var optionArray = options.split(',');
   product.Product_Options = optionArray;
 

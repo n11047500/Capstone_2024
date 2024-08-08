@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
-import ProductCard from '../components/ProductCard';
 import Footer from '../components/Footer';
 import './HomePage.css';
-import home_icon from '../assets/home_icon.png';
-import top_image from '../assets/homepage_image1.jpg';
 
 import large_planter_tray from '../assets/large_planter_tray.jpg';
 import desktop_planter_box from '../assets/desktop_planter_box.jpg';
@@ -40,11 +37,11 @@ const imageMap = {
   'Trellis': trellis,
 };
 
-function HomePage() {
+const HomePage = () => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3001/products')
+    fetch(`${process.env.REACT_APP_API_URL}/products`)
       .then(response => response.json())
       .then(data => {
         const productsWithImages = data.map(product => ({
@@ -57,28 +54,23 @@ function HomePage() {
   }, []);
 
   return (
-    <div className="HomePage">
+    <>
       <Header />
-      <div className='motto_section'>
-        <h1 className='motto_text'>The pain-free gardening solution suitable for everybody.</h1>
-      </div>
-      <div className="home_product_section">
+      <div className="home-container">
         <h2>Featured Products</h2>
-        <div className="home_product_container">
+        <div className="product-list">
           {products.map(product => (
-            <ProductCard
-              key={product.Product_ID}
-              productId={product.Product_ID}
-              title={product.Product_Name}
-              price={`$${product.Product_Price}`}
-              image={product.image}
-            />
+            <div key={product.Product_ID} className="product-card">
+              <img src={product.image} alt={product.Product_Name} />
+              <h3>{product.Product_Name}</h3>
+              <p>${product.Product_Price}</p>
+            </div>
           ))}
         </div>
       </div>
       <Footer />
-    </div>
+    </>
   );
-}
+};
 
 export default HomePage;

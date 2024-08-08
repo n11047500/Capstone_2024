@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import './UserProfile.css';
 
 const UserProfile = () => {
@@ -21,7 +19,7 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/user/${email}`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/user/${email}`);
         const data = await response.json();
         setUser(data);
         setFormData({
@@ -42,28 +40,16 @@ const UserProfile = () => {
   }, [email]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-      ...(name === 'shippingAddress' && sameAddress ? { billingAddress: value } : {})
-    }));
-  };
-
-  const handleCheckboxChange = (e) => {
-    setSameAddress(e.target.checked);
-    if (e.target.checked) {
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        billingAddress: prevFormData.shippingAddress
-      }));
-    }
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:3001/user/${email}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/user/${email}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -81,88 +67,83 @@ const UserProfile = () => {
     }
   };
 
+  const handleSameAddressChange = () => {
+    setSameAddress(!sameAddress);
+    if (!sameAddress) {
+      setFormData({
+        ...formData,
+        billingAddress: formData.shippingAddress
+      });
+    }
+  };
+
   return (
-    <>
-      <Header />
-      <main>
-        <div className="profile-container">
-          <h1>User Profile</h1>
-          {message && <p className="message">{message}</p>}
-          {user ? (
-            <form onSubmit={handleSubmit}>
-              <label htmlFor="firstName">First Name:</label>
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-              />
-
-              <label htmlFor="lastName">Last Name:</label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-              />
-
-              <label htmlFor="mobileNumber">Mobile Number:</label>
-              <input
-                type="text"
-                id="mobileNumber"
-                name="mobileNumber"
-                value={formData.mobileNumber}
-                onChange={handleChange}
-              />
-
-              <label htmlFor="dateOfBirth">Date of Birth:</label>
-              <input
-                type="date"
-                id="dateOfBirth"
-                name="dateOfBirth"
-                value={formData.dateOfBirth}
-                onChange={handleChange}
-              />
-
-              <label htmlFor="shippingAddress">Shipping Address:</label>
-              <input
-                type="text"
-                id="shippingAddress"
-                name="shippingAddress"
-                value={formData.shippingAddress}
-                onChange={handleChange}
-              />
-
-              <label>
-                <input
-                  type="checkbox"
-                  checked={sameAddress}
-                  onChange={handleCheckboxChange}
-                />
-                Billing address is the same as shipping address
-              </label>
-
-              <label htmlFor="billingAddress">Billing Address:</label>
-              <input
-                type="text"
-                id="billingAddress"
-                name="billingAddress"
-                value={formData.billingAddress}
-                onChange={handleChange}
-                disabled={sameAddress}
-              />
-
-              <button type="submit" className="update-button">Update Profile</button>
-            </form>
-          ) : (
-            <p>Loading...</p>
+    <div className="user-profile-container">
+      <h2>User Profile</h2>
+      {user ? (
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="firstName"
+            placeholder="First Name"
+            value={formData.firstName}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="text"
+            name="lastName"
+            placeholder="Last Name"
+            value={formData.lastName}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="text"
+            name="mobileNumber"
+            placeholder="Mobile Number"
+            value={formData.mobileNumber}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="date"
+            name="dateOfBirth"
+            placeholder="Date of Birth"
+            value={formData.dateOfBirth}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="text"
+            name="shippingAddress"
+            placeholder="Shipping Address"
+            value={formData.shippingAddress}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="checkbox"
+            checked={sameAddress}
+            onChange={handleSameAddressChange}
+          /> Billing address is the same as shipping address
+          {!sameAddress && (
+            <input
+              type="text"
+              name="billingAddress"
+              placeholder="Billing Address"
+              value={formData.billingAddress}
+              onChange={handleChange}
+              required
+            />
           )}
-        </div>
-      </main>
-      <Footer />
-    </>
+          {message && <p className="message">{message}</p>}
+          <button type="submit">Update Profile</button>
+        </form>
+      ) : (
+        <p>Loading user information...</p>
+      )}
+    </div>
   );
 };
 
