@@ -2,11 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
+const path = require('path'); // Add this line
 const db = require('./database');
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('/', (req, res) => {
   res.send('Server is running.');
@@ -207,6 +211,14 @@ app.put('/user/:email', (req, res) => {
       });
     });
   });
+});
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'build')));
+
+// Catch-all handler to return the index.html file for any request that doesn't match an API route
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 if (require.main === module) {

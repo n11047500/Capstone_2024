@@ -1,7 +1,5 @@
-// /backend/test/database.test.js
 const mysql = require('mysql');
 
-// Mock the mysql module
 jest.mock('mysql', () => ({
   createConnection: jest.fn().mockImplementation(() => ({
     connect: jest.fn(),
@@ -14,21 +12,18 @@ describe('Database Connection', () => {
   let mockConnection;
 
   beforeEach(() => {
-    // Set up mock connection
     mockConnection = mysql.createConnection();
   });
 
   afterEach(() => {
-    jest.clearAllMocks(); // Clear mocks after each test
+    jest.clearAllMocks();
   });
 
   it('should connect to the database without errors', async () => {
-    // Simulate a successful connection
     mockConnection.connect.mockImplementationOnce((cb) => cb(null));
 
-    // Import the connection creation function
     const createDBConnection = require('../database');
-    const connection = createDBConnection(); // Create a new connection instance
+    const connection = createDBConnection();
 
     await new Promise((resolve, reject) => {
       connection.connect((err) => {
@@ -45,12 +40,10 @@ describe('Database Connection', () => {
   });
 
   it('should handle database connection errors', async () => {
-    // Simulate a connection error
     mockConnection.connect.mockImplementationOnce((cb) => cb(new Error('Connection Error')));
 
-    // Import the connection creation function
     const createDBConnection = require('../database');
-    const faultyConnection = createDBConnection(); // Create a new connection instance
+    const faultyConnection = createDBConnection();
 
     await new Promise((resolve, reject) => {
       faultyConnection.connect((err) => {

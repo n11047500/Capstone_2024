@@ -1,4 +1,3 @@
-// /backend/database.js
 const mysql = require('mysql');
 
 function createDBConnection() {
