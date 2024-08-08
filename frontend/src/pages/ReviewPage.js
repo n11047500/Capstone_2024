@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './ReviewPage.css';
+import ReviewCard from '../components/ReviewCard';
+
 
 
 import mini_standard_planter_box from '../assets/mini_standard_planter_box.jpg';
@@ -43,9 +45,14 @@ const imageMap = {
 const ReviewPage = () => {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
+  const [reviews, setReviews] = useState([]);
   const [rating, setRating] = useState(null);
   const [hover, setHover] = useState(null);
   const [totalStars, setTotalStars] = useState(5);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -58,12 +65,35 @@ const ReviewPage = () => {
       }
     };
 
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/reviews/${productId}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    
+        const data = await response.json();
+        console.log('Fetched reviews data:', data);  // Log the data here
+        setReviews(data);
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+        // Optionally handle the error in the UI
+        setReviews([]);
+      }
+    };
+
     fetchProduct();
+    fetchReviews();
   }, [productId]);
 
   if (!product) {
     return <div>Loading...</div>;
   }
+
+  console.log('Product ID:', productId);
+ 
+
 
   const productImage = imageMap[product.Product_Name];
 
@@ -133,6 +163,21 @@ const ReviewPage = () => {
             <div>
               <h1>Reviews</h1>
               
+              {reviews.length > 0 ? (
+  <ul>
+    {reviews.map(review => (
+      <li key={review.review_ID}>
+        <h3>Review ID: {review.review_ID}</h3>
+        <h4>User ID: {review.user_ID}</h4>
+        <p>Rating: {review.rating}</p>
+        <p>Comment: {review.comment}</p>
+      </li>
+    ))}
+  </ul>
+) : (
+  <p>No reviews for this product.</p>
+)}
+
               <div className="user-comments">
                     <h2>User1  ⭐⭐⭐⭐⭐</h2>
                     <p>This is a very good product. 10 out of 10.</p>

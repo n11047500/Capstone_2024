@@ -41,6 +41,28 @@ app.get('/products/:id', (req, res) => {
       }
 
       res.json(product);
+      console.log(product);
+    }
+  });
+});
+
+
+
+
+app.get('/reviews/:id', (req, res) => {
+  const productId = req.params.id;
+  console.log(`Received request for productId: ${productId}`); // Log the request
+
+  db.query('SELECT * FROM Reviews WHERE product_ID = ?', [productId], (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    } else if (results.length === 0) {
+      console.log('No reviews found for productId:', productId); // Log when no reviews are found
+      res.status(404).json({ error: 'No reviews found for this product' });
+    } else {
+      console.log('Reviews found:', results); // Log the reviews found
+      res.json(results);
     }
   });
 });
