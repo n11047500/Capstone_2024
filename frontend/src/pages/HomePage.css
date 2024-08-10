@@ -13,7 +13,7 @@ body, html {
 
 .home_product_container {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   flex-wrap: wrap;
   padding: 20px;
   z-index: 3;
@@ -30,7 +30,7 @@ body, html {
 
 .motto_section {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   flex-wrap: wrap;
   margin-top: 7.5%;
 }
@@ -42,7 +42,7 @@ body, html {
 
 .motto_image {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   flex-wrap: wrap;
 }
 
@@ -75,7 +75,7 @@ body, html {
 
 @media (max-width: 1024px) {
   .product-card {
-    flex-basis: 50%;
+    flex-basis: 45%;
   }
 }
 
