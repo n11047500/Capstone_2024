@@ -44,7 +44,7 @@ function HomePage() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3001/products')
+    fetch(`${process.env.REACT_APP_API_URL}/products`)
       .then(response => response.json())
       .then(data => {
         const productsWithImages = data.map(product => ({

@@ -21,7 +21,7 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/user/${email}`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/user/${email}`);
         const data = await response.json();
         setUser(data);
         setFormData({
@@ -63,7 +63,7 @@ const UserProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:3001/user/${email}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/user/${email}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

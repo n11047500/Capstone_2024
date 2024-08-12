@@ -49,7 +49,7 @@ const ProductPage = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/products/${productId}`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/products/${productId}`);
         const data = await response.json();
         setProduct(data);
       } catch (error) {
