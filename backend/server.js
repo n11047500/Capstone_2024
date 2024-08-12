@@ -53,19 +53,59 @@ app.get('/reviews/:id', (req, res) => {
   const productId = req.params.id;
   console.log(`Received request for productId: ${productId}`); // Log the request
 
-  db.query('SELECT * FROM Reviews WHERE product_ID = ?', [productId], (err, results) => {
+  db.query('SELECT * FROM Reviews WHERE product_ID = ?', [productId], (err, reviews) => {
     if (err) {
       console.error('Database error:', err);
       res.status(500).json({ error: 'Internal Server Error' });
-    } else if (results.length === 0) {
+    } else if (reviews.length === 0) {
       console.log('No reviews found for productId:', productId); // Log when no reviews are found
       res.status(404).json({ error: 'No reviews found for this product' });
     } else {
-      console.log('Reviews found:', results); // Log the reviews found
-      res.json(results);
+      console.log('Reviews found:', reviews); // Log the reviews found
+      //res.json(results);
     }
+
+      db.query('SELECT rating FROM Reviews WHERE product_ID = ?', [productId], (err, results) => {
+      if (err) {
+        console.error('Database error:', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      const ratings = results.map(result => result.rating); // Extract all rating values
+      console.log('Fetched ratings for product:', ratings); // Log all the ratings for the product
+
+      // Send the reviews and the specific rating to the frontend
+      return res.json({ reviews, ratings });
   });
+  });
+
+
 });
+
+
+app.post('/reviews', (req, res) => {
+  const { productId, rating, comment } = req.body;
+
+  if (!productId || !rating || !comment) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  // Insert the review into the database
+  db.query(
+    'INSERT INTO Reviews (product_ID, rating, comment) VALUES (?, ?, ?)',
+    [productId, rating, comment],
+    (err, results) => {
+      if (err) {
+        console.error('Database error:', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+      res.status(201).json({ message: 'Review created successfully' });
+    }
+  );
+});
+
+
+
 
 app.listen(3001, () => {
   console.log('Server is running on port 3001');

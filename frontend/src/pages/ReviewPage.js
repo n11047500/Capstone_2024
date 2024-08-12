@@ -3,6 +3,9 @@ import { useParams, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './ReviewPage.css';
+import ReviewForm from './ReviewForm';
+import StarRating from './StarRating';
+
 import ReviewCard from '../components/ReviewCard';
 
 
@@ -46,9 +49,7 @@ const ReviewPage = () => {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
-  const [rating, setRating] = useState(null);
-  const [hover, setHover] = useState(null);
-  const [totalStars, setTotalStars] = useState(5);
+  const [ratings, setRatings] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -68,20 +69,20 @@ const ReviewPage = () => {
     const fetchReviews = async () => {
       try {
         const response = await fetch(`http://localhost:3001/reviews/${productId}`);
-        
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-    
         const data = await response.json();
-        console.log('Fetched reviews data:', data);  // Log the data here
-        setReviews(data);
+        console.log('Fetched reviews data:', data);
+        setReviews(data.reviews || []);
+        setRatings(data.ratings || []);
       } catch (error) {
         console.error('Error fetching reviews:', error);
-        // Optionally handle the error in the UI
         setReviews([]);
+        setRatings([]);
       }
     };
+
 
     fetchProduct();
     fetchReviews();
@@ -93,6 +94,14 @@ const ReviewPage = () => {
 
   console.log('Product ID:', productId);
  
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    alert('Your review has been submited.');
+  }
+  
+  
+
 
 
   const productImage = imageMap[product.Product_Name];
@@ -113,48 +122,11 @@ const ReviewPage = () => {
               <div className="review-small">
                 <span className="star product-page">⭐</span> 4.9 · 142 reviews
               </div>
-              <br /><br />
-                <p className="review-description-title">Your Rating: </p>
-                  
-                  <form action="/action.php">
 
-                  {[...Array(totalStars)].map((star, index) => {
-                    const currentRating = index + 1;
+              <br />
+              <br />
 
-                      return (
-                        <label key={index}>
-                        <input
-                          key={star}
-                          type="radio"
-                          size="10"
-                          name="rating"
-                          value={currentRating}
-                          onChange={() => setRating(currentRating)}
-                          required
-                        />
-                        <span
-                          className="star review-page"
-                          style={{
-                            color:
-                              currentRating <= (hover || rating) ? "#ffc107" : "#e4e5e9",
-                          }}
-                          onMouseEnter={() => setHover(currentRating)}
-                          onMouseLeave={() => setHover(null)}
-                        >
-                          &#9733;
-                        </span>
-                        </label>
-                      );
-                  })}
-                  
-                    <br />
-                    <br />
-                    <p className="review-description-title">Comments: </p>
-                    <textarea className="comment-text" cols="70" rows="8" required></textarea>
-                    <br />
-                    <br />
-                    <input className="submit-review" type="submit" value="Submit"></input>
-                  </form>
+              <ReviewForm productId={productId} />
                   
                   </div>
               </div>
@@ -164,39 +136,24 @@ const ReviewPage = () => {
               <h1>Reviews</h1>
               
               {reviews.length > 0 ? (
-  <ul>
-    {reviews.map(review => (
-      <li key={review.review_ID}>
-        <h3>Review ID: {review.review_ID}</h3>
-        <h4>User ID: {review.user_ID}</h4>
-        <p>Rating: {review.rating}</p>
-        <p>Comment: {review.comment}</p>
-      </li>
-    ))}
-  </ul>
-) : (
-  <p>No reviews for this product.</p>
-)}
+              <ul>
+                <div classname="comments-flex">
+                  <div className="user-comments">
 
-              <div className="user-comments">
-                    <h2>User1  ⭐⭐⭐⭐⭐</h2>
-                    <p>This is a very good product. 10 out of 10.</p>
+                    {reviews.map((review, index) => (
+                      <li key={index}>
+                        <h3>User ID: {review.user_ID}</h3>
+                        <StarRating rating={ratings[index]} /> {/* Display star rating */}
+                        <p>{review.comment}</p>
+                        <br />
+                      </li>
+                    ))}
                   </div>
-
-                  <div className="user-comments">
-                    <h2>User1  ⭐⭐⭐⭐⭐</h2>
-                    <p>This is a very good product. 10 out of 10.</p>
-                  </div>
-                  <br />
-                  <div className="user-comments">
-                    <h2>User2</h2>
-                    <p>This is a very good product. 10 out of 10.</p>
-                  </div>
-                  <br />
-                  <div className="user-comments">
-                    <h2>User3</h2>
-                    <p>This is a very good product. 10 out of 10.</p>
-                  </div>
+                </div>
+              </ul>
+               ) : (
+                <p>No reviews for this product.</p>
+               )}
 
             </div>
           </div>          
