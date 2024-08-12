@@ -30,12 +30,14 @@ function Footer() {
       </div>
       <div className="footer-businesses">
         <h4>Other EZee Businesses</h4>
-        <a href="https://www.ezeeindustries.com.au" target='_blank' rel="noopener noreferrer">
-          <img src={ezeeind} alt="EZee Industries"/>
-        </a>
-        <a href="https://www.ezeefencing.com.au" target='_blank' rel="noopener noreferrer">
-          <img src={ezeefencing} alt="EZee Fencing"/>
-        </a>
+          <div className ="image-links-container"> 
+            <a href="https://www.ezeeindustries.com.au" target='_blank' rel="noopener noreferrer">
+              <img src={ezeeind} alt="EZee Industries"/>
+            </a>
+            <a href="https://www.ezeefencing.com.au" target='_blank' rel="noopener noreferrer">
+              <img src={ezeefencing} alt="EZee Fencing"/>
+            </a>
+        </div>
       </div>
       <div className="footer-payments">
         {/* Payment method logos */}
