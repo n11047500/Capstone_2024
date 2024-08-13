@@ -1,13 +1,15 @@
 import React from 'react';
+import './UserProfile.css';
 
 const EmployeeDashboard = () => {
   return (
-    <div>
+    <div className="employee-dashboard">
       <h2>Employee Dashboard</h2>
-      <button>Add Product</button>
-      <button>Edit Product</button>
-      <button>Remove Product</button>
-      {/* Implement these actions as needed */}
+      <div className="dashboard-buttons">
+        <button>Add Product</button>
+        <button>Edit Product</button>
+        <button>Remove Product</button>
+      </div>
     </div>
   );
 };

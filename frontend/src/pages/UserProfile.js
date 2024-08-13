@@ -45,7 +45,7 @@ const UserProfile = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add form submission logic here
+    // Add form submission logic
   };
 
   return (
@@ -54,8 +54,12 @@ const UserProfile = () => {
       <main>
         <div className="profile-container">
           <h1>User Profile</h1>
+          {user && <h2>Welcome, {user.first_name}!</h2>}
           {role === 'employee' ? (
-            <EmployeeDashboard />  // Show employee-specific interface
+            <>
+              <h2>Employee Dashboard</h2>
+              <EmployeeDashboard />
+            </> 
           ) : (
             <form onSubmit={handleSubmit}>
               <label htmlFor="firstName">First Name:</label>
