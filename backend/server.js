@@ -12,6 +12,7 @@ app.get('/', (req, res) => {
   res.send('Server is running.');
 });
 
+// Fetch all products
 app.get('/products', (req, res) => {
   db.query('SELECT * FROM products', (err, results) => {
     if (err) {
@@ -23,6 +24,7 @@ app.get('/products', (req, res) => {
   });
 });
 
+// Fetch a specific product by ID
 app.get('/products/:id', (req, res) => {
   const productId = req.params.id;
   db.query('SELECT * FROM products WHERE Product_ID = ?', [productId], (err, results) => {
@@ -38,8 +40,9 @@ app.get('/products/:id', (req, res) => {
   });
 });
 
+// Register a new user
 app.post('/register', (req, res) => {
-  const { firstName, lastName, email, password, mobileNumber, dateOfBirth } = req.body;
+  const { firstName, lastName, email, password, mobileNumber, dateOfBirth, role = 'customer' } = req.body;  // Default role to 'customer'
   console.log('Received registration data:', req.body);
 
   const checkQuery = 'SELECT * FROM users WHERE email = ?';
@@ -60,19 +63,20 @@ app.post('/register', (req, res) => {
         return res.status(500).json({ error: 'Error creating user. Please try again.' });
       }
 
-      const query = 'INSERT INTO users (first_name, last_name, email, password, mobile_number, date_of_birth) VALUES (?, ?, ?, ?, ?, ?)';
-      db.query(query, [firstName, lastName, email, hash, mobileNumber, dateOfBirth], (err, result) => {
+      const query = 'INSERT INTO users (first_name, last_name, email, password, mobile_number, date_of_birth, role) VALUES (?, ?, ?, ?, ?, ?, ?)';
+      db.query(query, [firstName, lastName, email, hash, mobileNumber, dateOfBirth, role], (err, result) => {
         if (err) {
           console.error('Error inserting user into database:', err);
           return res.status(500).json({ error: 'Error creating user. Please try again.' });
         }
 
-        res.status(201).json({ message: 'User created successfully.', email });
+        res.status(201).json({ message: 'User created successfully.', email, role });
       });
     });
   });
 });
 
+// Login a user
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
   console.log('Login attempt with email:', email);
@@ -101,16 +105,21 @@ app.post('/login', (req, res) => {
         return res.status(401).json({ error: 'Incorrect password' });
       }
 
-      res.status(200).json({ message: 'Login successful', email: user.email });
+      res.status(200).json({ 
+        message: 'Login successful', 
+        email: user.email,
+        role: user.role  // Include the role in the response
+      });
     });
   });
 });
 
+// Fetch user details by email
 app.get('/user/:email', (req, res) => {
   const email = req.params.email;
   console.log('Fetching user with email:', email);
 
-  const userQuery = 'SELECT user_id, first_name, last_name, email, mobile_number, date_of_birth FROM users WHERE email = ?';
+  const userQuery = 'SELECT user_id, first_name, last_name, email, mobile_number, date_of_birth, role FROM users WHERE email = ?';
   const addressesQuery = 'SELECT type, address FROM addresses WHERE user_id = ?';
 
   db.query(userQuery, [email], (err, userResults) => {
@@ -150,6 +159,7 @@ app.get('/user/:email', (req, res) => {
   });
 });
 
+// Update user details by email
 app.put('/user/:email', (req, res) => {
   const email = req.params.email;
   const { firstName, lastName, mobileNumber, dateOfBirth, shippingAddress, billingAddress } = req.body;
@@ -197,6 +207,7 @@ app.put('/user/:email', (req, res) => {
   });
 });
 
+// Start the server
 app.listen(3001, () => {
   console.log('Server is running on port 3001');
 });
