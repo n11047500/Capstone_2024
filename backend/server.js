@@ -220,6 +220,29 @@ app.post('/update-role', (req, res) => {
   });
 });
 
+app.post('/add-product', (req, res) => {
+  const { name, price, quantity, description, dimensions, options } = req.body;
+
+  if (!name || !price || !quantity || !description || !dimensions) {
+    return res.status(400).json({ message: 'All fields except options are required.' });
+  }
+
+  const query = `
+    INSERT INTO products (Product_Name, Product_Price, Quantity_Available, Description, Product_Dimensions, Product_Options)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+  const values = [name, price, quantity, description, dimensions, options];
+
+  db.query(query, values, (err, result) => {
+    if (err) {
+      console.error('Error adding product:', err);
+      return res.status(500).json({ message: 'An error occurred while adding the product.' });
+    }
+
+    res.status(201).json({ message: 'Product added successfully', productId: result.insertId });
+  });
+});
+
 app.listen(3001, () => {
   console.log('Server is running on port 3001');
 });
