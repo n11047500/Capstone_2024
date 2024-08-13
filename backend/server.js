@@ -12,7 +12,6 @@ app.get('/', (req, res) => {
   res.send('Server is running.');
 });
 
-// Fetch all products
 app.get('/products', (req, res) => {
   db.query('SELECT * FROM products', (err, results) => {
     if (err) {
@@ -24,7 +23,6 @@ app.get('/products', (req, res) => {
   });
 });
 
-// Fetch a specific product by ID
 app.get('/products/:id', (req, res) => {
   const productId = req.params.id;
   db.query('SELECT * FROM products WHERE Product_ID = ?', [productId], (err, results) => {
@@ -40,9 +38,8 @@ app.get('/products/:id', (req, res) => {
   });
 });
 
-// Register a new user
 app.post('/register', (req, res) => {
-  const { firstName, lastName, email, password, mobileNumber, dateOfBirth, role = 'customer' } = req.body;  // Default role to 'customer'
+  const { firstName, lastName, email, password, mobileNumber, dateOfBirth, role = 'customer' } = req.body;
   console.log('Received registration data:', req.body);
 
   const checkQuery = 'SELECT * FROM users WHERE email = ?';
@@ -76,7 +73,6 @@ app.post('/register', (req, res) => {
   });
 });
 
-// Login a user
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
   console.log('Login attempt with email:', email);
@@ -108,13 +104,12 @@ app.post('/login', (req, res) => {
       res.status(200).json({ 
         message: 'Login successful', 
         email: user.email,
-        role: user.role  // Include the role in the response
+        role: user.role
       });
     });
   });
 });
 
-// Fetch user details by email
 app.get('/user/:email', (req, res) => {
   const email = req.params.email;
   console.log('Fetching user with email:', email);
@@ -159,7 +154,6 @@ app.get('/user/:email', (req, res) => {
   });
 });
 
-// Update user details by email
 app.put('/user/:email', (req, res) => {
   const email = req.params.email;
   const { firstName, lastName, mobileNumber, dateOfBirth, shippingAddress, billingAddress } = req.body;
@@ -207,7 +201,26 @@ app.put('/user/:email', (req, res) => {
   });
 });
 
-// Start the server
+app.post('/update-role', async (req, res) => {
+  const { email, role } = req.body;
+
+  if (req.user.role !== 'employee') {
+    return res.status(403).json({ message: 'Access denied' });
+  }
+
+  try {
+    const result = await db.query('UPDATE users SET role = ? WHERE email = ?', [role, email]);
+    if (result.affectedRows > 0) {
+      res.status(200).json({ message: 'Role updated successfully' });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error updating role:', error);
+    res.status(500).json({ message: 'An error occurred' });
+  }
+});
+
 app.listen(3001, () => {
   console.log('Server is running on port 3001');
 });

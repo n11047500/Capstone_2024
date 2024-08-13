@@ -57,7 +57,7 @@ const UserProfile = () => {
           {user && <h2>Welcome, {user.first_name}!</h2>}
           {role === 'employee' ? (
             <>
-              <EmployeeDashboard />  // Show employee-specific interface
+              <EmployeeDashboard />
             </>
           ) : (
             <form onSubmit={handleSubmit}>

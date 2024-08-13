@@ -115,3 +115,44 @@
   flex-grow: 1;
   text-align: center;
 }
+
+.role-update-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.role-update-form label {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #666;
+}
+
+.role-update-form input {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 15px;
+}
+
+.role-update-form .update-button {
+  width: 100%;
+  max-width: 300px;
+  padding: 10px;
+  font-size: 16px;
+  color: white;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.role-update-form .update-button:hover {
+  background-color: #45a049;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
