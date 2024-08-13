@@ -1,6 +1,6 @@
 .slideshow-container {
   width: 100%; /* Adjust the width as needed */
-  height: 650px; /* Adjust the height as needed */
+  height: 750px; /* Adjust the height as needed */
   margin: 0px auto; /* Center the slideshow horizontally */
   position: relative;
   overflow: hidden;
@@ -32,4 +32,9 @@
   font-size: 3vw;
   font-weight: bold;
   color: #eec4ff;
+  text-shadow:
+    3px 3px 0 #000,
+    -3px 3px 0 #000,
+    -3px -3px 0 #000,
+    3px -3px 0 #000;
 }
