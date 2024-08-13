@@ -201,25 +201,23 @@ app.put('/user/:email', (req, res) => {
   });
 });
 
-app.post('/update-role', async (req, res) => {
+app.post('/update-role', (req, res) => {
   const { email, role } = req.body;
 
   console.log('Received role update request:', { email, role });
 
-  try {
-    const result = await db.query('UPDATE users SET role = ? WHERE email = ?', [role, email]);
-
-    console.log('Result of the update query:', result);
+  db.query('UPDATE users SET role = ? WHERE email = ?', [role, email], (err, result) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      return res.status(500).json({ message: 'An error occurred during the role update.' });
+    }
 
     if (result.affectedRows > 0) {
-      res.status(200).json({ message: 'Role updated successfully' });
+      res.status(200).json({ message: 'Role updated successfully.' });
     } else {
-      res.status(404).json({ message: 'User not found' });
+      res.status(404).json({ message: 'User not found.' });
     }
-  } catch (error) {
-    console.error('Error updating role:', error);
-    res.status(500).json({ message: 'An error occurred' });
-  }
+  });
 });
 
 app.listen(3001, () => {
