@@ -204,12 +204,13 @@ app.put('/user/:email', (req, res) => {
 app.post('/update-role', async (req, res) => {
   const { email, role } = req.body;
 
-  if (req.user.role !== 'employee') {
-    return res.status(403).json({ message: 'Access denied' });
-  }
+  console.log('Received role update request:', { email, role });
 
   try {
     const result = await db.query('UPDATE users SET role = ? WHERE email = ?', [role, email]);
+
+    console.log('Result of the update query:', result);
+
     if (result.affectedRows > 0) {
       res.status(200).json({ message: 'Role updated successfully' });
     } else {
