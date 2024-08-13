@@ -39,7 +39,24 @@ const SignUpPage = () => {
 
       const data = await response.json();
       console.log('User created successfully:', data);
-      navigate(`/user/${formData.email}`);
+
+      // Fetch the user details immediately after registration
+      const userResponse = await fetch(`${process.env.REACT_APP_API_URL}/user/${formData.email}`);
+      if (!userResponse.ok) {
+        throw new Error('Failed to fetch user details after signup.');
+      }
+
+      const userData = await userResponse.json();
+
+      // Store the user's role in local storage immediately
+      localStorage.setItem('userRole', userData.role);
+
+      // Redirect based on the user's role
+      if (userData.role === 'employee') {
+        navigate('/employee-dashboard');
+      } else {
+        navigate(`/user/${formData.email}`);
+      }
     } catch (error) {
       console.error('Error creating user:', error);
       setError(error.message);
