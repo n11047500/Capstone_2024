@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './UserProfile.css';
-import EmployeeDashboard from './EmployeeDashboard';  // Assuming you have created this component
+import EmployeeDashboard from './EmployeeDashboard';
 
 const UserProfile = () => {
   const { email } = useParams();
@@ -45,7 +45,7 @@ const UserProfile = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add your form submission logic here
+    // Add form submission logic here
   };
 
   return (
@@ -58,7 +58,6 @@ const UserProfile = () => {
             <EmployeeDashboard />  // Show employee-specific interface
           ) : (
             <form onSubmit={handleSubmit}>
-              {/* Existing form fields go here */}
               <label htmlFor="firstName">First Name:</label>
               <input
                 type="text"
@@ -67,7 +66,67 @@ const UserProfile = () => {
                 value={formData.firstName}
                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
               />
-              {/* Add other form fields here */}
+              
+              <label htmlFor="lastName">Last Name:</label>
+              <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                value={formData.lastName}
+                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+              />
+
+              <label htmlFor="mobileNumber">Mobile Number:</label>
+              <input
+                type="text"
+                id="mobileNumber"
+                name="mobileNumber"
+                value={formData.mobileNumber}
+                onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value })}
+              />
+
+              <label htmlFor="dateOfBirth">Date of Birth:</label>
+              <input
+                type="date"
+                id="dateOfBirth"
+                name="dateOfBirth"
+                value={formData.dateOfBirth}
+                onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+              />
+
+              <label htmlFor="shippingAddress">Shipping Address:</label>
+              <input
+                type="text"
+                id="shippingAddress"
+                name="shippingAddress"
+                value={formData.shippingAddress}
+                onChange={(e) => setFormData({ ...formData, shippingAddress: e.target.value })}
+              />
+
+              <label>
+                <input
+                  type="checkbox"
+                  checked={sameAddress}
+                  onChange={(e) => {
+                    setSameAddress(e.target.checked);
+                    if (e.target.checked) {
+                      setFormData({ ...formData, billingAddress: formData.shippingAddress });
+                    }
+                  }}
+                />
+                Billing address is the same as shipping address
+              </label>
+
+              <label htmlFor="billingAddress">Billing Address:</label>
+              <input
+                type="text"
+                id="billingAddress"
+                name="billingAddress"
+                value={formData.billingAddress}
+                onChange={(e) => setFormData({ ...formData, billingAddress: e.target.value })}
+                disabled={sameAddress}
+              />
+
               <button type="submit" className="update-button">Update Profile</button>
             </form>
           )}
