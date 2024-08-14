@@ -21,6 +21,7 @@ import side_table from '../assets/side_table.jpg';
 import small_planter_tray from '../assets/small_planter_tray.jpg';
 import small_wicking_planter_box from '../assets/small_wicking_planter_box.jpg';
 import trellis from '../assets/trellis.jpg';
+import Slideshow from '../components/Slideshow';
 
 const imageMap = {
   'Mini Standard Planter Box': mini_standard_planter_box,
@@ -59,9 +60,11 @@ function HomePage() {
   return (
     <div className="HomePage">
       <Header />
-      <div className='motto_section'>
-        <h1 className='motto_text'>The pain-free gardening solution suitable for everybody.</h1>
-      </div>
+      <Slideshow>
+        <div className='motto_section'>
+          <h1 className='motto_text'>The pain-free gardening solution suitable for everybody.</h1>
+        </div>
+      </Slideshow>
       <div className="home_product_section">
         <h2>Featured Products</h2>
         <div className="home_product_container">

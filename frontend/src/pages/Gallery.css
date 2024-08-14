@@ -1,4 +1,3 @@
-/* Global styles */
 body, html {
   margin: 0;
   padding: 0;
@@ -10,33 +9,37 @@ body, html {
   display: flex;
   justify-content: flex-end;
   padding: 10px 20px;
+  background-color: #333;
+  color: #fff;
 }
 
-.gallery h1{
-  font-size:  4.5vh;
+.gallery h1 {
+  font-size: 4.5vh;
   margin-bottom: 1%;
   text-align: center;
+  color: #333;
 }
 
-.gallery h2{
-  font-size:  3vh;
+.gallery h2 {
+  font-size: 3vh;
   margin-bottom: 1%;
   text-align: center;
+  color: #666;
 }
 
 .gallery-row {
-  display: -ms-flexbox; /* IE10 */
   display: flex;
-  -ms-flex-wrap: wrap; /* IE10 */
   flex-wrap: wrap;
-  padding: 0 1.5%;
+  justify-content: space-between;
+  padding: 0 2%;
+  gap: 16px; /* Added gap between columns for better spacing */
 }
 
 .gallery-column {
-  -ms-flex: 24%; /* IE10 */
-  flex: 24%;
-  max-width: 25%;
-  padding: 0 4px;
+  flex: 1 1 calc(25% - 32px); /* Four columns with equal width and margin */
+  max-width: calc(25% - 32px);
+  padding: 0;
+  box-sizing: border-box; /* Ensures padding and border are included in width */
   align-items: center;
 }
 
@@ -44,26 +47,49 @@ body, html {
   margin-top: 8px;
   vertical-align: middle;
   width: 100%;
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 8px; /* Optional: Adds rounded corners to images */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow for depth */
 }
-
-
 
 /* Responsive styles */
 @media (max-width: 1024px) {
-  .product-card {
-    flex-basis: 50%;
+  .gallery-column {
+    flex: 1 1 calc(50% - 16px); /* Switches to two columns directly */
+    max-width: calc(50% - 16px);
+  }
+
+  .gallery h1 {
+    font-size: 4vh;
+  }
+
+  .gallery h2 {
+    font-size: 2.5vh;
   }
 }
 
 @media (max-width: 768px) {
-  .product-card {
-    flex-basis: 100%;
+  .gallery-column {
+    flex: 1 1 calc(50% - 16px); /* Remain in two columns */
+    max-width: calc(50% - 16px);
   }
 }
 
 @media (max-width: 480px) {
-  .product-card {
-    padding: 10px;
+  .gallery-column {
+    flex: 1 1 100%; /* Single column on very small screens */
+    max-width: 100%;
+  }
+
+  .gallery h1 {
+    font-size: 3.5vh;
+  }
+
+  .gallery h2 {
+    font-size: 2vh;
+  }
+
+  .gallery-row {
+    padding: 0 1%; /* Adjusts padding on smaller screens */
   }
 }
-

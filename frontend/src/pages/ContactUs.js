@@ -61,8 +61,11 @@ function ContactUs() {
           </div>
   
           </div>
-  
           
+        </div>
+        <div className='map_section'>
+          <iframe loading="lazy" src="https://maps.google.com/maps?q=21%20Huntington%20Street%2C%20Clontarf%20QLD%204019&amp;t=m&amp;z=16&amp;output=embed&amp;iwloc=near" 
+          title="21 Huntington Street, Clontarf QLD 4019" aria-label="21 Huntington Street, Clontarf QLD 4019" width='100%' height='85%' frameborder="0"></iframe>
         </div>
         <Footer />
       </div>
