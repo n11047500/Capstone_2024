@@ -221,17 +221,17 @@ app.post('/update-role', (req, res) => {
 });
 
 app.post('/add-product', (req, res) => {
-  const { name, price, quantity, description, dimensions, options } = req.body;
+  const { name, price, quantity, description, dimensions, options, imageUrl } = req.body;
 
   if (!name || !price || !quantity || !description || !dimensions) {
-    return res.status(400).json({ message: 'All fields except options are required.' });
+    return res.status(400).json({ message: 'All fields except options and image URL are required.' });
   }
 
   const query = `
-    INSERT INTO products (Product_Name, Product_Price, Quantity_Available, Description, Product_Dimensions, Product_Options)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO products (Product_Name, Product_Price, Quantity_Available, Description, Product_Dimensions, Product_Options, Product_Image_URL)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
-  const values = [name, price, quantity, description, dimensions, options];
+  const values = [name, price, quantity, description, dimensions, options, imageUrl];
 
   db.query(query, values, (err, result) => {
     if (err) {

@@ -5,40 +5,6 @@ import Footer from '../components/Footer';
 import { CartContext } from '../context/CartContext';
 import './ProductPage.css';
 
-import large_planter_tray from '../assets/large_planter_tray.jpg';
-import desktop_planter_box from '../assets/desktop_planter_box.jpg';
-import accessibility_planter_box from '../assets/accessibility_planter_box.jpg';
-import small_standard_planter_box from '../assets/small_standard_planter_box.jpg';
-import mini_standard_planter_box from '../assets/mini_standard_planter_box.jpg';
-import mini_wicking_planter_box from '../assets/mini_wicking_planter_box.jpg';
-import insta_garden_range from '../assets/insta_garden_range.jpg';
-import large_standard_planter_box from '../assets/large_standard_planter_box.jpg';
-import large_wicking_planter_box from '../assets/large_wicking_planter_box.jpg';
-import medium_standard_planter_box from '../assets/medium_standard_planter_box.jpg';
-import medium_wicking_planter_box from '../assets/medium_wicking_planter_box.jpg';
-import side_table from '../assets/side_table.jpg';
-import small_planter_tray from '../assets/small_planter_tray.jpg';
-import small_wicking_planter_box from '../assets/small_wicking_planter_box.jpg';
-import trellis from '../assets/trellis.jpg';
-
-const imageMap = {
-  'Mini Standard Planter Box': mini_standard_planter_box,
-  'Small Standard Planter Box': small_standard_planter_box,
-  'Medium Standard Planter Box': medium_standard_planter_box,
-  'Large Standard Planter Box': large_standard_planter_box,
-  'Mini Wicking Planter Box': mini_wicking_planter_box,
-  'Small Wicking Planter Box': small_wicking_planter_box,
-  'Medium Wicking Planter Box': medium_wicking_planter_box,
-  'Large Wicking Planter Box': large_wicking_planter_box,
-  'Small Planter Tray': small_planter_tray,
-  'Large Planter Tray': large_planter_tray,
-  'Desktop Planter Box': desktop_planter_box,
-  'Accessibility Planter Box': accessibility_planter_box,
-  'Insta Garden Range': insta_garden_range,
-  'Side Table': side_table,
-  'Trellis': trellis,
-};
-
 const ProductPage = () => {
   const { productId } = useParams();
   const { addToCart } = useContext(CartContext);
@@ -64,7 +30,7 @@ const ProductPage = () => {
     return <div>Loading...</div>;
   }
 
-  const productImage = imageMap[product.Product_Name];
+  const productImage = product.Product_Image_URL;
 
   const handleAddToCart = () => {
     if (!selectedOption && product.Product_Options.length > 0) {
@@ -76,7 +42,8 @@ const ProductPage = () => {
 
   var options = product.Product_Options;
   if (typeof options !== 'string') {
-    options = String(options);}
+    options = String(options);
+  }
   var optionArray = options.split(',');
   product.Product_Options = optionArray;
 
@@ -100,9 +67,10 @@ const ProductPage = () => {
               <select
                 className="product-options product-page"
                 value={selectedOption}
-                onChange={(e) => setSelectedOption(e.target.value)}>
+                onChange={(e) => setSelectedOption(e.target.value)}
+              >
                 <option value="">Select an option</option>
-                {product.Product_Options.map((option, index) => (
+                {product.Product_Options.map((option) => (
                   <option key={option} value={option}>{option}</option>
                 ))}
               </select>

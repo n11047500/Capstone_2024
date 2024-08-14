@@ -11,7 +11,8 @@ const AddProduct = () => {
     width: '',
     depth: '',
     height: '',
-    options: ''
+    options: '',
+    imageUrl: ''
   });
   const [message, setMessage] = useState('');
 
@@ -23,7 +24,6 @@ const AddProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Combine width, depth, and height into a single string
     const dimensions = `${formData.width}mm (width) x ${formData.depth}mm (depth) x ${formData.height}mm (height)`;
 
     try {
@@ -34,7 +34,8 @@ const AddProduct = () => {
         },
         body: JSON.stringify({ 
           ...formData, 
-          dimensions 
+          dimensions,
+          imageUrl: formData.imageUrl 
         }),
       });
 
@@ -144,6 +145,16 @@ const AddProduct = () => {
           placeholder="e.g., Surfmist,Domain,Paperbark,Riversand,Jasper,Bushland"
           value={formData.options}
           onChange={handleChange}
+        />
+
+        <label htmlFor="imageUrl">Google Drive Image URL or File ID:</label>
+        <input
+          type="text"
+          id="imageUrl"
+          name="imageUrl"
+          value={formData.imageUrl}
+          onChange={handleChange}
+          placeholder="Enter the Google Drive file ID or full URL"
         />
 
         <button type="submit" className="add-product-button">Add Product</button>
