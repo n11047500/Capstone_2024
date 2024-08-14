@@ -47,52 +47,24 @@ body, html {
   }
 
   .left-box {
-    flex: 1; 
-    flex-direction: column; 
+    flex: 1; /* Flex-grow, flex-shrink, and flex-basis */
+    flex-direction: column; /* Ensures children are arranged in a column */
     width: 40%;
     border-radius: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center; 
+    
     border: 10px solid #20c146;
     font-size: 2vw;
-}
 
-.contact-container {
-    display: flex;
-    align-items: center;
-    justify-content: center; 
-    margin-bottom: 5px; 
-    width: 100%; 
-}
-
-.img-container {
-    width: 50px; 
-    display: flex;
-    justify-content: center; 
-    align-items: center;
-}
-
-
-.Img {
-    max-width: 100%;
-    max-height: 100%;
-    display: block;
-
-}
-
-.contact-text {
-    flex: 1;
-    vertical-align: middle;
-    line-height: 1.2;
-    padding-left: 1px; 
-}
-
+    /* background-color: #0e6322; Blue background */
+  }
+  .left-box p {
+    font-size: 2vw;
+  }
   .right-box {
-    flex: 3; 
-    flex-direction: column; 
+    flex: 3; /* Flex-grow, flex-shrink, and flex-basis */
+    flex-direction: column; /* Ensures children are arranged in a column */
     width: 40%;
-    background-color: none;   
+    background-color: none; /* Green background */  
 
   }
   .form-table {
@@ -113,7 +85,15 @@ body, html {
     width: 100%;
   }
   
-
+  .contact_image{
+    float: right;
+    margin-top: -20px;
+    width: 50vh;
+    height: 35vw;
+    margin-right: 12%;
+    padding-bottom: 50px;
+  }
+  
   input[type=text], select {
     width: 100%;
     padding: 12px 20px;
@@ -127,11 +107,11 @@ body, html {
 
 
  .submit-button{
-    background-color: #20c146;
+    background-color: #04AA6D;
     color: white;
     padding: 12px 20px;
     border: none;
-    font-size: 1.2vw;
+    font-size: 1vw;
     border-radius: 4px;
     cursor: pointer;
     float: right;
@@ -142,9 +122,9 @@ body, html {
   }
   
   textarea {
-    height: 5.5vw; 
+    height: 5vw; /* Adjust height as needed */
     width: 100%;
-    resize: none; 
+    resize: none; /* Prevent resizing by user */
     font-family: Arial, sans-serif;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -169,7 +149,7 @@ body, html {
         font-size: 5.6vw;
       }
       h2 {
-        font-size: 3.8vw;
+        font-size: 4.0vw;
       }
 
       .contact-flexbox {
@@ -177,7 +157,6 @@ body, html {
         flex-direction:  column;
         font-size: 2vw;
       }
-
       .left-box {
         flex: 1; 
         flex-direction: column; 
@@ -186,7 +165,6 @@ body, html {
         
         border: 10px solid #20c146;
         font-size: 2vw;
-        background-color: white;
     
       }
       .left-box p {
@@ -208,15 +186,15 @@ body, html {
 
 
       textarea {
-        height: 10vw; 
+        height: 10vw; /* Adjust height as needed */        
         font-size: 2vw;
       }
       .submit-button{
-        background-color: #20c146;
+        background-color: #04AA6D;
         color: white;
         padding: 12px 20px;
         border: none;
-        font-size: 2.5vw;
+        font-size: vw;
         border-radius: 4px;
         cursor: pointer;
         float: right;

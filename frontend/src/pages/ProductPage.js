@@ -76,7 +76,7 @@ const ProductPage = () => {
 
   var options = product.Product_Options;
   if (typeof options !== 'string') {
-    options = String(options); }
+    options = String(options);}
   var optionArray = options.split(',');
   product.Product_Options = optionArray;
 

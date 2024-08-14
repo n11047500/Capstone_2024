@@ -43,22 +43,3 @@
   padding: 5px; /* Adds space around each logo */
   height: auto; /* Adjust height automatically to maintain aspect ratio */
 }
-
-
-@media screen and (max-width: 650px) {
-  .site-footer {
-      flex-direction: column;
-      align-items: center;
-  }
-
-  .foot-logo, .footer-links, .footer-contact {
-      margin: 10px 0;
-  }
-
-  .image-links-container {
-    flex-direction: row; /* Stack images side by side */
-    flex-wrap: wrap; /* Allow images to wrap if necessary */
-    justify-content: center;
-    
-  }
-}
