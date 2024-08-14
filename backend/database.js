@@ -1,6 +1,11 @@
 const mysql = require('mysql');
 
-let connection;
+const connection = mysql.createConnection({
+  host: process.env.DB_HOST || 'sql12.freesqldatabase.com',
+  user: process.env.DB_USER || 'sql12706499',
+  password: process.env.DB_PASSWORD || 'TApP5UqBDM',
+  database: process.env.DB_NAME || 'sql12706499'
+});
 
 function handleDisconnect() {
   connection = mysql.createConnection({
