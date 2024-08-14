@@ -1,11 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './UserProfile.css';
-import AddProduct from './AddProduct';  // Adjust the import path based on your directory structure
+import AddProduct from './AddProduct';
+import EditProduct from './EditProduct';
 
 const EmployeeDashboard = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  const [activeForm, setActiveForm] = useState(null);  // Manage which form is active
+  const [activeForm, setActiveForm] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [selectedProductId, setSelectedProductId] = useState('');
+
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_API_URL}/products`)
+      .then(response => response.json())
+      .then(data => setProducts(data))
+      .catch(error => console.error('Error fetching products:', error));
+  }, []);
 
   const handleRoleUpdate = async (e) => {
     e.preventDefault();
@@ -30,6 +40,10 @@ const EmployeeDashboard = () => {
 
   const toggleForm = (formName) => {
     setActiveForm(activeForm === formName ? null : formName);
+  };
+
+  const handleProductSelect = (e) => {
+    setSelectedProductId(e.target.value);
   };
 
   return (
@@ -59,19 +73,25 @@ const EmployeeDashboard = () => {
 
       {activeForm === 'addProduct' && <AddProduct />}
 
-      {/* Add placeholders for Edit and Remove product forms if necessary */}
       {activeForm === 'editProduct' && (
-        <div>
-          {/* Edit Product Form Placeholder */}
-          <p>Edit Product functionality will go here.</p>
-        </div>
-      )}
+        <>
+          <label htmlFor="productSelect">Select a Product to Edit:</label>
+          <select
+            id="productSelect"
+            value={selectedProductId}
+            onChange={handleProductSelect}
+            className="product-select-dropdown"
+          >
+            <option value="">--Select a Product--</option>
+            {products.map(product => (
+              <option key={product.Product_ID} value={product.Product_ID}>
+                {product.Product_Name}
+              </option>
+            ))}
+          </select>
 
-      {activeForm === 'removeProduct' && (
-        <div>
-          {/* Remove Product Form Placeholder */}
-          <p>Remove Product functionality will go here.</p>
-        </div>
+          {selectedProductId && <EditProduct productId={selectedProductId} />}
+        </>
       )}
 
       {message && <p className="message">{message}</p>}
