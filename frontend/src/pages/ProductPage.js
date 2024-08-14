@@ -48,10 +48,7 @@ const ProductPage = () => {
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedOption, setSelectedOption] = useState('');
-  const [isVisible, setIsVisible] = useState(false);
-  const [rating, setRating] = useState(null);
-  const [hover, setHover] = useState(null);
-  const [totalStars, setTotalStars] = useState(5);
+
 
   
 
@@ -98,8 +95,8 @@ const ProductPage = () => {
             <p className="product-description product-page">{product.Description}</p>
             <p className="product-price product-page">${product.Product_Price}</p>
             <div className="product-reviews product-page">
-              <span className="star product-page">⭐</span> 4.9 · 
-             <Link to={`/reviews/${productId}`} className="product-page">142 reviews</Link>
+              <span className="star product-page">⭐</span>  {product.averageRating.toFixed(1)} &nbsp;·&nbsp;  
+             <Link to={`/reviews/${productId}`} className="product-page">{product.reviewCount} reviews</Link>
 
             </div>
         

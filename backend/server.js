@@ -21,14 +21,35 @@ app.get('/products', (req, res) => {
 
 app.get('/products/:id', (req, res) => {
   const productId = req.params.id;
-  db.query('SELECT * FROM products WHERE Product_ID = ?', [productId], (err, results) => {
-    if (err) {
-      res.status(500).send(err);
-    } else if (results.length === 0) {
-      res.status(404).send('Product not found');
-    } else {
-      const product = results[0];
 
+  // Query to get product details
+  db.query('SELECT * FROM products WHERE Product_ID = ?', [productId], (err, productResults) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).send('Internal Server Error');
+    }
+
+    if (productResults.length === 0) {
+      return res.status(404).send('Product not found');
+    }
+
+    const product = productResults[0];
+
+    // Query to get average rating and review count
+    db.query(`
+      SELECT AVG(rating) AS average_rating, COUNT(*) AS review_count
+      FROM Reviews
+      WHERE product_id = ?
+    `, [productId], (err, reviewsResults) => {
+      if (err) {
+        console.error('Database error:', err);
+        return res.status(500).send('Internal Server Error');
+      }
+
+      const averageRating = reviewsResults[0].average_rating || 0;
+      const reviewCount = reviewsResults[0].review_count || 0;
+
+      // Add product options based on product name
       const colorOptions = ['Cottage Green', 'Domain', 'Monument', 'Pearl White', 'Riversand', 'Satin Black'];
       const sizeOptions = ['Small', 'Medium', 'Large'];
 
@@ -40,11 +61,19 @@ app.get('/products/:id', (req, res) => {
         product.Product_Options = [];
       }
 
-      res.json(product);
-      console.log(product);
-    }
+      // Combine product details with review metrics
+      const productWithReviewInfo = {
+        ...product,
+        averageRating,
+        reviewCount
+      };
+
+      res.json(productWithReviewInfo);
+      console.log(productWithReviewInfo);
+    });
   });
 });
+
 
 
 
@@ -53,19 +82,27 @@ app.get('/reviews/:id', (req, res) => {
   const productId = req.params.id;
   console.log(`Received request for productId: ${productId}`); // Log the request
 
-  db.query('SELECT * FROM Reviews WHERE product_ID = ?', [productId], (err, reviews) => {
+  // Query to get reviews and first names
+  db.query(`
+    SELECT r.review_id, r.product_id, r.rating, r.comment, u.first_name
+    FROM Reviews r
+    LEFT JOIN users u ON r.user_id = u.user_id
+    WHERE r.product_id = ?
+  `, [productId], (err, reviews) => {
     if (err) {
       console.error('Database error:', err);
-      res.status(500).json({ error: 'Internal Server Error' });
-    } else if (reviews.length === 0) {
-      console.log('No reviews found for productId:', productId); // Log when no reviews are found
-      res.status(404).json({ error: 'No reviews found for this product' });
-    } else {
-      console.log('Reviews found:', reviews); // Log the reviews found
-      //res.json(results);
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
 
-      db.query('SELECT rating FROM Reviews WHERE product_ID = ?', [productId], (err, results) => {
+    if (reviews.length === 0) {
+      console.log('No reviews found for productId:', productId); // Log when no reviews are found
+      return res.status(404).json({ error: 'No reviews found for this product' });
+    }
+
+    console.log('Reviews found:', reviews); // Log the reviews found
+
+    // Query to get ratings
+    db.query('SELECT rating FROM Reviews WHERE product_id = ?', [productId], (err, results) => {
       if (err) {
         console.error('Database error:', err);
         return res.status(500).json({ error: 'Internal Server Error' });
@@ -74,13 +111,38 @@ app.get('/reviews/:id', (req, res) => {
       const ratings = results.map(result => result.rating); // Extract all rating values
       console.log('Fetched ratings for product:', ratings); // Log all the ratings for the product
 
-      // Send the reviews and the specific rating to the frontend
-      return res.json({ reviews, ratings });
-  });
-  });
+      // Query to count the total number of reviews
+      db.query('SELECT COUNT(*) AS review_count FROM Reviews WHERE product_id = ?', [productId], (err, countResults) => {
+        if (err) {
+          console.error('Database error:', err);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
 
+        const reviewCount = countResults[0].review_count; // Get the review count from the result
+        console.log('Total review count for product:', reviewCount); // Log the review count
 
+        // Query to calculate the average rating
+        db.query('SELECT AVG(rating) AS average_rating FROM Reviews WHERE product_id = ?', [productId], (err, avgResults) => {
+          if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ error: 'Internal Server Error' });
+          }
+
+          const averageRating = avgResults[0].average_rating || 0; // Get the average rating from the result
+          console.log('Average rating for product:', averageRating); // Log the average rating
+
+          // Send the reviews, ratings, review count, and average rating to the frontend
+          return res.json({ reviews, ratings, reviewCount, averageRating });
+        });
+      });
+    });
+  });
 });
+
+
+
+
+app.use(express.json()); 
 
 
 app.post('/reviews', (req, res) => {
@@ -90,19 +152,23 @@ app.post('/reviews', (req, res) => {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
-  // Insert the review into the database
-  db.query(
-    'INSERT INTO Reviews (product_ID, rating, comment) VALUES (?, ?, ?)',
-    [productId, rating, comment],
-    (err, results) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).json({ error: 'Internal Server Error' });
-      }
-      res.status(201).json({ message: 'Review created successfully' });
+  const userId = req.session ? req.session.user_id : null; // Ensure req.session is defined
+
+  const query = 'INSERT INTO Reviews (product_ID, user_ID, rating, comment) VALUES (?, ?, ?, ?)';
+  const params = [productId, userId, rating, comment];
+
+  db.query(query, params, (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
-  );
+    res.status(201).json({ message: 'Review created successfully' });
+  });
 });
+
+
+
+
 
 
 

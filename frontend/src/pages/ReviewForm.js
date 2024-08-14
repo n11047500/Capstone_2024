@@ -7,36 +7,40 @@ const ReviewForm = ({ productId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!rating || !comment) {
       setError('Both rating and comment are required.');
       return;
     }
-
+  
     try {
       const response = await fetch(`http://localhost:3001/reviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ productId, rating, comment }),
+        body: JSON.stringify({ productId, rating, comment }),  // Ensure productId is defined
       });
-
+  
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
+  
       const data = await response.json();
       console.log('Review submitted:', data);
-      // Clear the form or show a success message
       setRating('');
       setComment('');
       setError('');
     } catch (error) {
       console.error('Error submitting review:', error);
+      console.log('Product ID:', productId);
+      console.log('Rating:', rating);
+      console.log('Comment:', comment);
+
       setError('Failed to submit review');
     }
   };
+  
 
   return (
     <form onSubmit={handleSubmit}>

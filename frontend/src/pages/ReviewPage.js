@@ -50,6 +50,8 @@ const ReviewPage = () => {
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [ratings, setRatings] = useState([]);
+  const [reviewCount, setReviewCount] = useState(0);
+  const [averageRating, setAverageRating] = useState(0);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -76,12 +78,17 @@ const ReviewPage = () => {
         console.log('Fetched reviews data:', data);
         setReviews(data.reviews || []);
         setRatings(data.ratings || []);
+        setReviewCount(data.reviewCount || 0); // Set review count from the response
+        setAverageRating(data.averageRating || 0); // Set average rating from the response
       } catch (error) {
         console.error('Error fetching reviews:', error);
+        setError(error.message);
         setReviews([]);
         setRatings([]);
+        setReviewCount(0); // Set default review count in case of error
+        setAverageRating(0); // Set default average rating in case of error
       }
-    };
+    };    
 
 
     fetchProduct();
@@ -93,13 +100,7 @@ const ReviewPage = () => {
   }
 
   console.log('Product ID:', productId);
- 
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    alert('Your review has been submited.');
-  }
-  
+   
   
 
 
@@ -120,7 +121,8 @@ const ReviewPage = () => {
               <h1 className="review-title review-page">Create a review</h1>
               <br />
               <div className="review-small">
-                <span className="star product-page">⭐</span> 4.9 · 142 reviews
+                <span className="star product-page">⭐</span> {averageRating.toFixed(1)} · {reviewCount} reviews
+                {/*Displays average rating to one decimal place and the total number of reviews for said product*/}
               </div>
 
               <br />
@@ -142,7 +144,7 @@ const ReviewPage = () => {
 
                     {reviews.map((review, index) => (
                       <li key={index}>
-                        <h3>User ID: {review.user_ID}</h3>
+                        <h3>{review.first_name ? review.first_name : 'Guest User'}</h3>
                         <StarRating rating={ratings[index]} /> {/* Display star rating */}
                         <p>{review.comment}</p>
                         <br />
