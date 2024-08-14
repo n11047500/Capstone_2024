@@ -13,7 +13,7 @@ body, html {
 
 .home_product_container {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   flex-wrap: wrap;
   padding: 20px;
 }
@@ -56,7 +56,7 @@ body, html {
 
 @media (max-width: 1024px) {
   .product-card {
-    flex-basis: 50%;
+    flex-basis: 45%;
   }
 }
 
