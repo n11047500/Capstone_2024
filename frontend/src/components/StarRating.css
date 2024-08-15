@@ -1,0 +1,19 @@
+.star-rating {
+    display: inline-flex;
+    font-size: 1.5rem; /* Adjust size as needed */
+    color: #FFD700; /* Gold color for stars */
+  }
+  
+  .star {
+    margin: 0 2px;
+    cursor: default;
+  }
+  
+  .star.filled {
+    color: #FFD700; /* Color for filled stars */
+  }
+  
+  .star:not(.filled) {
+    color: #e0e0e0; /* Color for empty stars */
+  }
+  

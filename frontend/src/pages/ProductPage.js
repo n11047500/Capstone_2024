@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { CartContext } from '../context/CartContext';
@@ -61,7 +61,8 @@ const ProductPage = () => {
             <p className="product-dimensions product-page"><strong>Dimensions:</strong> {product.Product_Dimensions}</p>
             <p className="product-price product-page">${product.Product_Price}</p>
             <div className="product-reviews product-page">
-              <span className="star product-page">⭐</span> 4.9 · <a href="#reviews" className="product-page">142 reviews</a>
+              <span className="star product-page">⭐</span> {product.averageRating.toFixed(1)} &nbsp;·&nbsp;  
+              <Link to={`/reviews/${productId}`} className="product-page">{product.reviewCount} reviews</Link>
             </div>
             {product.Product_Options.length > 1 && (
               <select

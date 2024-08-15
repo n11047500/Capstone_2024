@@ -10,7 +10,7 @@ body {
 
 .product-container.product-page {
   display: flex;
-  flex-direction: column;
+  flex-direction: row; /* Align image and text side by side by default */
   background-color: #EDF1EC;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
@@ -20,7 +20,7 @@ body {
 
 .product-image.product-page {
   flex: 1;
-  max-width: 100%;
+  max-width: 50%; /* Adjust this to control the image size relative to the container */
   text-align: center;
   background-color: #EDF1EC;
   padding: 20px;
@@ -39,6 +39,7 @@ body {
   padding: 20px 40px;
   background-color: #EDF1EC;
   border-top: 1px solid #e0e0e0;
+  max-width: 50%; /* Ensure the text doesn't overflow the container */
 }
 
 .product-title.product-page {
@@ -129,11 +130,11 @@ body {
 
   .product-image.product-page {
     flex: 1;
-    max-width: 50%;
-  }
+    max-width: 50%; /* Allow the image to take up half the container width */
+}
 
-  .product-details.product-page {
+.product-details.product-page {
     flex: 1;
-    max-width: 50%;
-  }
+    max-width: 50%; /* Allow the text to take up the other half */
+}
 }

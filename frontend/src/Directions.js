@@ -7,6 +7,7 @@ import Gallery from "./pages/Gallery";
 import ContactUs from "./pages/ContactUs";
 
 import ProductPage from './pages/ProductPage';
+import ReviewPage from "./pages/ReviewPage";
 import CartPage from './pages/CartPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
@@ -23,6 +24,7 @@ const Directions = () => {
             <Route path="/gallery" element={<Gallery />}/>
             <Route path="/contactus" element={<ContactUs/>}/>
             <Route path="/product/:productId" element={<ProductPage />} />
+            <Route path="/reviews/:productId" element={<ReviewPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
