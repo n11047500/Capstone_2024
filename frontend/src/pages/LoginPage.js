@@ -18,9 +18,12 @@ const LoginPage = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
+
       if (response.ok) {
-        localStorage.setItem('userEmail', email);
-        navigate(`/user/${email}`);
+        const data = await response.json();
+        localStorage.setItem('userEmail', data.email);
+        localStorage.setItem('userRole', data.role);
+        navigate(`/user/${data.email}`);
       } else {
         const data = await response.json();
         setError(data.message || 'An error occurred. Please try again.');

@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import './UserProfile.css';
+import EmployeeDashboard from './EmployeeDashboard';
 
 const UserProfile = () => {
   const { email } = useParams();
   const [user, setUser] = useState(null);
+  const [role, setRole] = useState(localStorage.getItem('userRole') || 'customer');
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -39,111 +43,100 @@ const UserProfile = () => {
     fetchUser();
   }, [email]);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/user/${email}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update user information.');
-      }
-
-      const data = await response.json();
-      setMessage(data.message);
-    } catch (error) {
-      console.error('Error updating user information:', error);
-      setMessage('Failed to update user information.');
-    }
+    // Add form submission logic here
   };
-
-  const handleSameAddressChange = () => {
-    setSameAddress(!sameAddress);
-    if (!sameAddress) {
-      setFormData({
-        ...formData,
-        billingAddress: formData.shippingAddress
-      });
-    }
-  };
-
+  
   return (
-    <div className="user-profile-container">
-      <h2>User Profile</h2>
-      {user ? (
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="firstName"
-            placeholder="First Name"
-            value={formData.firstName}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            name="lastName"
-            placeholder="Last Name"
-            value={formData.lastName}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            name="mobileNumber"
-            placeholder="Mobile Number"
-            value={formData.mobileNumber}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="date"
-            name="dateOfBirth"
-            placeholder="Date of Birth"
-            value={formData.dateOfBirth}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            name="shippingAddress"
-            placeholder="Shipping Address"
-            value={formData.shippingAddress}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="checkbox"
-            checked={sameAddress}
-            onChange={handleSameAddressChange}
-          /> Billing address is the same as shipping address
-          {!sameAddress && (
-            <input
-              type="text"
-              name="billingAddress"
-              placeholder="Billing Address"
-              value={formData.billingAddress}
-              onChange={handleChange}
-              required
-            />
-          )}
-          {message && <p className="message">{message}</p>}
-          <button type="submit">Update Profile</button>
-        </form>
-      ) : (
-        <p>Loading user information...</p>
+    <>
+      <Header />
+      <main>
+        <div className="profile-container">
+          <h1>{role === 'employee' ? 'Employee Dashboard' : 'User Profile'}</h1>
+          {user && <h2>Welcome, {user.first_name}!</h2>}
+          {role === 'employee' ? (
+            <>
+              <EmployeeDashboard />
+            </>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <label htmlFor="firstName">First Name:</label>
+              <input
+                type="text"
+                id="firstName"
+                name="firstName"
+                value={formData.firstName}
+                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+              />
+              
+              <label htmlFor="lastName">Last Name:</label>
+              <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                value={formData.lastName}
+                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+              />
+
+              <label htmlFor="mobileNumber">Mobile Number:</label>
+              <input
+                type="text"
+                id="mobileNumber"
+                name="mobileNumber"
+                value={formData.mobileNumber}
+                onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value })}
+              />
+
+              <label htmlFor="dateOfBirth">Date of Birth:</label>
+              <input
+                type="date"
+                id="dateOfBirth"
+                name="dateOfBirth"
+                value={formData.dateOfBirth}
+                onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+              />
+
+              <label htmlFor="shippingAddress">Shipping Address:</label>
+              <input
+                type="text"
+                id="shippingAddress"
+                name="shippingAddress"
+                value={formData.shippingAddress}
+                onChange={(e) => setFormData({ ...formData, shippingAddress: e.target.value })}
+              />
+
+              <label>
+                <input
+                  type="checkbox"
+                  checked={sameAddress}
+                  onChange={(e) => {
+                    setSameAddress(e.target.checked);
+                    if (e.target.checked) {
+                      setFormData({ ...formData, billingAddress: formData.shippingAddress });
+                    }
+                  }}
+                />
+                Billing address is the same as shipping address
+              </label>
+
+              <label htmlFor="billingAddress">Billing Address:</label>
+              <input
+                type="text"
+                id="billingAddress"
+                name="billingAddress"
+                value={formData.billingAddress}
+                onChange={(e) => setFormData({ ...formData, billingAddress: e.target.value })}
+                disabled={sameAddress}
+              />
+
+              <button type="submit" className="update-button">Update Profile</button>
+            </form>
       )}
     </div>
+</main>
+<Footer />
+      </>
   );
 };
 

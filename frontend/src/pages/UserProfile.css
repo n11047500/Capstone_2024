@@ -65,3 +65,108 @@
   flex-direction: column;
   gap: 15px;
 }
+
+.profile-container h2 {
+  font-size: 20px;
+  color: #000000;
+  margin-bottom: 16px;
+}
+
+.employee-dashboard h2 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.employee-dashboard {
+  margin-top: 20px;
+}
+
+.employee-dashboard h2 {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.employee-dashboard button {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: white;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  margin: 5px;
+}
+
+.employee-dashboard button:hover {
+  background-color: #45a049;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.employee-dashboard .dashboard-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.employee-dashboard .dashboard-buttons button {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.role-update-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.role-update-form label {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #666;
+}
+
+.role-update-form input {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 15px;
+}
+
+.role-update-form .update-button {
+  width: 100%;
+  max-width: 300px;
+  padding: 10px;
+  font-size: 16px;
+  color: white;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.role-update-form .update-button:hover {
+  background-color: #45a049;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.employee-dashboard .reset-button {
+  background-color: #f44336;
+  color: white;
+  padding: 10px 20px;
+  margin-left: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.employee-dashboard .reset-button:hover {
+  background-color: #d32f2f;
+}
