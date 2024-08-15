@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
 import Footer from '../components/Footer';
+import Slideshow from '../components/Slideshow';
 import './HomePage.css';
 
 const HomePage = () => {
