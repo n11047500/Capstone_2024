@@ -170,3 +170,17 @@
 .employee-dashboard .reset-button:hover {
   background-color: #d32f2f;
 }
+
+.employee-dashboard .delete-product-button {
+  background-color: #f44336;
+  color: white;
+  padding: 10px 20px;
+  margin-left: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.employee-dashboard .delete-product-button:hover {
+  background-color: #d32f2f;
+}

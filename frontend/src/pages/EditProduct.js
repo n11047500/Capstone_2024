@@ -17,28 +17,36 @@ const EditProduct = ({ productId }) => {
   
   const [formData, setFormData] = useState(originalFormData);
   const [message, setMessage] = useState('');
+  const [imagePreview, setImagePreview] = useState('');
 
   useEffect(() => {
     if (productId) {
       fetch(`${process.env.REACT_APP_API_URL}/products/${productId}`)
         .then(response => response.json())
         .then(data => {
-          const options = data.Product_Options || '';
+          const options = data.Product_Options || '';  // Default to empty string if null
+
+          // Handle Product_Dimensions safely
+          const dimensions = data.Product_Dimensions ? data.Product_Dimensions.split(' x ') : ['', '', ''];
+          const width = dimensions[0] ? dimensions[0].split('mm')[0] : '';
+          const depth = dimensions[1] ? dimensions[1].split('mm')[0] : '';
+          const height = dimensions[2] ? dimensions[2].split('mm')[0] : '';
 
           const initialData = {
             name: data.Product_Name,
             price: data.Product_Price,
             quantity: data.Quantity_Available,
             description: data.Description,
-            width: data.Product_Dimensions.split(' x ')[0].split('mm')[0],
-            depth: data.Product_Dimensions.split(' x ')[1].split('mm')[0],
-            height: data.Product_Dimensions.split(' x ')[2].split('mm')[0],
+            width: width,
+            depth: depth,
+            height: height,
             options: options,
             imageUrl: data.Product_Image_URL,
           };
 
           setOriginalFormData(initialData);
           setFormData(initialData);
+          setImagePreview(data.Product_Image_URL);
         })
         .catch(error => console.error('Error fetching product:', error));
     }
@@ -47,6 +55,10 @@ const EditProduct = ({ productId }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+
+    if (name === 'imageUrl') {
+      setImagePreview(value);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -81,6 +93,7 @@ const EditProduct = ({ productId }) => {
 
   const handleReset = () => {
     setFormData(originalFormData);
+    setImagePreview(originalFormData.imageUrl);
   };
 
   return (
@@ -134,7 +147,6 @@ const EditProduct = ({ productId }) => {
             name="width"
             value={formData.width}
             onChange={handleChange}
-            required
           />
 
           <label htmlFor="depth">Depth (mm):</label>
@@ -144,7 +156,6 @@ const EditProduct = ({ productId }) => {
             name="depth"
             value={formData.depth}
             onChange={handleChange}
-            required
           />
 
           <label htmlFor="height">Height (mm):</label>
@@ -154,7 +165,6 @@ const EditProduct = ({ productId }) => {
             name="height"
             value={formData.height}
             onChange={handleChange}
-            required
           />
         </div>
 
@@ -174,8 +184,9 @@ const EditProduct = ({ productId }) => {
           name="imageUrl"
           value={formData.imageUrl}
           onChange={handleChange}
-          required
         />
+
+        {imagePreview && <img src={imagePreview} alt="Product Preview" className="image-preview" />}
 
         <button type="submit" className="add-product-button">Update Product</button>
         <button type="button" onClick={handleReset} className="reset-button">Reset</button>

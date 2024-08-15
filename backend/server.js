@@ -379,7 +379,7 @@ app.put('/products/:id', (req, res) => {
   const productId = req.params.id;
   const { name, price, quantity, description, dimensions, options, imageUrl } = req.body;
 
-  const optionsString = options.join(', ');
+  const optionsString = Array.isArray(options) ? options.join(', ') : '';
 
   const query = `
     UPDATE products
@@ -402,6 +402,24 @@ app.put('/products/:id', (req, res) => {
   });
 });
 
+
+app.delete('/products/:id', (req, res) => {
+  const productId = req.params.id;
+
+  const query = 'DELETE FROM products WHERE Product_ID = ?';
+  db.query(query, [productId], (err, result) => {
+    if (err) {
+      console.error('Error deleting product:', err);
+      return res.status(500).json({ message: 'An error occurred while deleting the product.' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Product not found.' });
+    }
+
+    res.status(200).json({ message: 'Product deleted successfully.' });
+  });
+});
 
 app.listen(3001, () => {
   console.log('Server is running on port 3001');

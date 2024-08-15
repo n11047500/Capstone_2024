@@ -15,10 +15,15 @@ const AddProduct = () => {
     imageUrl: ''
   });
   const [message, setMessage] = useState('');
+  const [imagePreview, setImagePreview] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+
+    if (name === 'imageUrl') {
+      setImagePreview(value);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -51,8 +56,10 @@ const AddProduct = () => {
           width: '', 
           depth: '', 
           height: '', 
-          options: '' 
+          options: '',
+          imageUrl: ''
         });
+        setImagePreview('');
       } else {
         setMessage(data.message || 'Failed to add product.');
       }
@@ -113,7 +120,6 @@ const AddProduct = () => {
             name="width"
             value={formData.width}
             onChange={handleChange}
-            required
           />
 
           <label htmlFor="depth">Depth (mm):</label>
@@ -123,7 +129,6 @@ const AddProduct = () => {
             name="depth"
             value={formData.depth}
             onChange={handleChange}
-            required
           />
 
           <label htmlFor="height">Height (mm):</label>
@@ -133,7 +138,6 @@ const AddProduct = () => {
             name="height"
             value={formData.height}
             onChange={handleChange}
-            required
           />
         </div>
 
@@ -142,20 +146,21 @@ const AddProduct = () => {
           type="text"
           id="options"
           name="options"
-          placeholder="e.g., Surfmist,Domain,Paperbark,Riversand,Jasper,Bushland"
           value={formData.options}
           onChange={handleChange}
         />
 
-        <label htmlFor="imageUrl">Google Drive Image URL or File ID:</label>
+        <label htmlFor="imageUrl">Image URL:</label>
         <input
           type="text"
           id="imageUrl"
           name="imageUrl"
           value={formData.imageUrl}
           onChange={handleChange}
-          placeholder="Enter the Google Drive file ID or full URL"
+          placeholder="Enter the full image URL"
         />
+        
+        {imagePreview && <img src={imagePreview} alt="Product Preview" className="image-preview" />}
 
         <button type="submit" className="add-product-button">Add Product</button>
       </form>

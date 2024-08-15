@@ -46,6 +46,28 @@ const EmployeeDashboard = () => {
     setSelectedProductId(e.target.value);
   };
 
+  const handleDeleteProduct = async () => {
+    const confirmation = window.confirm('Are you sure you want to delete this product?');
+    if (confirmation) {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/products/${selectedProductId}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          setProducts(products.filter(product => product.Product_ID !== selectedProductId));
+          setSelectedProductId(''); // Reset the selected product
+          setMessage('Product deleted successfully.');
+        } else {
+          setMessage('Failed to delete product.');
+        }
+      } catch (error) {
+        console.error('Error deleting product:', error);
+        setMessage('An error occurred while deleting the product.');
+      }
+    }
+  };
+
   return (
     <div className="employee-dashboard">
       <div className="dashboard-buttons">
@@ -91,6 +113,31 @@ const EmployeeDashboard = () => {
           </select>
 
           {selectedProductId && <EditProduct productId={selectedProductId} />}
+        </>
+      )}
+
+      {activeForm === 'removeProduct' && (
+        <>
+          <label htmlFor="productRemoveSelect">Select a Product to Remove:</label>
+          <select
+            id="productRemoveSelect"
+            value={selectedProductId}
+            onChange={handleProductSelect}
+            className="product-select-dropdown"
+          >
+            <option value="">--Select a Product--</option>
+            {products.map(product => (
+              <option key={product.Product_ID} value={product.Product_ID}>
+                {product.Product_Name}
+              </option>
+            ))}
+          </select>
+
+          {selectedProductId && (
+            <button onClick={handleDeleteProduct} className="delete-product-button">
+              Delete Product
+            </button>
+          )}
         </>
       )}
 
