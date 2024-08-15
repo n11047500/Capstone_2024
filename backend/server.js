@@ -375,6 +375,34 @@ app.post('/add-product', (req, res) => {
   });
 });
 
+app.put('/products/:id', (req, res) => {
+  const productId = req.params.id;
+  const { name, price, quantity, description, dimensions, options, imageUrl } = req.body;
+
+  const optionsString = options.join(', ');
+
+  const query = `
+    UPDATE products
+    SET Product_Name = ?, Product_Price = ?, Quantity_Available = ?, Description = ?, Product_Dimensions = ?, Product_Options = ?, Product_Image_URL = ?
+    WHERE Product_ID = ?
+  `;
+  const values = [name, price, quantity, description, dimensions, optionsString, imageUrl, productId];
+
+  db.query(query, values, (err, result) => {
+    if (err) {
+      console.error('Error updating product:', err);
+      return res.status(500).json({ message: 'An error occurred while updating the product.' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Product not found.' });
+    }
+
+    res.status(200).json({ message: 'Product updated successfully.' });
+  });
+});
+
+
 app.listen(3001, () => {
   console.log('Server is running on port 3001');
 });
