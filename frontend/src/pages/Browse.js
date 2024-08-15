@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
-import ProductCard from '../components/ProductCard';
 import Footer from '../components/Footer';
+import ProductCard from '../components/ProductCard';
 import './Browse.css';
 
 function Browse() {

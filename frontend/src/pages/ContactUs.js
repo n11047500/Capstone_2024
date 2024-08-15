@@ -21,9 +21,22 @@ function ContactUs() {
           <div className='contact-flexbox'>
   
         <div class ="contact-flexbox left-box"> 
-          <p><img src={email} alt = "clock" className="lImg" />Email <br /> sales@ezeeind.com.au </p>
-          <p><img src={phone} alt = "clock" className="Img" />Phone <br />  07 3284 8180 </p>
-              <p><img src={clock} alt = "clock" className="Img" />Opening Hours <br />  Mon-Thurs 7:30am to 4pm <br /> Friday 7:30am – 2pm </p>
+            <p class= "contact-container">
+                <div  class="img-container">
+                <img src={email} alt = "email" className="Img" /> 
+                </div>
+                <span class ="contact-text"> <b>Email</b> <br /> sales@ezeeind.com.au </span> 
+            </p>
+            <p class= "contact-container">
+                <div class="img-container"> <img src={phone} alt = "phone" className="Img" /> </div>
+                 <span class ="contact-text"><b> Phone </b> <br />  07 3284 8180  </span>
+            </p> 
+            <p class= "contact-container">
+                <div class="img-container">
+                <img src={clock} alt = "clock" className="Img" /> 
+                </div>
+                <span class ="contact-text"> <b>Opening Hours</b><br />  Mon-Thurs 7:30am – 4pm <br /> Friday 7:30am – 2pm  </span>
+            </p>
           </div>
           
           <div class ="contact-flexbox right-box">
@@ -31,7 +44,6 @@ function ContactUs() {
           
           <form target="_blank" action="https://formsubmit.co/ezeeplanterbox@gmail.com" method="POST" class ="contact-form"> 
             <table class="form-table">
-
                 <tr>
                     <td><label for="fname">First Name:</label><br/>
                     <input type="text" id="first_name" name="first_name" placeholder="Your First Name..." /><br/>
@@ -51,18 +63,19 @@ function ContactUs() {
                     <td colspan="2"> 
                     <label for="inquiry">Enquiry:</label><br/>
                     <textarea id="inquiry" name="inquiry" placeholder="Write your inquiry here..." > </textarea>
-                    {/* <input type="text" id="inquiry" name="inquiry" placeholder="Write your inquiry here..." /><br/><br /> */}
                     </td>
                 </tr>
                 </table>
                 <button type="submit" class="submit-button">Submit Form</button>
         </form>          
-  
           </div>
   
           </div>
-  
           
+        </div>
+        <div className='map_section'>
+          <iframe loading="lazy" src="https://maps.google.com/maps?q=21%20Huntington%20Street%2C%20Clontarf%20QLD%204019&amp;t=m&amp;z=16&amp;output=embed&amp;iwloc=near" 
+          title="21 Huntington Street, Clontarf QLD 4019" aria-label="21 Huntington Street, Clontarf QLD 4019" width='100%' height='85%' frameborder="0"></iframe>
         </div>
         <Footer />
       </div>

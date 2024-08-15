@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
 import Footer from '../components/Footer';
 import './HomePage.css';
 
-function HomePage() {
+const HomePage = () => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -19,9 +19,11 @@ function HomePage() {
   return (
     <div className="HomePage">
       <Header />
-      <div className='motto_section'>
-        <h1 className='motto_text'>The pain-free gardening solution suitable for everybody.</h1>
-      </div>
+      <Slideshow>
+        <div className='motto_section'>
+          <h1 className='motto_text'>The pain-free gardening solution suitable for everybody.</h1>
+        </div>
+      </Slideshow>
       <div className="home_product_section">
         <h2>Featured Products</h2>
         <div className="home_product_container">
@@ -39,6 +41,6 @@ function HomePage() {
       <Footer />
     </div>
   );
-}
+};
 
 export default HomePage;
