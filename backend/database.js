@@ -8,7 +8,7 @@ const connection = mysql.createConnection({
 });
 
 function handleDisconnect() {
-  connection = mysql.createConnection({
+  connection == mysql.createConnection({
     host: process.env.DB_HOST || 'sql12.freesqldatabase.com',
     user: process.env.DB_USER || 'sql12706499',
     password: process.env.DB_PASSWORD || 'TApP5UqBDM',
