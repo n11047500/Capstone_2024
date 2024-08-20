@@ -54,18 +54,6 @@ app.get('/products/:id', (req, res) => {
       const averageRating = reviewsResults[0].average_rating || 0;
       const reviewCount = reviewsResults[0].review_count || 0;
 
-      // Add product options based on product name
-      const colorOptions = ['Cottage Green', 'Domain', 'Monument', 'Pearl White', 'Riversand', 'Satin Black'];
-      const sizeOptions = ['Small', 'Medium', 'Large'];
-
-      if (['Accessibility Planter Box', 'Mini Standard Planter Box', 'Small Standard Planter Box', 'Medium Standard Planter Box', 'Large Standard Planter Box'].includes(product.Product_Name)) {
-        product.Product_Options = colorOptions;
-      } else if (['Side Table', 'Trellis'].includes(product.Product_Name)) {
-        product.Product_Options = sizeOptions;
-      } else {
-        product.Product_Options = [];
-      }
-
       // Combine product details with review metrics
       const productWithReviewInfo = {
         ...product,
