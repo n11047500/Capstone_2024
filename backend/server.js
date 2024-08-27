@@ -2,11 +2,13 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
+const axios = require('axios');
 const db = require('./database');
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json()); 
 
 app.get('/', (req, res) => {
@@ -66,10 +68,6 @@ app.get('/products/:id', (req, res) => {
     });
   });
 });
-
-
-
-
 
 app.get('/reviews/:id', (req, res) => {
   const productId = req.params.id;
@@ -407,6 +405,34 @@ app.delete('/products/:id', (req, res) => {
 
     res.status(200).json({ message: 'Product deleted successfully.' });
   });
+});
+
+// Route to handle form submission
+app.post('/api/contact', async (req, res) => {
+  const token = req.body['g-recaptcha-response'];
+  
+  // Verify reCAPTCHA token with Google
+  const verificationURL = `https://www.google.com/recaptcha/api/siteverify?secret=${RECAPTCHA_SECRET_KEY}&response=${token}`;
+
+  try {
+    const response = await axios.post(verificationURL);
+    const { success, score, 'error-codes': errorCodes } = response.data;
+
+    // Log the response for debugging
+    console.log('reCAPTCHA verification result:', response.data);
+
+    if (success) {
+      // Success response
+      res.json({ message: 'reCAPTCHA verified successfully!', success: true, score });
+    } else {
+      // Failure response with error codes
+      res.status(400).json({ message: 'reCAPTCHA verification failed', success: false, errorCodes });
+    }
+  } catch (error) {
+    // Log server error
+    console.error('Server error during reCAPTCHA verification:', error);
+    res.status(500).json({ message: 'Server error during reCAPTCHA verification', success: false });
+  }
 });
 
 app.listen(3001, () => {

@@ -14,6 +14,7 @@ main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 20px; /* Added padding for small screens */
 }
 
 .login-container {
@@ -48,6 +49,7 @@ main {
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-bottom: 20px;
+  box-sizing: border-box; /* Ensures padding is included within the width */
 }
 
 .login-container .login-button {
@@ -84,4 +86,49 @@ main {
 
 .login-container .signup-link a:hover {
   text-decoration: underline;
+}
+
+/* Media Queries for Better Scaling */
+@media (max-width: 768px) {
+  .login-container {
+    padding: 30px;
+    max-width: 90%;
+  }
+
+  .login-container h1 {
+    font-size: 1.75rem;
+  }
+
+  .login-container input[type="email"],
+  .login-container input[type="password"] {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+
+  .login-container .login-button {
+    padding: 12px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: 20px;
+    max-width: 100%;
+  }
+
+  .login-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .login-container input[type="email"],
+  .login-container input[type="password"] {
+    padding: 8px;
+    font-size: 0.875rem;
+  }
+
+  .login-container .login-button {
+    padding: 10px;
+    font-size: 1rem;
+  }
 }

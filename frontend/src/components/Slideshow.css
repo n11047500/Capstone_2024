@@ -1,6 +1,6 @@
 .slideshow-container {
   width: 100%; /* Adjust the width as needed */
-  height: 750px; /* Adjust the height as needed */
+  height: 75vh; /* Adjusted to be a percentage of viewport height for better responsiveness */
   margin: 0px auto; /* Center the slideshow horizontally */
   position: relative;
   overflow: hidden;
@@ -26,15 +26,40 @@
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
+  width: 80%;
 }
 
 .motto_text {
-  font-size: 3vw;
-  font-weight: bold;
+  font-size: 5vw;
   color: #eec4ff;
   text-shadow:
-    3px 3px 0 #000,
-    -3px 3px 0 #000,
-    -3px -3px 0 #000,
-    3px -3px 0 #000;
+    0.02em 0 black,
+    0 0.02em black,
+    -0.02em 0 black,
+    0 -0.02em black,
+    -0.02em -0.02em black,
+    -0.02em 0.02em black,
+    0.02em -0.02em black,
+    0.02em 0.02em black;
+}
+
+/* Media Queries for Smaller Screens */
+@media (max-width: 768px) {
+  .slideshow-container {
+    height: 50vh; /* Reduced height for smaller screens */
+  }
+
+  .motto_text {
+    font-size: 6vw; /* Adjusted for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .slideshow-container {
+    height: 40vh; /* Further reduced height for very small screens */
+  }
+
+  .motto_text {
+    font-size: 7vw; /* Adjusted for very small screens */
+  }
 }

@@ -30,6 +30,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-bottom: 20px;
+  box-sizing: border-box; /* Ensures padding is included within the width */
 }
 
 .profile-container input[type="checkbox"] {
@@ -183,4 +184,42 @@
 
 .employee-dashboard .delete-product-button:hover {
   background-color: #d32f2f;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 20px;
+    margin: 20px;
+  }
+
+  .profile-container h1 {
+    font-size: 20px;
+  }
+
+  .employee-dashboard .dashboard-buttons {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 15px;
+    margin: 15px;
+  }
+
+  .profile-container h1 {
+    font-size: 18px;
+  }
+
+  .profile-container .update-button {
+    font-size: 18px;
+    padding: 12px;
+  }
+
+  .role-update-form input,
+  .role-update-form .update-button {
+    font-size: 14px;
+    padding: 8px;
+  }
 }

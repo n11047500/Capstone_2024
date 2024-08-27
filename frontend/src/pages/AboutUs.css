@@ -11,59 +11,86 @@ body, html {
   padding: 10px 20px;
 }
 
-.about_section{
-  float : left;
-  margin-top: 5%;
-  margin-left: 5%;
-  padding-left: 3%;
+.about_section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5% 5%; /* Equal margins on left and right */
+  padding: 0 5%; /* Equal padding on both sides */
+  gap: 5%; /* Space between text and image */
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
-.about_section h1{
-  font-size:  4.5vh;
-  margin-bottom: 20px;
-  width: 45%;
-  text-align: center;
+.text-content {
+  display: flex;
+  flex-direction: column; /* Stack h1, h2, and p vertically */
+  width: 45%; /* Width for the text block */
 }
 
-.about_section h2{
-  font-size:  3.5vh;
-  margin-bottom: 20px;
-  text-align: center;
-  width: 45%;
-}
-
-.about_section p{
-  font-size: 2.5vh;
+.text-content h1, 
+.text-content h2, 
+.text-content p {
   margin-bottom: 20px;
   text-align: center;
-  width: 45%;
 }
 
-.aboutus_image{
-  float: right;
-  margin-top: -20px;
-  width: 50vh;
-  height: 35vw;
-  margin-right: 12%;
+.text-content h1 {
+  font-size: 4vh;
+}
+
+.text-content h2 {
+  font-size: 3vh;
+}
+
+.text-content p {
+  font-size: 2vh;
+}
+
+.aboutus_image {
+  width: 40%; /* Reduced width by 10% */
+  height: auto; /* Maintain aspect ratio */
   padding-bottom: 50px;
+  align-self: center; /* Center the image vertically */
 }
 
-/* Responsive styles */
-@media (max-width: 1024px) {
-  .product-card {
-    flex-basis: 50%;
-  }
-}
-
+/* Media Queries for smaller screens */
 @media (max-width: 768px) {
-  .product-card {
-    flex-basis: 100%;
+  .about_section {
+    flex-direction: column; /* Stack text and image vertically */
+    text-align: center;
+    padding: 0 5%; /* Maintain equal padding on small screens */
+    gap: 20px; /* Space between stacked items */
+  }
+
+  .text-content, 
+  .aboutus_image {
+    width: 100%; /* Full width for both text and image on small screens */
+  }
+
+  .aboutus_image {
+    width: 80%; /* Adjust image size */
+    margin: 0 auto; /* Center image */
   }
 }
 
 @media (max-width: 480px) {
-  .product-card {
-    padding: 10px;
+  .about_section {
+    margin: 10% auto;
+  }
+
+  .text-content h1 {
+    font-size: 5vw;
+  }
+
+  .text-content h2 {
+    font-size: 4vw;
+  }
+
+  .text-content p {
+    font-size: 3vw;
+  }
+
+  .aboutus_image {
+    width: 100%; /* Full width on very small screens */
   }
 }
-
