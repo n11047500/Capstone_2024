@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './OrderManagement.css'; // Import the CSS file
+import './OrderManagement.css';
 
 const OrderManagement = ({ setActiveForm }) => {
   const [orders, setOrders] = useState([]);
@@ -74,16 +74,21 @@ const OrderManagement = ({ setActiveForm }) => {
   };
 
   const handleOrderStatusChange = (orderId, newStatus) => {
-    fetch(`${process.env.REACT_APP_API_URL}/orders/${orderId}`, { // Ensure the endpoint is correct
+    const confirmation = window.confirm('Are you sure you want to change the status of this order to completed?');
+    if (!confirmation) return;
+  
+    fetch(`${process.env.REACT_APP_API_URL}/orders/${orderId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus }),
     })
       .then(response => {
         if (response.ok) {
-          setOrders(prevOrders => prevOrders.map(order =>
-            order.Order_ID === orderId ? { ...order, status: newStatus } : order
-          ));
+          setOrders(prevOrders =>
+            prevOrders.map(order =>
+              order.Order_ID === orderId ? { ...order, status: newStatus } : order
+            )
+          );
           setSelectedOrder(prevOrder => ({ ...prevOrder, status: newStatus }));
         } else {
           console.error('Error updating order status');
@@ -95,6 +100,7 @@ const OrderManagement = ({ setActiveForm }) => {
         setError('Failed to update order status. Please try again later.');
       });
   };
+  
   
   const handleBackToOrders = () => {
     setSelectedOrder(null);
