@@ -1,0 +1,107 @@
+/* General Styles */
+.order-management {
+    font-family: 'Arial', sans-serif;
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .order-management h3 {
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .error-message {
+    color: red;
+    font-weight: bold;
+  }
+  
+  .order-details {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .order-details table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  
+  .order-details th,
+  .order-details td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .order-details th {
+    background-color: #f2f2f2;
+    color: #333;
+  }
+  
+  .order-details tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .order-details tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .order-item-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 5px 0;
+  }
+  
+  .order-item-button:hover {
+    background-color: #45a049;
+  }
+  
+  .back-button {
+    margin-bottom: 15px;
+    background-color: #ff4b5c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .back-button:hover {
+    background-color: #d33b4f;
+  }
+  
+  .order-details img {
+    border-radius: 5px;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+  }
+  
+  .select-filter {
+    margin-bottom: 10px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 14px;
+  }
+  
+  @media (max-width: 768px) {
+    .order-details table {
+      font-size: 12px;
+    }
+  
+    .order-details th,
+    .order-details td {
+      padding: 8px;
+    }
+  }
+  
