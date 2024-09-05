@@ -4,7 +4,7 @@ import './OrderManagement.css';
 const OrderManagement = ({ setActiveForm }) => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [orderStatusFilter, setOrderStatusFilter] = useState('pending');
+  const [orderStatusFilter, setOrderStatusFilter] = useState('Pending');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -32,39 +32,13 @@ const OrderManagement = ({ setActiveForm }) => {
     fetch(`${process.env.REACT_APP_API_URL}/orders/${orderId}`)
       .then(response => response.json())
       .then(data => {
-        if (data.Product_IDs) {
-          const productPairs = data.Product_IDs.split(',').map(pair => {
-            const [productId, option] = pair.split(':').map(item => item.trim());
-            return { productId, option };
-          });
-
-          const productIds = productPairs.map(pair => pair.productId);
-
-          if (productIds.length > 0) {
-            fetch(`${process.env.REACT_APP_API_URL}/products?ids=${productIds.join(',')}`)
-              .then(response => response.json())
-              .then(products => {
-                const productsWithOptions = productPairs.map(pair => {
-                  const product = products.find(p => p.Product_ID == pair.productId);
-                  return product ? { ...product, option: pair.option } : null;
-                }).filter(product => product !== null);
-
-                setSelectedOrder({ ...data, products: productsWithOptions });
-                setLoading(false);
-              })
-              .catch(error => {
-                console.error('Error fetching product details:', error);
-                setError('Failed to fetch product details. Please try again later.');
-                setLoading(false);
-              });
-          } else {
-            setSelectedOrder({ ...data, products: [] });
-            setLoading(false);
-          }
+        if (data.products && data.products.length > 0) {
+          setSelectedOrder(data);
         } else {
+          console.error('No products found for this order:', data);
           setSelectedOrder({ ...data, products: [] });
-          setLoading(false);
         }
+        setLoading(false);
       })
       .catch(error => {
         console.error('Error fetching order details:', error);
@@ -100,10 +74,14 @@ const OrderManagement = ({ setActiveForm }) => {
         setError('Failed to update order status. Please try again later.');
       });
   };
-  
-  
+
   const handleBackToOrders = () => {
     setSelectedOrder(null);
+  };
+
+  const formatDate = (date) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(date).toLocaleDateString(undefined, options);
   };
 
   return (
@@ -115,8 +93,8 @@ const OrderManagement = ({ setActiveForm }) => {
       {!selectedOrder ? (
         <>
           <select onChange={(e) => setOrderStatusFilter(e.target.value)} className="select-filter">
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
+            <option value="Pending">Pending</option>
+            <option value="Completed">Completed</option>
           </select>
 
           <table className="orders-table">
@@ -159,22 +137,18 @@ const OrderManagement = ({ setActiveForm }) => {
         <>
           <button onClick={handleBackToOrders} className="back-button">Back to Orders</button>
 
+          
+
           <div className="order-details">
             <h4>Order Details for Order #{selectedOrder.Order_ID}</h4>
             <p>Customer: {selectedOrder.First_Name} {selectedOrder.Last_Name}</p>
-            <p>Email: {selectedOrder.Email}</p>
+            <p>Order Type: {selectedOrder.Order_Type}</p>
+            <p>Email: <a href={`mailto:${selectedOrder.Email}`}>{selectedOrder.Email}</a></p>
+            <p>Phone: <a href={`tel:${selectedOrder.Mobile}`}>{selectedOrder.Mobile}</a></p>
+            <p>Order Date: {formatDate(selectedOrder.Order_Date)}</p>
             <p>Address: {selectedOrder.Street_Address}</p>
             <p>Total Amount: ${selectedOrder.Total_Amount}</p>
-
-            {selectedOrder.status === 'pending' && (
-              <button
-                onClick={() => handleOrderStatusChange(selectedOrder.Order_ID, 'completed')}
-                className="order-item-button"
-              >
-                Mark as Completed
-              </button>
-            )}
-
+          
             <h5>Products in Order:</h5>
             <table>
               <thead>
@@ -193,7 +167,7 @@ const OrderManagement = ({ setActiveForm }) => {
                       <td><img src={product.Product_Image_URL} alt={product.Product_Name} style={{ width: '50px', height: '50px' }} /></td>
                       <td>{product.Product_Name}</td>
                       <td>{product.option}</td>
-                      <td>{product.Quantity}</td>
+                      <td>1</td>
                       <td>${product.Product_Price}</td>
                     </tr>
                   ))
@@ -204,6 +178,15 @@ const OrderManagement = ({ setActiveForm }) => {
                 )}
               </tbody>
             </table>
+            <br />
+            {selectedOrder.status === 'Pending' && (
+              <button
+                onClick={() => handleOrderStatusChange(selectedOrder.Order_ID, 'Completed')}
+                className="order-item-button"
+              >
+                Mark as Completed
+              </button>
+            )}
           </div>
         </>
       )}

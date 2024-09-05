@@ -380,8 +380,9 @@ app.delete('/products/:id', (req, res) => {
 app.get('/orders/:id', (req, res) => {
   const orderId = req.params.id;
 
+// Query to fetch order details
   const orderQuery = `
-    SELECT Order_ID, Customer_ID, Order_Date, Total_Amount, Product_IDs, First_Name, Last_Name, Mobile, Email, Street_Address, Order_Type, status
+    SELECT Order_ID, Total_Amount, Product_IDs, First_Name, Last_Name, Mobile, Email, Street_Address, Order_Type, status, created_at AS Order_Date
     FROM orders
     WHERE Order_ID = ?;
   `;
@@ -398,16 +399,40 @@ app.get('/orders/:id', (req, res) => {
 
     const orderDetails = orderResults[0];
 
-    res.json(orderDetails);
+    // Split Product_IDs to parse them into individual products and their options
+    const productPairs = orderDetails.Product_IDs.split(',').map(pair => {
+      const [productId, option] = pair.split(':').map(item => item.trim());
+      return { productId, option };
+    });
+
+    const productIds = productPairs.map(pair => pair.productId);
+
+    // Fetch product details from the products table
+    const productsQuery = `SELECT * FROM products WHERE Product_ID IN (${productIds.map(() => '?').join(',')})`;
+
+    db.query(productsQuery, productIds, (err, products) => {
+      if (err) {
+        console.error('Error fetching product details:', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      const productsWithOptions = productPairs.map(pair => {
+        const product = products.find(p => p.Product_ID.toString() === pair.productId);
+        return product ? { ...product, option: pair.option } : null;
+      }).filter(product => product !== null);
+
+      res.json({ ...orderDetails, products: productsWithOptions });
+    });
   });
 });
+
 
 // Fetch all orders or filter by status
 app.get('/orders', (req, res) => {
   const status = req.query.status;
 
   let orderQuery = `
-    SELECT Order_ID, Customer_ID, Order_Date, Total_Amount, Product_IDs, First_Name, Last_Name, Mobile, Email, Street_Address, Order_Type, status
+    SELECT Order_ID, Total_Amount, Product_IDs, First_Name, Last_Name, Mobile, Email, Street_Address, Order_Type, status
     FROM orders
   `;
 
