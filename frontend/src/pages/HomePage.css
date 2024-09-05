@@ -8,7 +8,7 @@ body, html {
 .header-bar {
   display: flex;
   justify-content: flex-end;
-  padding: 10px 20px;
+  padding: 10px 5%;
 }
 
 .home_product_container {
@@ -16,6 +16,7 @@ body, html {
   justify-content: space-between;
   flex-wrap: wrap;
   padding: 20px;
+  gap: 20px; /* Adds space between product cards */
 }
 
 .home_product-card {
@@ -33,7 +34,7 @@ body, html {
 }
 
 .product-card:hover img {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .intro-section {
@@ -44,7 +45,7 @@ body, html {
 
 .home_product_section {
   text-align: center;
-  font-size: 2vw;
+  font-size: 1.5vw;
   padding: 1%;
 }
 

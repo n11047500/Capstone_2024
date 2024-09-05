@@ -8,9 +8,7 @@
   z-index: 1;
 }
 
-.site-header .menu-icon,
-.site-header .cart-icon,
-.site-header .user-icon-container {
+.site-header .menu-icon {
   font-size: 2.5em;
   cursor: pointer;
 }
@@ -20,11 +18,14 @@
   align-items: center;
 }
 
-.cart-icon {
-  font-size: 2.5em;
-  cursor: pointer;
-  z-index: 5;
+.cart-icon,
+.user-icon {
   position: relative;
+  z-index: 5;
+  cursor: pointer;
+}
+
+.cart-icon {
   margin-left: 20px;
 }
 
@@ -47,15 +48,8 @@
   background-color: black;
   color: white;
   border-radius: 50%;
-  padding: 2.5px 5px;
-  font-size: 0.4em;
-}
-
-.user-icon {
-  font-size: 2.5em;
-  cursor: pointer;
-  z-index: 5;
-  position: relative;
+  padding: 3px 7px;
+  font-size: 1em;
 }
 
 .dropdown-menu {
@@ -128,4 +122,82 @@
 
 .sidebar-nav a:hover {
   text-decoration: underline;
+}
+
+/* Media Queries for Smaller Devices */
+@media (max-width: 768px) {
+  .site-header {
+    padding: 10px 5%;
+  }
+
+  .site-header .logo {
+    max-width: 300px; /* Smaller logo size for tablets */
+  }
+
+  .right-icons img {
+    width: 40px; /* Adjust icon size for tablets */
+    margin-left: 10px; /* Space between icons */
+  }
+
+  .cart-icon {
+    margin-left: 10px;
+  }
+
+  .cart-counter {
+    padding: 2.5px 6px;
+    font-size: .7em;
+  }
+
+  .menu-icon {
+    font-size: 2em;
+  }
+
+  .dropdown-menu {
+    min-width: 150px;
+  }
+
+  .sidebar {
+    width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .site-header {
+    padding: 10px 2%;
+  }
+
+  .site-header .logo {
+    max-width: 200px; /* Smaller logo size for mobile phones */
+  }
+
+  .right-icons img {
+    width: 25px; /* Adjust icon size for mobile phones */
+  }
+
+  .menu-icon {
+    font-size: 1.5em;
+  }
+
+  .cart-counter {
+    padding: 2.5px 5px;
+    font-size: .5em;
+  }
+
+  .dropdown-menu {
+    min-width: 100px;
+  }
+
+  .sidebar {
+    width: 100vw; /* Full viewport width */
+    left: -100vw; /* Start offscreen */
+  }
+
+  .sidebar.open {
+    left: 0; /* Slide in to cover the whole screen */
+  }
+
+  .sidebar .close-btn {
+    right: 10px; /* Adjust close button position for smaller screens */
+    font-size: 20px; /* Smaller close button */
+  }
 }
