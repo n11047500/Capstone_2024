@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
 import Footer from '../components/Footer';
@@ -25,6 +26,7 @@ const HomePage = () => {
           <h1 className='motto_text'>The pain-free gardening solution suitable for everybody.</h1>
         </div>
       </Slideshow>
+ 
       <div className="home_product_section">
         <h2>Featured Products</h2>
         <div className="home_product_container">
@@ -39,6 +41,16 @@ const HomePage = () => {
           ))}
         </div>
       </div>
+
+      <div className="home_customised_section">
+        <h2 className="order-text">Order Customised Ezee Planter Box</h2>
+        <h3 className="order-text-small">Ezee Planter Boxes provides customers a customisable design of their own if they so choose.</h3>
+
+        <div className="order_customised">
+          <button className="order-button"><Link to={`/customise`}>Order Customised Ezee Planter Box</Link></button>
+        </div> <br />
+      </div>
+
       <Footer />
     </div>
   );

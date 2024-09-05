@@ -3,11 +3,16 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const db = require('./database');
+const multer = require('multer');
+const axios = require('axios');
+const fs = require('fs');
+const { exec } = require('child_process');
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json()); 
+const upload = multer({ dest: 'uploads/' });
 
 app.get('/', (req, res) => {
   res.send('Server is running.');
@@ -79,8 +84,15 @@ app.get('/products/:id', (req, res) => {
   });
 });
 
-
-
+app.get('/customise', (req, res) => {
+  const productColour = [
+      'Surfmist', 'Domain', 'Paperbark', 'Riversand', 'Jasper', 'Bushland',
+      'Pale Eucalypt', 'Wilderness', 'Shale Grey', 'Windspray', 'Wallaby',
+      'Basalt', 'Woodland Grey', 'Grey Ridge', 'Ironstone', 'Monument',
+      'Satin Black', 'Pearl White'
+  ];
+  res.json(productColour);
+});
 
 
 app.get('/reviews/:id', (req, res) => {
@@ -374,6 +386,67 @@ app.post('/add-product', (req, res) => {
     res.status(201).json({ message: 'Product added successfully', productId: result.insertId });
   });
 });
+
+
+app.post('/customise/send-email', upload.single('file'), async (req, res) => {
+    const { name, email, message } = req.body;
+    const filePath = req.file ? req.file.path : null;
+
+    const phpCode = `
+    <?php
+    use PHPMailer\\PHPMailer\\PHPMailer;
+    use PHPMailer\\PHPMailer\\Exception;
+
+    require 'vendor/autoload.php';
+
+    $mail = new PHPMailer(true);
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.example.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'your-email@example.com';
+        $mail->Password = 'your-email-password';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        $mail->setFrom('${email}', '${name}');
+        $mail->addAddress('vincesolitana9@gmail.com'); 
+
+        if (${filePath}) {
+            $mail->addAttachment('${filePath}', '${req.file.originalname}');
+        }
+
+        $mail->isHTML(true);
+        $mail->Subject = 'New Form Submission';
+        $mail->Body = 'Name: ${name}<br>Email: ${email}<br>Message: ${message}';
+        $mail->AltBody = 'Name: ${name}\nEmail: ${email}\nMessage: ${message}';
+
+        $mail->send();
+        echo 'Message has been sent';
+    } catch (Exception $e) {
+        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    }
+    ?>
+    `;
+
+    fs.writeFileSync('send_email.php', phpCode);
+
+    exec('php send_email.php', (error, stdout, stderr) => {
+        if (error) {
+            console.error(`exec error: ${error}`);
+            return res.status(500).send('Error sending email');
+        }
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+        res.send('Form submitted successfully');
+    });
+
+    if (filePath) {
+        fs.unlinkSync(filePath); // Delete the uploaded file after processing
+    }
+});
+
+
 
 app.listen(3001, () => {
   console.log('Server is running on port 3001');

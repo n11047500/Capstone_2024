@@ -15,6 +15,13 @@
   cursor: pointer;
 }
 
+/*
+.search-bar {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}*/
+
 .right-icons {
   display: flex;
   align-items: center;
@@ -34,6 +41,7 @@
   width: 80%;
   display: block;
   margin-left: auto;
+  justify-content: center;
 }
 
 .user-icon-container {
