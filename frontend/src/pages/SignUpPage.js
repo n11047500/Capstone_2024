@@ -1,13 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ReCAPTCHA from 'react-google-recaptcha';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './SignUpPage.css';
 
 const SignUpPage = () => {
   const navigate = useNavigate();
-  const recaptchaRef = useRef();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -61,28 +59,6 @@ const SignUpPage = () => {
     } catch (error) {
       console.error('Error creating user:', error);
       setError(error.message);
-    }
-
-    const token = recaptchaRef.current.getValue(); // Get reCAPTCHA token
-    if (!token) {
-        alert('Please verify you are not a robot.');
-        return;
-    }
-
-    // Prepare form data
-    formData.append('recaptchaToken', token);
-
-    // Send form data to your server
-    const response = await fetch('/submit-form', {
-        method: 'POST',
-        body: formData
-    });
-
-    const result = await response.json();
-    if (result.success) {
-        alert('Form submitted successfully!');
-    } else {
-        alert('Failed to submit form. Please try again.');
     }
   };
 
@@ -146,11 +122,6 @@ const SignUpPage = () => {
               value={formData.dateOfBirth}
               onChange={handleChange}
             />
-            <div className="captcha-signup-container">
-                  <ReCAPTCHA
-                  sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-                  ref={recaptchaRef}/>
-            </div>
             <button type="submit" className="signup-button">Sign Up</button>
           </form>
         </div>

@@ -1,5 +1,4 @@
-import React, {useState} from 'react';
-import ReCAPTCHA from 'react-google-recaptcha';
+import React from 'react';
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -9,39 +8,8 @@ import clock from "../assets/clock_img.png"
 import phone from "../assets/phone_img.png"
 import email from "../assets/email_img.png"
 
-const RECAPTCHA_SITE_KEY = process.env.RECAPTCHA_SITE_KEY;
 
 function ContactUs() {
-  const [recaptchaToken, setRecaptchaToken] = useState('');
-
-  function onChange(value) {
-    setRecaptchaToken(value);
-  }
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    const formData = new FormData(event.target);
-    formData.append('g-recaptcha-response', recaptchaToken);
-
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const result = await response.json();
-      if (result.success) {
-        alert(`Success: ${result.message}, Score: ${result.score}`);
-      } else {
-        alert(`Failure: ${result.message}, Errors: ${result.errorCodes}`);
-      }
-    } catch (error) {
-      alert('Error submitting the form. Please try again later.');
-      console.error('Error:', error);
-    }
-  };
-
 
     return (
       <div className="ContactUs">
@@ -79,8 +47,7 @@ function ContactUs() {
           target="_blank"
           action="https://formsubmit.co/ezeeplanterbox@gmail.com"
           method="POST"
-          class ="contact-form"
-          onSubmit={handleSubmit}> 
+          class ="contact-form"> 
             <table class="form-table">
                 <tr>
                     <td><label for="fname">First Name:</label><br/>
@@ -105,8 +72,6 @@ function ContactUs() {
                 </tr>
                 </table>
                 <div className="captcha-submit-container">
-                  <ReCAPTCHA
-                  sitekey = "6LfpyS4qAAAAACV-9rKjHiyxg9LR0FOr6nVUUu2j" onChange={onChange} />
                   <button type="submit" class="submit-button">Submit Form</button>
                 </div>
         </form>          
