@@ -7,27 +7,47 @@ const db = require('./database');
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.json()); 
+app.use(express.json());
 
 app.get('/', (req, res) => {
   res.send('Server is running.');
 });
 
+// Fetch all products or multiple products by IDs
 app.get('/products', (req, res) => {
-  db.query('SELECT * FROM products', (err, results) => {
-    if (err) {
-      console.error('Error fetching products:', err);
-      res.status(500).send(err);
-    } else {
+  const ids = req.query.ids ? req.query.ids.split(',') : [];
+
+  // If product IDs are provided, filter products by those IDs
+  if (ids.length > 0) {
+    const query = `
+      SELECT * FROM products WHERE Product_ID IN (${ids.map(() => '?').join(',')});
+    `;
+
+    db.query(query, ids, (err, results) => {
+      if (err) {
+        console.error('Error fetching products by IDs:', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
       res.json(results);
-    }
-  });
+    });
+  } else {
+    // If no IDs are provided, fetch all products
+    db.query('SELECT * FROM products', (err, results) => {
+      if (err) {
+        console.error('Error fetching all products:', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      res.json(results);
+    });
+  }
 });
 
+// Fetch specific product details
 app.get('/products/:id', (req, res) => {
   const productId = req.params.id;
 
-  // Query to get product details
   db.query('SELECT * FROM products WHERE Product_ID = ?', [productId], (err, productResults) => {
     if (err) {
       console.error('Database error:', err);
@@ -40,7 +60,6 @@ app.get('/products/:id', (req, res) => {
 
     const product = productResults[0];
 
-    // Query to get average rating and review count
     db.query(`
       SELECT AVG(rating) AS average_rating, COUNT(*) AS review_count
       FROM Reviews
@@ -54,7 +73,6 @@ app.get('/products/:id', (req, res) => {
       const averageRating = reviewsResults[0].average_rating || 0;
       const reviewCount = reviewsResults[0].review_count || 0;
 
-      // Combine product details with review metrics
       const productWithReviewInfo = {
         ...product,
         averageRating,
@@ -62,20 +80,14 @@ app.get('/products/:id', (req, res) => {
       };
 
       res.json(productWithReviewInfo);
-      console.log(productWithReviewInfo);
     });
   });
 });
 
-
-
-
-
+// Fetch reviews for a product
 app.get('/reviews/:id', (req, res) => {
   const productId = req.params.id;
-  console.log(`Received request for productId: ${productId}`); // Log the request
 
-  // Query to get reviews and first names
   db.query(`
     SELECT r.review_id, r.product_id, r.rating, r.comment, u.first_name
     FROM Reviews r
@@ -88,51 +100,14 @@ app.get('/reviews/:id', (req, res) => {
     }
 
     if (reviews.length === 0) {
-      console.log('No reviews found for productId:', productId); // Log when no reviews are found
       return res.status(404).json({ error: 'No reviews found for this product' });
     }
 
-    console.log('Reviews found:', reviews); // Log the reviews found
-
-    // Query to get ratings
-    db.query('SELECT rating FROM Reviews WHERE product_id = ?', [productId], (err, results) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).json({ error: 'Internal Server Error' });
-      }
-
-      const ratings = results.map(result => result.rating); // Extract all rating values
-      console.log('Fetched ratings for product:', ratings); // Log all the ratings for the product
-
-      // Query to count the total number of reviews
-      db.query('SELECT COUNT(*) AS review_count FROM Reviews WHERE product_id = ?', [productId], (err, countResults) => {
-        if (err) {
-          console.error('Database error:', err);
-          return res.status(500).json({ error: 'Internal Server Error' });
-        }
-
-        const reviewCount = countResults[0].review_count; // Get the review count from the result
-        console.log('Total review count for product:', reviewCount); // Log the review count
-
-        // Query to calculate the average rating
-        db.query('SELECT AVG(rating) AS average_rating FROM Reviews WHERE product_id = ?', [productId], (err, avgResults) => {
-          if (err) {
-            console.error('Database error:', err);
-            return res.status(500).json({ error: 'Internal Server Error' });
-          }
-
-          const averageRating = avgResults[0].average_rating || 0; // Get the average rating from the result
-          console.log('Average rating for product:', averageRating); // Log the average rating
-
-          // Send the reviews, ratings, review count, and average rating to the frontend
-          return res.json({ reviews, ratings, reviewCount, averageRating });
-        });
-      });
-    });
+    res.json(reviews);
   });
 });
 
-
+// Add a new review
 app.post('/reviews', (req, res) => {
   const { productId, rating, comment } = req.body;
 
@@ -140,7 +115,7 @@ app.post('/reviews', (req, res) => {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
-  const userId = req.session ? req.session.user_id : null; // Ensure req.session is defined
+  const userId = req.session ? req.session.user_id : null;
 
   const query = 'INSERT INTO Reviews (product_ID, user_ID, rating, comment) VALUES (?, ?, ?, ?)';
   const params = [productId, userId, rating, comment];
@@ -154,13 +129,9 @@ app.post('/reviews', (req, res) => {
   });
 });
 
-
-
-
-
+// Register a new user
 app.post('/register', (req, res) => {
   const { firstName, lastName, email, password, mobileNumber, dateOfBirth, role = 'customer' } = req.body;
-  console.log('Received registration data:', req.body);
 
   const checkQuery = 'SELECT * FROM users WHERE email = ?';
   db.query(checkQuery, [email], (err, results) => {
@@ -170,7 +141,6 @@ app.post('/register', (req, res) => {
     }
 
     if (results.length > 0) {
-      console.log('User already exists:', email);
       return res.status(400).json({ error: 'User already exists.' });
     }
 
@@ -193,9 +163,9 @@ app.post('/register', (req, res) => {
   });
 });
 
+// Login an existing user
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
-  console.log('Login attempt with email:', email);
 
   const query = 'SELECT * FROM users WHERE email = ?';
   db.query(query, [email], (err, results) => {
@@ -205,7 +175,6 @@ app.post('/login', (req, res) => {
     }
 
     if (results.length === 0) {
-      console.log('User not found:', email);
       return res.status(404).json({ error: 'User not found' });
     }
 
@@ -217,7 +186,6 @@ app.post('/login', (req, res) => {
       }
 
       if (!isMatch) {
-        console.log('Incorrect password for user:', email);
         return res.status(401).json({ error: 'Incorrect password' });
       }
 
@@ -230,9 +198,9 @@ app.post('/login', (req, res) => {
   });
 });
 
+// Fetch a user by email
 app.get('/user/:email', (req, res) => {
   const email = req.params.email;
-  console.log('Fetching user with email:', email);
 
   const userQuery = 'SELECT user_id, first_name, last_name, email, mobile_number, date_of_birth, role FROM users WHERE email = ?';
   const addressesQuery = 'SELECT type, address FROM addresses WHERE user_id = ?';
@@ -244,7 +212,6 @@ app.get('/user/:email', (req, res) => {
     }
 
     if (userResults.length === 0) {
-      console.log('User not found:', email);
       return res.status(404).json({ error: 'User not found' });
     }
 
@@ -274,10 +241,10 @@ app.get('/user/:email', (req, res) => {
   });
 });
 
+// Update a user's information
 app.put('/user/:email', (req, res) => {
   const email = req.params.email;
   const { firstName, lastName, mobileNumber, dateOfBirth, shippingAddress, billingAddress } = req.body;
-  console.log('Updating user with email:', email);
 
   const updateUserQuery = 'UPDATE users SET first_name = ?, last_name = ?, mobile_number = ?, date_of_birth = ? WHERE email = ?';
   const getUserIDQuery = 'SELECT user_id FROM users WHERE email = ?';
@@ -290,7 +257,6 @@ app.put('/user/:email', (req, res) => {
     }
 
     if (result.affectedRows === 0) {
-      console.log('User not found for update:', email);
       return res.status(404).json({ error: 'User not found.' });
     }
 
@@ -321,10 +287,9 @@ app.put('/user/:email', (req, res) => {
   });
 });
 
+// Update user role
 app.post('/update-role', (req, res) => {
   const { email, role } = req.body;
-
-  console.log('Received role update request:', { email, role });
 
   db.query('UPDATE users SET role = ? WHERE email = ?', [role, email], (err, result) => {
     if (err) {
@@ -340,6 +305,7 @@ app.post('/update-role', (req, res) => {
   });
 });
 
+// Add a new product
 app.post('/add-product', (req, res) => {
   const { name, price, quantity, description, dimensions, options, imageUrl } = req.body;
 
@@ -363,6 +329,7 @@ app.post('/add-product', (req, res) => {
   });
 });
 
+// Update a product
 app.put('/products/:id', (req, res) => {
   const productId = req.params.id;
   const { name, price, quantity, description, dimensions, options, imageUrl } = req.body;
@@ -390,7 +357,7 @@ app.put('/products/:id', (req, res) => {
   });
 });
 
-
+// Delete a product
 app.delete('/products/:id', (req, res) => {
   const productId = req.params.id;
 
@@ -408,6 +375,85 @@ app.delete('/products/:id', (req, res) => {
     res.status(200).json({ message: 'Product deleted successfully.' });
   });
 });
+
+// Fetch details of a specific order
+app.get('/orders/:id', (req, res) => {
+  const orderId = req.params.id;
+
+  const orderQuery = `
+    SELECT Order_ID, Customer_ID, Order_Date, Total_Amount, Product_IDs, First_Name, Last_Name, Mobile, Email, Street_Address, Order_Type, status
+    FROM orders
+    WHERE Order_ID = ?;
+  `;
+
+  db.query(orderQuery, [orderId], (err, orderResults) => {
+    if (err) {
+      console.error('Error fetching order details:', err);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+    if (orderResults.length === 0) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    const orderDetails = orderResults[0];
+
+    res.json(orderDetails);
+  });
+});
+
+// Fetch all orders or filter by status
+app.get('/orders', (req, res) => {
+  const status = req.query.status;
+
+  let orderQuery = `
+    SELECT Order_ID, Customer_ID, Order_Date, Total_Amount, Product_IDs, First_Name, Last_Name, Mobile, Email, Street_Address, Order_Type, status
+    FROM orders
+  `;
+
+  if (status) {
+    orderQuery += ` WHERE status = ?`;
+  }
+
+  db.query(orderQuery, [status], (err, orderResults) => {
+    if (err) {
+      console.error('Error fetching orders:', err);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+    res.json(orderResults);
+  });
+});
+
+// Update the status of an order
+app.put('/orders/:id', (req, res) => {
+  const orderId = req.params.id;
+  const { status } = req.body;
+
+  if (!status) {
+    return res.status(400).json({ error: 'Status is required' });
+  }
+
+  const updateOrderQuery = `
+    UPDATE orders
+    SET status = ?
+    WHERE Order_ID = ?;
+  `;
+
+  db.query(updateOrderQuery, [status, orderId], (err, result) => {
+    if (err) {
+      console.error('Error updating order status:', err);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    res.status(200).json({ message: 'Order status updated successfully.' });
+  });
+});
+
 
 app.listen(3001, () => {
   console.log('Server is running on port 3001');

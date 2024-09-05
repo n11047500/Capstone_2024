@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './UserProfile.css';
 import AddProduct from './AddProduct';
 import EditProduct from './EditProduct';
+import OrderManagement from './OrderManagement'; // Import the new OrderManagement component
 
 const EmployeeDashboard = () => {
   const [email, setEmail] = useState('');
@@ -19,7 +20,6 @@ const EmployeeDashboard = () => {
 
   const handleRoleUpdate = async (e) => {
     e.preventDefault();
-
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/update-role`, {
         method: 'POST',
@@ -56,7 +56,7 @@ const EmployeeDashboard = () => {
 
         if (response.ok) {
           setProducts(products.filter(product => product.Product_ID !== selectedProductId));
-          setSelectedProductId(''); // Reset the selected product
+          setSelectedProductId('');
           setMessage('Product deleted successfully.');
         } else {
           setMessage('Failed to delete product.');
@@ -75,8 +75,10 @@ const EmployeeDashboard = () => {
         <button onClick={() => toggleForm('editProduct')}>Edit Product</button>
         <button onClick={() => toggleForm('removeProduct')}>Remove Product</button>
         <button onClick={() => toggleForm('grantAccess')}>Grant Access to New User</button>
+        <button onClick={() => toggleForm('manageOrders')}>Manage Orders</button>
       </div>
 
+      {activeForm === 'manageOrders' && <OrderManagement setActiveForm={setActiveForm} />} {/* Use OrderManagement Component */}
       {activeForm === 'grantAccess' && (
         <form onSubmit={handleRoleUpdate} className="role-update-form">
           <label htmlFor="email">Enter user's email</label>

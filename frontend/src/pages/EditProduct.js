@@ -24,9 +24,8 @@ const EditProduct = ({ productId }) => {
       fetch(`${process.env.REACT_APP_API_URL}/products/${productId}`)
         .then(response => response.json())
         .then(data => {
-          const options = data.Product_Options || '';  // Default to empty string if null
+          const options = data.Product_Options || '';
 
-          // Handle Product_Dimensions safely
           const dimensions = data.Product_Dimensions ? data.Product_Dimensions.split(' x ') : ['', '', ''];
           const width = dimensions[0] ? dimensions[0].split('mm')[0] : '';
           const depth = dimensions[1] ? dimensions[1].split('mm')[0] : '';
@@ -63,6 +62,9 @@ const EditProduct = ({ productId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const confirmation = window.confirm('Are you sure you want to save these changes?');
+    if (!confirmation) return;
 
     const dimensions = `${formData.width}mm (width) x ${formData.depth}mm (depth) x ${formData.height}mm (height)`;
 
