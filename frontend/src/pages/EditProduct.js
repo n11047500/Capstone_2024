@@ -83,6 +83,9 @@ const EditProduct = ({ productId }) => {
 
       if (response.ok) {
         setMessage('Product updated successfully');
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       } else {
         const data = await response.json();
         setMessage(data.message || 'Failed to update product.');

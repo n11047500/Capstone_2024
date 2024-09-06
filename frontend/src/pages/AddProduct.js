@@ -60,6 +60,11 @@ const AddProduct = () => {
           imageUrl: ''
         });
         setImagePreview('');
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+        
       } else {
         setMessage(data.message || 'Failed to add product.');
       }

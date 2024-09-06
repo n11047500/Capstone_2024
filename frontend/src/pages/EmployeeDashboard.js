@@ -78,7 +78,7 @@ const EmployeeDashboard = () => {
         <button onClick={() => toggleForm('manageOrders')}>Manage Orders</button>
       </div>
 
-      {activeForm === 'manageOrders' && <OrderManagement setActiveForm={setActiveForm} />} {/* Use OrderManagement Component */}
+      {activeForm === 'manageOrders' && <OrderManagement setActiveForm={setActiveForm} />}
       {activeForm === 'grantAccess' && (
         <form onSubmit={handleRoleUpdate} className="role-update-form">
           <label htmlFor="email">Enter user's email</label>
