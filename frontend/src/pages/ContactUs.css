@@ -125,6 +125,18 @@ body, html {
     font-size: 1vw;
   }
 
+  .captcha-submit-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px; /* Adjust the spacing between reCAPTCHA and the button as needed */
+    margin-top: 20px; /* Optional: Adds space above the container */
+    float: right;
+  }
+
+  .captcha-submit-container iframe {
+    width: 100% !important; 
+  }
 
  .submit-button{
     background-color: #20c146;
@@ -199,6 +211,10 @@ body, html {
     .contact-form {
     font-size: 3vw;
     width: 100%;
+    }
+
+    .captcha-submit-container {
+      max-width: 100%; /* Ensure full width on smaller screens */
     }
 
     input[type=text], select {

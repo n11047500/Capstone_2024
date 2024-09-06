@@ -50,6 +50,7 @@ main {
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-bottom: 20px;
+  box-sizing: border-box; /* Ensures padding is included within the width */
 }
 
 .signup-container .signup-button {
@@ -72,4 +73,60 @@ main {
 .signup-container .error-message {
   color: red;
   margin-top: 10px;
+}
+
+.captcha-signup-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* Media Queries for Better Scaling */
+@media (max-width: 768px) {
+  .signup-container {
+    padding: 30px;
+    max-width: 350px;
+  }
+
+  .signup-container h1 {
+    font-size: 22px;
+  }
+
+  .signup-container input[type="text"],
+  .signup-container input[type="email"],
+  .signup-container input[type="password"],
+  .signup-container input[type="date"] {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .signup-container .signup-button {
+    padding: 12px;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .signup-container {
+    padding: 20px;
+    max-width: 300px;
+  }
+
+  .signup-container h1 {
+    font-size: 20px;
+  }
+
+  .signup-container input[type="text"],
+  .signup-container input[type="email"],
+  .signup-container input[type="password"],
+  .signup-container input[type="date"] {
+    font-size: 14px;
+    padding: 6px;
+  }
+
+  .signup-container .signup-button {
+    padding: 10px;
+    font-size: 16px;
+  }
 }

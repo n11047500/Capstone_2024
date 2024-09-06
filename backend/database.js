@@ -1,14 +1,9 @@
 const mysql = require('mysql');
 
-const connection = mysql.createConnection({
-  host: process.env.DB_HOST || 'sql12.freesqldatabase.com',
-  user: process.env.DB_USER || 'sql12706499',
-  password: process.env.DB_PASSWORD || 'TApP5UqBDM',
-  database: process.env.DB_NAME || 'sql12706499'
-});
+let connection;
 
 function handleDisconnect() {
-  connection == mysql.createConnection({
+  connection = mysql.createConnection({
     host: process.env.DB_HOST || 'sql12.freesqldatabase.com',
     user: process.env.DB_USER || 'sql12706499',
     password: process.env.DB_PASSWORD || 'TApP5UqBDM',
@@ -26,10 +21,11 @@ function handleDisconnect() {
 
   connection.on('error', (err) => {
     console.error('Database error:', err);
-    if (err.code === 'PROTOCOL_CONNECTION_LOST' || err.code === 'ECONNRESET') {
-      handleDisconnect(); // Reconnect on connection loss
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+      console.error('Database connection lost. Reconnecting...');
+      handleDisconnect(); // Reconnect on connection lost
     } else {
-      throw err;
+      throw err; // Re-throw other errors
     }
   });
 }
