@@ -50,11 +50,10 @@ const OrderManagement = ({ setActiveForm }) => {
   const handleOrderStatusChange = (orderId, newStatus) => {
     const confirmation = window.confirm('Are you sure you want to mark this order as completed?');
     if (!confirmation) return;
-  
+
     if (selectedOrder.Order_Type === 'Delivery') {
-      const trackingNumber = window.prompt('Enter the tracking number for this delivery:');
-      if (!trackingNumber) return;
-  
+      const trackingNumber = window.prompt('Enter the tracking number for this delivery (leave blank if no tracking number is available):');
+
       const productDetailsTable = selectedOrder.products
         .map(
           (product) =>
@@ -69,48 +68,86 @@ const OrderManagement = ({ setActiveForm }) => {
             </tr>`
         )
         .join('');
-  
-      const message = `
-  <html>
-  <body>
-    <p>Dear ${selectedOrder.First_Name},</p>
-    <p>We are excited to let you know that your order has been shipped!</p>
-    
-    <h4>Order Details:</h4>
-    <p><strong>Order ID:</strong> ${selectedOrder.Order_ID}</p>
-    <p><strong>Order Date:</strong> ${formatDate(selectedOrder.Order_Date)}</p>
-    <p><strong>Total Amount:</strong> $${selectedOrder.Total_Amount.toFixed(2)}</p>
-  
-    <h4>Products Ordered:</h4>
-    <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
-      <thead>
-        <tr>
-          <th style="padding: 8px; border: 1px solid #ddd;">Image</th>
-          <th style="padding: 8px; border: 1px solid #ddd;">Product Name</th>
-          <th style="padding: 8px; border: 1px solid #ddd;">Option</th>
-          <th style="padding: 8px; border: 1px solid #ddd;">Quantity</th>
-          <th style="padding: 8px; border: 1px solid #ddd;">Price</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${productDetailsTable}
-      </tbody>
-    </table>
-  
-    <p>Your tracking details are as follows:</p>
-    <p><strong>Tracking Number:</strong> ${trackingNumber}</p>
-  
-    <p>You can track your order using the tracking number provided through the carrier's website.</p>
-    <p>If you have any questions or need further assistance, please don't hesitate to contact our customer support team.</p>
-  
-    <p>Thank you for choosing EZee Planter Boxes!</p>
-  
-    <p>Best regards,</p>
-    <p><strong>EZee Planter Boxes</strong><br>Customer Support Team</p>
-  </body>
-  </html>
-  `;
-  
+
+      const message = trackingNumber
+        ? `
+      <html>
+      <body>
+        <p>Dear ${selectedOrder.First_Name},</p>
+        <p>We are excited to let you know that your order has been shipped!</p>
+        
+        <h4>Order Details:</h4>
+        <p><strong>Order ID:</strong> ${selectedOrder.Order_ID}</p>
+        <p><strong>Order Date:</strong> ${formatDate(selectedOrder.Order_Date)}</p>
+        <p><strong>Total Amount:</strong> $${selectedOrder.Total_Amount.toFixed(2)}</p>
+      
+        <h4>Products Ordered:</h4>
+        <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+          <thead>
+            <tr>
+              <th style="padding: 8px; border: 1px solid #ddd;">Image</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Product Name</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Option</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Quantity</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${productDetailsTable}
+          </tbody>
+        </table>
+      
+        <p>Your tracking details are as follows:</p>
+        <p><strong>Tracking Number:</strong> ${trackingNumber}</p>
+      
+        <p>You can track your order using the tracking number provided through the carrier's website.</p>
+        <p>If you have any questions or need further assistance, please don't hesitate to contact our customer support team.</p>
+      
+        <p>Thank you for choosing EZee Planter Boxes!</p>
+      
+        <p>Best regards,</p>
+        <p><strong>EZee Planter Boxes</strong><br>Customer Support Team</p>
+      </body>
+      </html>
+      `
+        : `
+      <html>
+      <body>
+        <p>Dear ${selectedOrder.First_Name},</p>
+        <p>We are excited to let you know that your order has been shipped!</p>
+        
+        <h4>Order Details:</h4>
+        <p><strong>Order ID:</strong> ${selectedOrder.Order_ID}</p>
+        <p><strong>Order Date:</strong> ${formatDate(selectedOrder.Order_Date)}</p>
+        <p><strong>Total Amount:</strong> $${selectedOrder.Total_Amount.toFixed(2)}</p>
+      
+        <h4>Products Ordered:</h4>
+        <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+          <thead>
+            <tr>
+              <th style="padding: 8px; border: 1px solid #ddd;">Image</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Product Name</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Option</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Quantity</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${productDetailsTable}
+          </tbody>
+        </table>
+      
+        <p>Your order will be delivered in 2-7 business days.</p>
+        <p>If you have any questions or need further assistance, please don't hesitate to contact our customer support team.</p>
+      
+        <p>Thank you for choosing EZee Planter Boxes!</p>
+      
+        <p>Best regards,</p>
+        <p><strong>EZee Planter Boxes</strong><br>Customer Support Team</p>
+      </body>
+      </html>
+      `;
+
       sendEmail(selectedOrder.Email, 'Your Order is on the Way!', message);
     } else if (selectedOrder.Order_Type === 'Click and Collect') {
       const productDetailsTable = selectedOrder.products
@@ -127,54 +164,51 @@ const OrderManagement = ({ setActiveForm }) => {
             </tr>`
         )
         .join('');
-  
+
       const message = `
-  <html>
-  <body>
-    <p>Dear ${selectedOrder.First_Name},</p>
-    <p>We are pleased to inform you that your order is now ready for collection!</p>
-    
-    <h4>Order Details:</h4>
-    <p><strong>Order ID:</strong> ${selectedOrder.Order_ID}</p>
-    <p><strong>Order Date:</strong> ${formatDate(selectedOrder.Order_Date)}</p>
-    <p><strong>Total Amount:</strong> $${selectedOrder.Total_Amount.toFixed(2)}</p>
-  
-    <h4>Products Ordered:</h4>
-    <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
-      <thead>
-        <tr>
-          <th style="padding: 8px; border: 1px solid #ddd;">Image</th>
-          <th style="padding: 8px; border: 1px solid #ddd;">Product Name</th>
-          <th style="padding: 8px; border: 1px solid #ddd;">Option</th>
-          <th style="padding: 8px; border: 1px solid #ddd;">Quantity</th>
-          <th style="padding: 8px; border: 1px solid #ddd;">Price</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${productDetailsTable}
-      </tbody>
-    </table>
-  
-    <p>Please visit our store at your earliest convenience to pick up your order.</p>
-  
-    <p><strong>Store Address:</strong></p>
-    <p>21 Huntington Street,</p>
-    <p>Clontarf QLD 4019</p>
-    <p><strong>Phone:</strong> 07 3248 8180</p>
-  
-    <p>If you have any questions or need further assistance, please do not hesitate to contact us.</p>
-  
-    <p>Thank you for choosing EZee Planter Boxes!</p>
-  
-    <p>Best regards,</p>
-    <p><strong>EZee Planter Boxes</strong><br>Customer Support Team</p>
-  </body>
-  </html>
-  `;
-  
+      <html>
+      <body>
+        <p>Dear ${selectedOrder.First_Name},</p>
+        <p>We are pleased to inform you that your order is now ready for collection!</p>
+        
+        <h4>Order Details:</h4>
+        <p><strong>Order ID:</strong> ${selectedOrder.Order_ID}</p>
+        <p><strong>Order Date:</strong> ${formatDate(selectedOrder.Order_Date)}</p>
+        <p><strong>Total Amount:</strong> $${selectedOrder.Total_Amount.toFixed(2)}</p>
+      
+        <h4>Products Ordered:</h4>
+        <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+          <thead>
+            <tr>
+              <th style="padding: 8px; border: 1px solid #ddd;">Image</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Product Name</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Option</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Quantity</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${productDetailsTable}
+          </tbody>
+        </table>
+      
+        <p>Please visit our store to pick it up at your earliest convenience.</p>
+      
+        <p>Store Address:</p>
+        <p>21 Huntington Street, Clontarf QLD 4019</p>
+        <p>Phone: 07 3248 8180</p>
+      
+        <p>If you have any questions, please do not hesitate to contact us.</p>
+      
+        <p>Best regards,</p>
+        <p><strong>EZee Planter Boxes</strong><br>Customer Support Team</p>
+      </body>
+      </html>
+      `;
+
       sendEmail(selectedOrder.Email, 'Your Order is Ready for Collection!', message);
     }
-  
+
     // Update order status
     fetch(`${process.env.REACT_APP_API_URL}/orders/${orderId}`, {
       method: 'PUT',
@@ -198,13 +232,13 @@ const OrderManagement = ({ setActiveForm }) => {
         console.error('Error updating order status:', error);
         setError('Failed to update order status. Please try again later.');
       });
-  };  
+  };
 
-  const sendEmail = (to, subject, message) => {
+  const sendEmail = (to, subject, html) => {
     fetch(`${process.env.REACT_APP_API_URL}/send-email`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ to, subject, html: message }),
+      body: JSON.stringify({ to, subject, html }),
     })
       .then(response => {
         if (response.ok) {
