@@ -7,6 +7,7 @@ import './Browse.css';
 function Browse() {
   const [products, setProducts] = useState([]);
   const [sortType, setSortType] = useState('');
+  const defaultImage = 'https://res.cloudinary.com/dakwlrcqr/image/upload/v1725604960/HicksProductDefault_op2oce.gif';
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/products`)
@@ -53,7 +54,7 @@ function Browse() {
             productId={product.Product_ID}
             title={product.Product_Name}
             price={`$${product.Product_Price}`}
-            image={product.Product_Image_URL}  // Directly use the image URL from the database
+            image={product.Product_Image_URL || defaultImage}
             className="browse-product-card"
           />
         ))}
