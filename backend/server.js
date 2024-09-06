@@ -335,15 +335,13 @@ app.post('/add-product', (req, res) => {
 app.put('/products/:id', (req, res) => {
   const productId = req.params.id;
   const { name, price, quantity, description, dimensions, options, imageUrl } = req.body;
-
-  const optionsString = Array.isArray(options) ? options.join(', ') : '';
-
+  
   const query = `
     UPDATE products
     SET Product_Name = ?, Product_Price = ?, Quantity_Available = ?, Description = ?, Product_Dimensions = ?, Product_Options = ?, Product_Image_URL = ?
     WHERE Product_ID = ?
   `;
-  const values = [name, price, quantity, description, dimensions, optionsString, imageUrl, productId];
+  const values = [name, price, quantity, description, dimensions, options, imageUrl, productId];
 
   db.query(query, values, (err, result) => {
     if (err) {
