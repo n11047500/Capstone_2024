@@ -513,6 +513,39 @@ app.post('/send-email', (req, res) => {
   });
 });
 
+// Contact us email sending function
+app.post('/send-contact-email', (req, res) => {
+  const { first_name, last_name, email, mobile, inquiry } = req.body;
+
+  const transporter = nodemailer.createTransport({
+    service: 'Outlook365',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: 'joyalvincentofficial@gmail.com',
+    subject: 'New Contact Us Inquiry',
+    html: ` Hi Team, <br><br> You have received a new inquiry from the contact form on your website. Here are the details:<br><br>
+    <p><strong>Name:</strong> ${first_name} ${last_name}</p>
+    <p><strong>Email:</strong> ${email}</p>
+    <p><strong>Mobile:</strong> ${mobile}</p>
+    <p><strong>Inquiry:</strong> ${inquiry}</p><br><br>
+    <p>Thank you</p>`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending email:', error);
+      return res.status(500).json({ message: 'Error sending email' });
+    }
+    res.status(200).json({ message: 'Email sent successfully!' });
+  });
+});
+
 app.listen(3001, () => {
   console.log('Server is running on port 3001');
 });
