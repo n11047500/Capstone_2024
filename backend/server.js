@@ -4,12 +4,15 @@ const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const db = require('./database');
 const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
+
+const JWT_SECRET = process.env.JWT_SECRET || 'WAj7ghe50CFjv8MZ2Jgpct1Ok+GjpkviZNT1j3cs5AX3bKwFyLvD0GR8J6F6kR7czZaXsJCRKkr/+Eq2qKz3Dw==';
 
 app.get('/', (req, res) => {
   res.send('Server is running.');
@@ -191,8 +194,8 @@ app.post('/login', (req, res) => {
         return res.status(401).json({ error: 'Incorrect password' });
       }
 
-      res.status(200).json({ 
-        message: 'Login successful', 
+      res.status(200).json({
+        message: 'Login successful',
         email: user.email,
         role: user.role
       });
@@ -307,6 +310,100 @@ app.post('/update-role', (req, res) => {
   });
 });
 
+// Forgot password
+app.post('/forgot-password', (req, res) => {
+  const { email } = req.body;
+
+  // Check if the email exists in the database
+  const query = 'SELECT * FROM users WHERE email = ?';
+  db.query(query, [email], (err, results) => {
+    if (err) {
+      console.error('Error fetching user from database:', err);
+      return res.status(500).json({ error: 'An error occurred. Please try again.' });
+    }
+
+    // If no user is found with the given email
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const user = results[0];
+
+
+    // Create a reset token
+    const resetToken = jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: '1h' });
+
+    // Send email with reset link
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Password Reset Request',
+      text: `Click the link to reset your password: ${resetLink}`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+        return res.status(500).json({ message: 'Error sending email.' });
+      }
+
+      console.log('Password reset email sent:', info.response);
+      return res.json({ message: 'Password reset link sent to your email.' });
+    });
+  });
+});
+
+// Reset password
+app.post('/reset-password/:token', (req, res) => {
+  const { token } = req.params;
+  const { newPassword } = req.body;
+
+  // Verify the reset token
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const email = decoded.email;
+
+    // Check if the email exists in the database
+    const query = 'SELECT * FROM users WHERE email = ?';
+    db.query(query, [email], (err, results) => {
+      if (err) {
+        console.error('Error fetching user from database:', err);
+        return res.status(500).json({ error: 'An error occurred. Please try again.' });
+      }
+
+      // If no user is found with the given email
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
+
+      const user = results[0];
+
+      // Hash the new password
+      bcrypt.hash(newPassword, 10, (err, hashedPassword) => {
+        if (err) {
+          console.error('Error hashing password:', err);
+          return res.status(500).json({ message: 'Error hashing password.' });
+        }
+
+        // Update user password in the database
+        const updateQuery = 'UPDATE users SET password = ? WHERE email = ?';
+        db.query(updateQuery, [hashedPassword, email], (updateErr, updateResults) => {
+          if (updateErr) {
+            console.error('Error updating password in database:', updateErr);
+            return res.status(500).json({ error: 'An error occurred while updating the password.' });
+          }
+
+          return res.json({ message: 'Password has been reset successfully.' });
+        });
+      });
+    });
+  } catch (error) {
+    console.error('Invalid or expired token:', error);
+    return res.status(400).json({ message: 'Invalid or expired token.' });
+  }
+});
+
 // Add a new product
 app.post('/add-product', (req, res) => {
   const { name, price, quantity, description, dimensions, options, imageUrl } = req.body;
@@ -335,7 +432,7 @@ app.post('/add-product', (req, res) => {
 app.put('/products/:id', (req, res) => {
   const productId = req.params.id;
   const { name, price, quantity, description, dimensions, options, imageUrl } = req.body;
-  
+
   const query = `
     UPDATE products
     SET Product_Name = ?, Product_Price = ?, Quantity_Available = ?, Description = ?, Product_Dimensions = ?, Product_Options = ?, Product_Image_URL = ?
@@ -380,7 +477,7 @@ app.delete('/products/:id', (req, res) => {
 app.get('/orders/:id', (req, res) => {
   const orderId = req.params.id;
 
-// Query to fetch order details
+  // Query to fetch order details
   const orderQuery = `
     SELECT Order_ID, Total_Amount, Product_IDs, First_Name, Last_Name, Mobile, Email, Street_Address, Order_Type, status, created_at AS Order_Date
     FROM orders

@@ -80,8 +80,8 @@ const EmployeeDashboard = () => {
 
       {activeForm === 'manageOrders' && <OrderManagement setActiveForm={setActiveForm} />}
       {activeForm === 'grantAccess' && (
-        <form onSubmit={handleRoleUpdate} className="role-update-form">
-          <label htmlFor="email">Enter user's email</label>
+        <form onSubmit={handleRoleUpdate} className="add-product-form">
+          <label htmlFor="email" style={{ textAlign: 'center', color: '#333', marginBottom: '20px', fontSize: '24px', fontWeight: '600' }}>Enter user's email</label>
           <input
             type="email"
             id="email"

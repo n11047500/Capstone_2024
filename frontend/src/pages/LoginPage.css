@@ -88,6 +88,22 @@ main {
   text-decoration: underline;
 }
 
+.login-container .forgot-link {
+  font-size: 14px;
+  margin-top: 0px;
+  margin-bottom: 20px;
+}
+
+.login-container .forgot-link a {
+  color: blue;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.login-container .forgot-link a:hover {
+  text-decoration: underline;
+}
+
 /* Media Queries for Better Scaling */
 @media (max-width: 768px) {
   .login-container {
