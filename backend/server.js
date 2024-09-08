@@ -604,7 +604,7 @@ app.post('/api/orders', async (req, res) => {
     // Insert order into the database
     const insertQuery = `
       INSERT INTO orders (Total_Amount, Product_IDs, First_Name, Last_Name, Mobile, Email, Street_Address, Order_Type, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Completed')
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending')
     `;
     const params = [amount, productIds, firstName, lastName, mobile, email, streetAddress, orderType];
 
