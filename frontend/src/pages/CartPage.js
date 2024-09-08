@@ -13,6 +13,11 @@ const CartPage = () => {
     return cart.reduce((total, item) => total + item.Product_Price * item.quantity, 0).toFixed(2);
   };
 
+  const handleCheckout = () => {
+    // Navigate to the custom checkout page
+    navigate('/checkout');
+  };
+
   const handleContinueShopping = () => {
     navigate('/browse');
   };
@@ -74,7 +79,7 @@ const CartPage = () => {
         </div>
         <div className="cart-actions">
           <button className="continue-shopping-button" onClick={handleContinueShopping}>Continue Shopping</button>
-          <button className="checkout-button">Checkout</button>
+          <button className="checkout-button" onClick={handleCheckout}>Checkout</button>
         </div>
       </div>
       <Footer />

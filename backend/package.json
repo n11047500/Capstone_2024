@@ -19,7 +19,8 @@
     "express": "^4.19.2",
     "mysql": "^2.18.1",
     "mysql2": "^3.9.7",
-    "nodemailer": "^6.9.15"
+    "nodemailer": "^6.9.15",
+    "stripe": "^16.10.0"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

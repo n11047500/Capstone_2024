@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const db = require('./database');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 app.use(cors());
@@ -545,6 +546,81 @@ app.post('/send-contact-email', (req, res) => {
     res.status(200).json({ message: 'Email sent successfully!' });
   });
 });
+
+app.post('/create-checkout-session', async (req, res) => {
+  const { items } = req.body;
+
+  try {
+    const lineItems = items.map(item => ({
+      price_data: {
+        currency: 'aud',
+        product_data: {
+          name: item.Product_Name,
+          images: [item.Product_Image_URL],
+        },
+        unit_amount: item.Product_Price * 100, // Stripe expects amounts in cents
+      },
+      quantity: item.quantity,
+    }));
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: lineItems,
+      mode: 'payment',
+      success_url: `${req.headers.origin}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.origin}/cart`,
+    });
+
+    res.json({ id: session.id });
+  } catch (error) {
+    console.error('Error creating checkout session:', error);
+    res.status(500).json({ error: 'Failed to create checkout session' });
+  }
+});
+
+// Endpoint to handle order creation
+app.post('/api/orders', async (req, res) => {
+  const { paymentMethodId, orderDetails } = req.body;
+
+  try {
+    // Here, assume you have already validated the order details on the client side
+    const { firstName, lastName, mobile, email, streetAddress, productIds, orderType, totalAmount } = orderDetails;
+
+    // Ensure totalAmount is a valid number
+    const amount = parseFloat(totalAmount);
+    if (isNaN(amount) || amount <= 0) {
+      throw new Error('Invalid total amount');
+    }
+
+    // Create a payment intent with a return_url
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // Convert to cents and round to ensure it is an integer
+      currency: 'aud', // Ensure your currency matches
+      payment_method: paymentMethodId,
+      confirm: true, // Automatically confirm the payment
+      return_url: `${req.headers.origin}/order-confirmation`, // Add return URL for redirect-based payment methods
+    });
+
+    // Insert order into the database
+    const insertQuery = `
+      INSERT INTO orders (Total_Amount, Product_IDs, First_Name, Last_Name, Mobile, Email, Street_Address, Order_Type, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Completed')
+    `;
+    const params = [amount, productIds, firstName, lastName, mobile, email, streetAddress, orderType];
+
+    db.query(insertQuery, params, (err, results) => {
+      if (err) {
+        console.error('Database error:', err);
+        return res.status(500).send('Failed to save order.');
+      }
+      res.status(200).json({ message: 'Order saved successfully.' });
+    });
+  } catch (err) {
+    console.error('Error processing order:', err);
+    res.status(500).send('Error processing payment or saving order.');
+  }
+});
+
 
 app.listen(3001, () => {
   console.log('Server is running on port 3001');
