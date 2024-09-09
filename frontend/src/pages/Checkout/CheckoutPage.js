@@ -10,7 +10,7 @@ import PaymentForm from './PaymentForm';
 import { CartContext } from '../../context/CartContext';
 import './CheckoutPage.css';
 
-// Initialize Stripe with your publishable key
+// Initialize Stripe with publishable key
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 const CheckoutPage = () => {
