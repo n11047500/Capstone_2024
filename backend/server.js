@@ -547,41 +547,10 @@ app.post('/send-contact-email', (req, res) => {
   });
 });
 
-app.post('/create-checkout-session', async (req, res) => {
-  const { items } = req.body;
 
-  try {
-    const lineItems = items.map(item => ({
-      price_data: {
-        currency: 'aud',
-        product_data: {
-          name: item.Product_Name,
-          images: [item.Product_Image_URL],
-        },
-        unit_amount: item.Product_Price * 100, // Stripe expects amounts in cents
-      },
-      quantity: item.quantity,
-    }));
-
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: lineItems,
-      mode: 'payment',
-      success_url: `${req.headers.origin}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.origin}/cart`,
-    });
-
-    res.json({ id: session.id });
-  } catch (error) {
-    console.error('Error creating checkout session:', error);
-    res.status(500).json({ error: 'Failed to create checkout session' });
-  }
-});
-
-// Endpoint to handle order creation
-app.post('/api/orders', (req, res) => {
+app.post('/api/orders', async (req, res) => {
   console.log('Incoming request body:', req.body);
-  const { firstName, lastName, email, phone, streetAddress, orderType, productIds, totalAmount } = req.body;
+  const { firstName, lastName, email, phone, streetAddress, orderType, productIds, totalAmount, paymentMethodId } = req.body;
   const currentDateTime = new Date();
 
   // Validate the incoming data
@@ -589,22 +558,48 @@ app.post('/api/orders', (req, res) => {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  // Format the product IDs for insertion into the database
-  const productIdsString = productIds.join(',');
+  try {
+    // Create a PaymentIntent with the payment method ID
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(totalAmount * 100), // Convert to cents
+      currency: 'aud',
+      payment_method: paymentMethodId,
+      confirmation_method: 'manual',
+      confirm: true, // Automatically confirm the PaymentIntent after creation
+      return_url: `${req.headers.origin}/order-confirmation`,
+    });
 
-    const query = `
-    INSERT INTO orders (First_Name, Last_Name, Email, Mobile, Street_Address, Order_Type, Product_IDs, Total_Amount, status, created_at) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?)
-  `;
+    console.log('PaymentIntent created:', paymentIntent);
 
-  db.query(query, [firstName, lastName, email, phone, streetAddress, orderType, productIdsString, totalAmount, currentDateTime], (err, result) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ error: 'Failed to create order' });
+    // Always send the client_secret back to the frontend
+    if (paymentIntent.status === 'succeeded') {
+      const productIdsString = productIds.join(',');
+
+      const query = `
+        INSERT INTO orders (First_Name, Last_Name, Email, Mobile, Street_Address, Order_Type, Product_IDs, Total_Amount, status, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?)
+      `;
+
+      db.query(query, [firstName, lastName, email, phone, streetAddress, orderType, productIdsString, totalAmount, currentDateTime], (err, result) => {
+        if (err) {
+          console.error('Database error:', err);
+          return res.status(500).json({ error: 'Failed to create order' });
+        }
+
+        res.json({ 
+          id: result.insertId, 
+          client_secret: paymentIntent.client_secret // Send client_secret even if payment succeeded
+        });
+      });
+    } else if (paymentIntent.status === 'requires_action' || paymentIntent.status === 'requires_source_action') {
+      res.json({ client_secret: paymentIntent.client_secret });
+    } else {
+      res.status(400).json({ error: 'Payment requires further action or failed.' });
     }
-
-    res.json({ id: result.insertId });
-  });
+  } catch (error) {
+    console.error('Error processing payment:', error);
+    res.status(500).json({ error: 'Failed to process payment' });
+  }
 });
 
 

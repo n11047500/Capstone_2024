@@ -1,4 +1,3 @@
-// OrderConfirmationPage.js
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
@@ -9,28 +8,35 @@ const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 const OrderConfirmationPage = () => {
   const [status, setStatus] = useState('loading');
-  const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams(); // Correct usage to get query parameters
 
   useEffect(() => {
     const checkPaymentStatus = async () => {
-      const sessionId = searchParams.get('session_id');
-      if (!sessionId) {
+      const clientSecret = searchParams.get('client_secret'); // Correctly get the client_secret parameter
+      if (!clientSecret || !clientSecret.includes('_secret_')) { // Check for the correct client_secret format
         setStatus('error');
         return;
       }
 
-      const stripe = await stripePromise;
-      const { paymentIntent } = await stripe.retrievePaymentIntent(sessionId);
+      try {
+        const stripe = await stripePromise;
+        const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret); // Correct Stripe method
 
-      if (paymentIntent) {
-        setStatus(paymentIntent.status === 'succeeded' ? 'success' : 'failed');
-      } else {
+        if (paymentIntent && paymentIntent.status === 'succeeded') {
+          setStatus('success');
+        } else if (paymentIntent && paymentIntent.status === 'requires_payment_method') {
+          setStatus('failed');
+        } else {
+          setStatus('error');
+        }
+      } catch (error) {
+        console.error('Error retrieving payment status:', error);
         setStatus('error');
       }
     };
 
     checkPaymentStatus();
-  }, [searchParams]);
+  }, [searchParams]); // Ensure searchParams is in the dependency array
 
   return (
     <>

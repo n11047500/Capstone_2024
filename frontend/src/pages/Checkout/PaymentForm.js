@@ -37,13 +37,11 @@ const PaymentForm = ({ data, onBack, onChange }) => {
       if (!totalAmount || isNaN(totalAmount) || totalAmount <= 0) {
         throw new Error('Invalid total amount');
       }
-      
-      // Construct the productIds array with repetition based on quantity
-      const productIds = data.cart.flatMap (item =>
-        Array(item.quantity).fill(`${item.Product_ID}:${item.selectedOption || ''}`).filter(Boolean)
-      )
   
-      // Prepare the data object for the API call
+      const productIds = data.cart.flatMap(item =>
+        Array(item.quantity).fill(`${item.Product_ID}:${item.selectedOption || ''}`).filter(Boolean)
+      );
+  
       const orderDetails = {
         firstName: data.personalInfo.firstName,
         lastName: data.personalInfo.lastName,
@@ -53,23 +51,33 @@ const PaymentForm = ({ data, onBack, onChange }) => {
         orderType: data.shippingMethod.shippingOption,
         productIds,
         totalAmount: data.totalAmount,
+        paymentMethodId: paymentMethod.id,
       };
   
-      // Log the data being sent to check for missing fields
       console.log('Order details being sent:', orderDetails);
   
       const response = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          paymentMethodId: paymentMethod.id,
-          ...orderDetails, // Spread the order details here to ensure all fields are included
-        }),
+        body: JSON.stringify(orderDetails),
       });
   
-      if (response.ok) {
+      const responseData = await response.json();
+      console.log('Backend response:', responseData); // Log the backend response
+  
+      if (response.ok && responseData.client_secret) {
         console.log('Order saved successfully.');
-        navigate('/order-confirmation'); // Redirect to order confirmation on success
+        navigate('/order-confirmation?client_secret=' + responseData.client_secret);
+      } else if (responseData.client_secret) {
+        // Handle further action required for 3D Secure or similar
+        const { error: confirmError } = await stripe.confirmCardPayment(responseData.client_secret);
+        if (confirmError) {
+          console.error('Failed to confirm payment:', confirmError.message);
+          alert('Failed to confirm payment.');
+        } else {
+          console.log('Payment confirmed successfully.');
+          navigate('/order-confirmation?client_secret=' + responseData.client_secret);
+        }
       } else {
         const errorMessage = await response.text();
         console.error('Failed to save order:', errorMessage);
