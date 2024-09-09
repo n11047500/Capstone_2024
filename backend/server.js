@@ -6,6 +6,7 @@ const db = require('./database');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 app.use(cors());
@@ -609,6 +610,153 @@ app.post('/send-email', (req, res) => {
     res.status(200).json({ message: 'Email sent successfully' });
   });
 });
+
+// Contact us email sending function
+app.post('/send-contact-email', (req, res) => {
+  const { first_name, last_name, email, mobile, inquiry } = req.body;
+
+  const transporter = nodemailer.createTransport({
+    service: 'Outlook365',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: 'joyalvincentofficial@gmail.com',
+    subject: 'New Contact Us Inquiry',
+    html: ` Hi Team, <br><br> You have received a new inquiry from the contact form on your website. Here are the details:<br><br>
+    <p><strong>Name:</strong> ${first_name} ${last_name}</p>
+    <p><strong>Email:</strong> ${email}</p>
+    <p><strong>Mobile:</strong> ${mobile}</p>
+    <p><strong>Inquiry:</strong> ${inquiry}</p><br><br>
+    <p>Thank you</p>`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending email:', error);
+      return res.status(500).json({ message: 'Error sending email' });
+    }
+    res.status(200).json({ message: 'Email sent successfully!' });
+  });
+});
+
+// Payment processing and order creation
+app.post('/api/orders', async (req, res) => {
+  const { firstName, lastName, email, phone, streetAddress, orderType, productIds, totalAmount, paymentMethodId } = req.body;
+  const currentDateTime = new Date();
+
+  if (!firstName || !lastName || !email || !phone || !streetAddress || !orderType || !productIds || totalAmount === undefined) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(totalAmount * 100), // Convert to cents
+      currency: 'aud',
+      payment_method: paymentMethodId,
+      confirmation_method: 'manual',
+      confirm: true,
+      return_url: `${req.headers.origin}/order-confirmation`,
+    });
+
+    if (paymentIntent.status === 'succeeded') {
+      const productIdsString = productIds.join(',');
+      const clientSecret = paymentIntent.client_secret; // Get the client_secret
+
+      const query = `
+        INSERT INTO orders (First_Name, Last_Name, Email, Mobile, Street_Address, Order_Type, Product_IDs, Total_Amount, client_secret, status, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?)
+      `;
+
+      db.query(query, [firstName, lastName, email, phone, streetAddress, orderType, productIdsString, totalAmount, clientSecret, currentDateTime], (err, result) => {
+        if (err) {
+          console.error('Database error:', err);
+          return res.status(500).json({ error: 'Failed to create order' });
+        }
+
+        const orderId = result.insertId;
+        const fetchProductsQuery = `SELECT * FROM products WHERE Product_ID IN (${productIds.map(() => '?').join(',')})`;
+        
+        db.query(fetchProductsQuery, productIds.map(pid => pid.split(':')[0]), (err, products) => {
+          if (err) {
+            console.error('Error fetching product details:', err);
+            return res.status(500).json({ error: 'Failed to fetch product details' });
+          }
+
+          res.json({
+            id: orderId,
+            client_secret: paymentIntent.client_secret,
+            products: products,
+          });
+        });
+      });
+    } else if (paymentIntent.status === 'requires_action' || paymentIntent.status === 'requires_source_action') {
+      res.json({ client_secret: paymentIntent.client_secret });
+    } else {
+      res.status(400).json({ error: 'Payment requires further action or failed.' });
+    }
+  } catch (error) {
+    console.error('Error processing payment:', error);
+    res.status(500).json({ error: 'Failed to process payment' });
+  }
+});
+
+
+// Endpoint to fetch order details by client_secret
+app.get('/api/orders/details', async (req, res) => {
+  const clientSecret = req.query.client_secret;
+
+  if (!clientSecret) {
+    return res.status(400).json({ error: 'Client secret is required' });
+  }
+
+  try {
+    const paymentIntentId = clientSecret.split('_secret_')[0];
+
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+    if (!paymentIntent || paymentIntent.status !== 'succeeded') {
+      return res.status(404).json({ error: 'Payment not found or not successful' });
+    }
+
+    const query = `SELECT * FROM orders WHERE client_secret = ?`;
+    db.query(query, [clientSecret], (err, orderResults) => {
+      if (err) {
+        console.error('Error fetching order details:', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      if (orderResults.length === 0) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+
+      const order = orderResults[0];
+      const productIds = order.Product_IDs.split(',').map(pair => pair.split(':')[0].trim());
+
+      const productsQuery = `SELECT * FROM products WHERE Product_ID IN (${productIds.map(() => '?').join(',')})`;
+
+      db.query(productsQuery, productIds, (err, products) => {
+        if (err) {
+          console.error('Error fetching product details:', err);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        res.json({
+          order,
+          products,
+        });
+      });
+    });
+  } catch (error) {
+    console.error('Error retrieving payment details:', error);
+    res.status(500).json({ error: 'Failed to retrieve payment details' });
+  }
+});
+
 
 app.listen(3001, () => {
   console.log('Server is running on port 3001');

@@ -105,7 +105,6 @@ const AddProduct = () => {
           name="quantity"
           value={formData.quantity}
           onChange={handleChange}
-          required
         />
 
         <label htmlFor="description">Description:</label>
@@ -114,7 +113,6 @@ const AddProduct = () => {
           name="description"
           value={formData.description}
           onChange={handleChange}
-          required
         ></textarea>
 
         <div className="dimensions-group">
@@ -153,6 +151,7 @@ const AddProduct = () => {
           name="options"
           value={formData.options}
           onChange={handleChange}
+          placeholder="Enter product options in CSV format i.e. Surfmist, Domain, Monument"
         />
 
         <label htmlFor="imageUrl">Image URL:</label>

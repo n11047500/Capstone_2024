@@ -11,6 +11,7 @@ const ProductPage = () => {
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedOption, setSelectedOption] = useState('');
+  const defaultImage = 'https://res.cloudinary.com/dakwlrcqr/image/upload/v1725604960/HicksProductDefault_op2oce.gif';
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -30,7 +31,7 @@ const ProductPage = () => {
     return <div>Loading...</div>;
   }
 
-  const productImage = product.Product_Image_URL;
+  const productImage = product.Product_Image_URL || defaultImage;
 
   const handleAddToCart = () => {
     if (!selectedOption && product.Product_Options.length > 0) {
