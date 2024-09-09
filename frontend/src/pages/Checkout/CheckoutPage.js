@@ -67,9 +67,9 @@ const CheckoutPage = () => {
               <PaymentForm
                 data={{
                   ...formData, // Include all form data (personal info, shipping, etc.)
+                  cart, // Include cart data for product IDs
                   totalAmount: calculateTotal(), // Add calculated total amount
                 }}
-                onNext={handleNextStep} // This will now redirect directly to confirmation
                 onBack={handlePreviousStep}
                 onChange={(data) => handleFormDataChange('paymentDetails', data)}
               />

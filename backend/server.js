@@ -579,46 +579,32 @@ app.post('/create-checkout-session', async (req, res) => {
 });
 
 // Endpoint to handle order creation
-app.post('/api/orders', async (req, res) => {
-  const { paymentMethodId, orderDetails } = req.body;
+app.post('/api/orders', (req, res) => {
+  console.log('Incoming request body:', req.body);
+  const { firstName, lastName, email, phone, streetAddress, orderType, productIds, totalAmount } = req.body;
+  const currentDateTime = new Date();
 
-  try {
-    // Here, assume you have already validated the order details on the client side
-    const { firstName, lastName, mobile, email, streetAddress, productIds, orderType, totalAmount } = orderDetails;
+  // Validate the incoming data
+  if (!firstName || !lastName || !email || !phone || !streetAddress || !orderType || !productIds || totalAmount === undefined) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
 
-    // Ensure totalAmount is a valid number
-    const amount = parseFloat(totalAmount);
-    if (isNaN(amount) || amount <= 0) {
-      throw new Error('Invalid total amount');
+  // Format the product IDs for insertion into the database
+  const productIdsString = productIds.join(',');
+
+    const query = `
+    INSERT INTO orders (First_Name, Last_Name, Email, Mobile, Street_Address, Order_Type, Product_IDs, Total_Amount, status, created_at) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?)
+  `;
+
+  db.query(query, [firstName, lastName, email, phone, streetAddress, orderType, productIdsString, totalAmount, currentDateTime], (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ error: 'Failed to create order' });
     }
 
-    // Create a payment intent with a return_url
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // Convert to cents and round to ensure it is an integer
-      currency: 'aud', // Ensure your currency matches
-      payment_method: paymentMethodId,
-      confirm: true, // Automatically confirm the payment
-      return_url: `${req.headers.origin}/order-confirmation`, // Add return URL for redirect-based payment methods
-    });
-
-    // Insert order into the database
-    const insertQuery = `
-      INSERT INTO orders (Total_Amount, Product_IDs, First_Name, Last_Name, Mobile, Email, Street_Address, Order_Type, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending')
-    `;
-    const params = [amount, productIds, firstName, lastName, mobile, email, streetAddress, orderType];
-
-    db.query(insertQuery, params, (err, results) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).send('Failed to save order.');
-      }
-      res.status(200).json({ message: 'Order saved successfully.' });
-    });
-  } catch (err) {
-    console.error('Error processing order:', err);
-    res.status(500).send('Error processing payment or saving order.');
-  }
+    res.json({ id: result.insertId });
+  });
 });
 
 
