@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const db = require('./database');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
+const axios = require('axios');
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -12,8 +13,6 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
-
-const JWT_SECRET = process.env.JWT_SECRET || 'WAj7ghe50CFjv8MZ2Jgpct1Ok+GjpkviZNT1j3cs5AX3bKwFyLvD0GR8J6F6kR7czZaXsJCRKkr/+Eq2qKz3Dw==';
 
 app.get('/', (req, res) => {
   res.send('Server is running.');
@@ -136,72 +135,124 @@ app.post('/reviews', (req, res) => {
 });
 
 // Register a new user
-app.post('/register', (req, res) => {
-  const { firstName, lastName, email, password, mobileNumber, dateOfBirth, role = 'customer' } = req.body;
+app.post('/register', async (req, res) => {
+  const { firstName, lastName, email, password, mobileNumber, dateOfBirth, role = 'customer', captchaToken } = req.body;
 
-  const checkQuery = 'SELECT * FROM users WHERE email = ?';
-  db.query(checkQuery, [email], (err, results) => {
-    if (err) {
-      console.error('Error checking existing user:', err);
-      return res.status(500).json({ error: 'Error creating user. Please try again.' });
+  // Verify the reCAPTCHA token
+  if (!captchaToken) {
+    return res.status(400).json({ message: 'Captcha is required' });
+  }
+
+  try {
+    // Verify reCAPTCHA token with Google API
+    const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
+      params: {
+        secret: process.env.RECAPTCHA_SECRET_KEY, // Your reCAPTCHA secret key
+        response: captchaToken
+      }
+    });
+
+    console.log(response.data); // Log Google's reCAPTCHA response
+
+    const { success, 'error-codes': errorCodes } = response.data;
+
+    if (!success) {
+      return res.status(400).json({ message: 'Captcha verification failed', errorCodes });
     }
 
-    if (results.length > 0) {
-      return res.status(400).json({ error: 'User already exists.' });
-    }
-
-    bcrypt.hash(password, 10, (err, hash) => {
+    const checkQuery = 'SELECT * FROM users WHERE email = ?';
+    db.query(checkQuery, [email], (err, results) => {
       if (err) {
-        console.error('Error hashing password:', err);
+        console.error('Error checking existing user:', err);
         return res.status(500).json({ error: 'Error creating user. Please try again.' });
       }
 
-      const query = 'INSERT INTO users (first_name, last_name, email, password, mobile_number, date_of_birth, role) VALUES (?, ?, ?, ?, ?, ?, ?)';
-      db.query(query, [firstName, lastName, email, hash, mobileNumber, dateOfBirth, role], (err, result) => {
+      if (results.length > 0) {
+        return res.status(400).json({ error: 'User already exists.' });
+      }
+
+      bcrypt.hash(password, 10, (err, hash) => {
         if (err) {
-          console.error('Error inserting user into database:', err);
+          console.error('Error hashing password:', err);
           return res.status(500).json({ error: 'Error creating user. Please try again.' });
         }
 
-        res.status(201).json({ message: 'User created successfully.', email, role });
+        const query = 'INSERT INTO users (first_name, last_name, email, password, mobile_number, date_of_birth, role) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        db.query(query, [firstName, lastName, email, hash, mobileNumber, dateOfBirth, role], (err, result) => {
+          if (err) {
+            console.error('Error inserting user into database:', err);
+            return res.status(500).json({ error: 'Error creating user. Please try again.' });
+          }
+
+          res.status(201).json({ message: 'User created successfully.', email, role });
+        });
       });
     });
-  });
+  } catch (error) {
+    console.error('Error verifying reCAPTCHA token:', error);
+    return res.status(500).json({ message: 'Error verifying reCAPTCHA token' });
+  }
 });
 
 // Login an existing user
-app.post('/login', (req, res) => {
-  const { email, password } = req.body;
+app.post('/login', async (req, res) => {
+  const { email, password, captchaToken } = req.body;
 
-  const query = 'SELECT * FROM users WHERE email = ?';
-  db.query(query, [email], (err, results) => {
-    if (err) {
-      console.error('Error fetching user from database:', err);
-      return res.status(500).json({ error: 'An error occurred. Please try again.' });
+  // Verify the reCAPTCHA token
+  if (!captchaToken) {
+    return res.status(400).json({ message: 'Captcha is required' });
+  }
+
+  try {
+    // Verify reCAPTCHA token with Google API
+    const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
+      params: {
+        secret: process.env.RECAPTCHA_SECRET_KEY, // Your reCAPTCHA secret key
+        response: captchaToken
+      }
+    });
+
+    console.log(response.data); // Log Google's reCAPTCHA response
+
+    const { success, 'error-codes': errorCodes } = response.data;
+
+    if (!success) {
+      return res.status(400).json({ message: 'Captcha verification failed', errorCodes });
     }
 
-    if (results.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    const user = results[0];
-    bcrypt.compare(password, user.password, (err, isMatch) => {
+    const query = 'SELECT * FROM users WHERE email = ?';
+    db.query(query, [email], (err, results) => {
       if (err) {
-        console.error('Error comparing passwords:', err);
+        console.error('Error fetching user from database:', err);
         return res.status(500).json({ error: 'An error occurred. Please try again.' });
       }
 
-      if (!isMatch) {
-        return res.status(401).json({ error: 'Incorrect password' });
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'User not found' });
       }
 
-      res.status(200).json({
-        message: 'Login successful',
-        email: user.email,
-        role: user.role
+      const user = results[0];
+      bcrypt.compare(password, user.password, (err, isMatch) => {
+        if (err) {
+          console.error('Error comparing passwords:', err);
+          return res.status(500).json({ error: 'An error occurred. Please try again.' });
+        }
+
+        if (!isMatch) {
+          return res.status(401).json({ error: 'Incorrect password' });
+        }
+
+        res.status(200).json({
+          message: 'Login successful',
+          email: user.email,
+          role: user.role
+        });
       });
     });
-  });
+  } catch (error) {
+    console.error('Error verifying reCAPTCHA token:', error);
+    return res.status(500).json({ message: 'Error verifying reCAPTCHA token' });
+  }
 });
 
 // Fetch a user by email
@@ -312,58 +363,30 @@ app.post('/update-role', (req, res) => {
 });
 
 // Forgot password
-app.post('/forgot-password', (req, res) => {
-  const { email } = req.body;
+app.post('/forgot-password', async (req, res) => {
+  const { email, captchaToken } = req.body;
 
-  // Check if the email exists in the database
-  const query = 'SELECT * FROM users WHERE email = ?';
-  db.query(query, [email], (err, results) => {
-    if (err) {
-      console.error('Error fetching user from database:', err);
-      return res.status(500).json({ error: 'An error occurred. Please try again.' });
-    }
+  // Verify the reCAPTCHA token
+  if (!captchaToken) {
+    return res.status(400).json({ message: 'Captcha is required' });
+  }
 
-    // If no user is found with the given email
-    if (results.length === 0) {
-      return res.status(404).json({ error: 'User not found.' });
-    }
-
-    const user = results[0];
-
-
-    // Create a reset token
-    const resetToken = jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: '1h' });
-
-    // Send email with reset link
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Password Reset Request',
-      text: `Click the link to reset your password: ${resetLink}`,
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error('Error sending email:', error);
-        return res.status(500).json({ message: 'Error sending email.' });
-      }
-
-      console.log('Password reset email sent:', info.response);
-      return res.json({ message: 'Password reset link sent to your email.' });
-    });
-  });
-});
-
-// Reset password
-app.post('/reset-password/:token', (req, res) => {
-  const { token } = req.params;
-  const { newPassword } = req.body;
-
-  // Verify the reset token
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const email = decoded.email;
+    // Verify reCAPTCHA token with Google API
+    const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
+      params: {
+        secret: process.env.RECAPTCHA_SECRET_KEY, // Your reCAPTCHA secret key
+        response: captchaToken
+      }
+    });
+
+    console.log(response.data); // Log Google's reCAPTCHA response
+
+    const { success, 'error-codes': errorCodes } = response.data;
+
+    if (!success) {
+      return res.status(400).json({ message: 'Captcha verification failed', errorCodes });
+    }
 
     // Check if the email exists in the database
     const query = 'SELECT * FROM users WHERE email = ?';
@@ -380,28 +403,108 @@ app.post('/reset-password/:token', (req, res) => {
 
       const user = results[0];
 
-      // Hash the new password
-      bcrypt.hash(newPassword, 10, (err, hashedPassword) => {
-        if (err) {
-          console.error('Error hashing password:', err);
-          return res.status(500).json({ message: 'Error hashing password.' });
+
+      // Create a reset token
+      const resetToken = jwt.sign({ email: user.email }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+
+      // Send email with reset link
+      const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Password Reset Request',
+        text: `Click the link to reset your password: ${resetLink}`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+          return res.status(500).json({ message: 'Error sending email.' });
         }
 
-        // Update user password in the database
-        const updateQuery = 'UPDATE users SET password = ? WHERE email = ?';
-        db.query(updateQuery, [hashedPassword, email], (updateErr, updateResults) => {
-          if (updateErr) {
-            console.error('Error updating password in database:', updateErr);
-            return res.status(500).json({ error: 'An error occurred while updating the password.' });
-          }
-
-          return res.json({ message: 'Password has been reset successfully.' });
-        });
+        console.log('Password reset email sent:', info.response);
+        return res.json({ message: 'Password reset link sent to your email.' });
       });
     });
   } catch (error) {
-    console.error('Invalid or expired token:', error);
-    return res.status(400).json({ message: 'Invalid or expired token.' });
+    console.error('Error verifying reCAPTCHA token:', error);
+    return res.status(500).json({ message: 'Error verifying reCAPTCHA token' });
+  }
+});
+
+// Reset password
+app.post('/reset-password/:token', async (req, res) => {
+  const { token } = req.params;
+  const { newPassword, captchaToken } = req.body;
+
+  // Verify the reCAPTCHA token
+  if (!captchaToken) {
+    return res.status(400).json({ message: 'Captcha is required' });
+  }
+
+  try {
+    // Verify reCAPTCHA token with Google API
+    const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
+      params: {
+        secret: process.env.RECAPTCHA_SECRET_KEY, // Your reCAPTCHA secret key
+        response: captchaToken
+      }
+    });
+
+    console.log(response.data); // Log Google's reCAPTCHA response
+
+    const { success, 'error-codes': errorCodes } = response.data;
+
+    if (!success) {
+      return res.status(400).json({ message: 'Captcha verification failed', errorCodes });
+    }
+
+    // Verify the reset token
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+      const email = decoded.email;
+
+      // Check if the email exists in the database
+      const query = 'SELECT * FROM users WHERE email = ?';
+      db.query(query, [email], (err, results) => {
+        if (err) {
+          console.error('Error fetching user from database:', err);
+          return res.status(500).json({ error: 'An error occurred. Please try again.' });
+        }
+
+        // If no user is found with the given email
+        if (results.length === 0) {
+          return res.status(404).json({ error: 'User not found.' });
+        }
+
+        const user = results[0];
+
+        // Hash the new password
+        bcrypt.hash(newPassword, 10, (err, hashedPassword) => {
+          if (err) {
+            console.error('Error hashing password:', err);
+            return res.status(500).json({ message: 'Error hashing password.' });
+          }
+
+          // Update user password in the database
+          const updateQuery = 'UPDATE users SET password = ? WHERE email = ?';
+          db.query(updateQuery, [hashedPassword, email], (updateErr, updateResults) => {
+            if (updateErr) {
+              console.error('Error updating password in database:', updateErr);
+              return res.status(500).json({ error: 'An error occurred while updating the password.' });
+            }
+
+            return res.json({ message: 'Password has been reset successfully.' });
+          });
+        });
+      });
+    } catch (error) {
+      console.error('Invalid or expired token:', error);
+      return res.status(400).json({ message: 'Invalid or expired token.' });
+    }
+  } catch (error) {
+    console.error('Error verifying reCAPTCHA token:', error);
+    return res.status(500).json({ message: 'Error verifying reCAPTCHA token' });
   }
 });
 
@@ -612,36 +715,62 @@ app.post('/send-email', (req, res) => {
 });
 
 // Contact us email sending function
-app.post('/send-contact-email', (req, res) => {
-  const { first_name, last_name, email, mobile, inquiry } = req.body;
+app.post('/send-contact-email', async (req, res) => {
+  const { first_name, last_name, email, mobile, inquiry, captchaToken } = req.body;
 
-  const transporter = nodemailer.createTransport({
-    service: 'Outlook365',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+  // Verify the reCAPTCHA token
+  if (!captchaToken) {
+    return res.status(400).json({ message: 'Captcha is required' });
+  }
 
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: 'joyalvincentofficial@gmail.com',
-    subject: 'New Contact Us Inquiry',
-    html: ` Hi Team, <br><br> You have received a new inquiry from the contact form on your website. Here are the details:<br><br>
-    <p><strong>Name:</strong> ${first_name} ${last_name}</p>
-    <p><strong>Email:</strong> ${email}</p>
-    <p><strong>Mobile:</strong> ${mobile}</p>
-    <p><strong>Inquiry:</strong> ${inquiry}</p><br><br>
-    <p>Thank you</p>`,
-  };
+  try {
+    // Verify reCAPTCHA token with Google API
+    const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
+      params: {
+        secret: process.env.RECAPTCHA_SECRET_KEY, // Your reCAPTCHA secret key
+        response: captchaToken
+      }
+    });
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error('Error sending email:', error);
-      return res.status(500).json({ message: 'Error sending email' });
+    console.log(response.data); // Log Google's reCAPTCHA response
+
+    const { success, 'error-codes': errorCodes } = response.data;
+
+    if (!success) {
+      return res.status(400).json({ message: 'Captcha verification failed', errorCodes });
     }
-    res.status(200).json({ message: 'Email sent successfully!' });
-  });
+
+    const transporter = nodemailer.createTransport({
+      service: 'Outlook365',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: 'joyalvincentofficial@gmail.com',
+      subject: 'New Contact Us Inquiry',
+      html: ` Hi Team, <br><br> You have received a new inquiry from the contact form on your website. Here are the details:<br><br>
+      <p><strong>Name:</strong> ${first_name} ${last_name}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Mobile:</strong> ${mobile}</p>
+      <p><strong>Inquiry:</strong> ${inquiry}</p><br><br>
+      <p>Thank you</p>`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+        return res.status(500).json({ message: 'Error sending email' });
+      }
+      res.status(200).json({ message: 'Email sent successfully!' });
+    });
+  } catch (error) {
+    console.error('Error verifying reCAPTCHA token:', error);
+    return res.status(500).json({ message: 'Error verifying reCAPTCHA token' });
+  }
 });
 
 // Payment processing and order creation
