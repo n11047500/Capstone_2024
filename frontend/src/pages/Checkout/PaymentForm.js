@@ -37,6 +37,11 @@ const PaymentForm = ({ data, onBack, onChange }) => {
       if (!totalAmount || isNaN(totalAmount) || totalAmount <= 0) {
         throw new Error('Invalid total amount');
       }
+      
+      // Construct the productIds array with repetition based on quantity
+      const productIds = data.cart.flatMap (item =>
+        Array(item.quantity).fill(`${item.Product_ID}:${item.selectedOption || ''}`).filter(Boolean)
+      )
   
       // Prepare the data object for the API call
       const orderDetails = {
@@ -46,7 +51,7 @@ const PaymentForm = ({ data, onBack, onChange }) => {
         phone: data.personalInfo.phone,
         streetAddress: data.personalInfo.address,
         orderType: data.shippingMethod.shippingOption,
-        productIds: data.cart.map(item => `${item.Product_ID}:${item.selectedOption || ''}`).filter(Boolean),
+        productIds,
         totalAmount: data.totalAmount,
       };
   
