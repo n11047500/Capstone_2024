@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import ReCAPTCHA from 'react-google-recaptcha';
 import './ContactUs.css';
 
 import clock from "../assets/clock_img.png";
@@ -15,8 +16,12 @@ function ContactUs() {
     mobile: '',
     inquiry: '',
   });
-
+  const [captchaToken, setCaptchaToken] = useState(null); // Store reCAPTCHA token
   const [message, setMessage] = useState('');
+
+  const handleCaptcha = (token) => {
+    setCaptchaToken(token); // Set the reCAPTCHA token
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -25,11 +30,18 @@ function ContactUs() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!captchaToken) {
+      setMessage('Please complete the CAPTCHA.');
+      return;
+    }
+
     try {
+      const totalForm = { ...formData, captchaToken };
+
       const response = await fetch(`${process.env.REACT_APP_API_URL}/send-contact-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(totalForm),
       });
 
       if (response.ok) {
@@ -102,6 +114,10 @@ function ContactUs() {
                   </tr>
                 </tbody>
               </table>
+              <ReCAPTCHA
+                sitekey={process.env.RECAPTCHA_SITE_KEY || '6LfpyS4qAAAAACV-9rKjHiyxg9LR0FOr6nVUUu2j'}
+                onChange={handleCaptcha}
+              />
               <button type="submit" className="submit-button">Submit Form</button>
             </form>
             {message && <p className="response-message">{message}</p>}

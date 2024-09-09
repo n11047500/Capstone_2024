@@ -26,14 +26,14 @@
     margin-bottom: 10px;
   }
   
-  table {
+  .order_confirmation_table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
   }
   
-  table th,
-  table td {
+  .order_confirmation_table th,
+  .order_confirmation_table td {
     border: 1px solid #ddd;
     padding: 12px;
     text-align: left;
@@ -41,23 +41,23 @@
     color: #555;
   }
   
-  table th {
+  .order_confirmation_table th {
     background-color: #f2f2f2;
     font-weight: 600;
   }
   
-  table td img {
+  .order_confirmation_table td img {
     max-width: 50px;
     height: auto;
     display: block;
     margin: 0 auto;
   }
   
-  table tr:nth-child(even) {
+  .order_confirmation_table tr:nth-child(even) {
     background-color: #fafafa;
   }
   
-  table tr:hover {
+  .order_confirmation_table tr:hover {
     background-color: #f1f1f1;
   }
   

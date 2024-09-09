@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ReCAPTCHA from 'react-google-recaptcha';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './SignUpPage.css';
@@ -14,7 +15,12 @@ const SignUpPage = () => {
     mobileNumber: '',
     dateOfBirth: '',
   });
+  const [captchaToken, setCaptchaToken] = useState(null); // Store reCAPTCHA token
   const [error, setError] = useState('');
+
+  const handleCaptcha = (token) => {
+    setCaptchaToken(token); // Set the reCAPTCHA token
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -26,12 +32,14 @@ const SignUpPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const totalForm = { ...formData, captchaToken };
+
       const response = await fetch(`${process.env.REACT_APP_API_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(totalForm),
       });
 
       if (!response.ok) {
@@ -121,6 +129,10 @@ const SignUpPage = () => {
               name="dateOfBirth"
               value={formData.dateOfBirth}
               onChange={handleChange}
+            />
+            <ReCAPTCHA
+              sitekey={process.env.RECAPTCHA_SITE_KEY || '6LfpyS4qAAAAACV-9rKjHiyxg9LR0FOr6nVUUu2j'}
+              onChange={handleCaptcha}
             />
             <button type="submit" className="signup-button">Sign Up</button>
           </form>
