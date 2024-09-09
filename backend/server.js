@@ -547,48 +547,54 @@ app.post('/send-contact-email', (req, res) => {
   });
 });
 
-
+// Payment processing and order creation
 app.post('/api/orders', async (req, res) => {
-  console.log('Incoming request body:', req.body);
   const { firstName, lastName, email, phone, streetAddress, orderType, productIds, totalAmount, paymentMethodId } = req.body;
   const currentDateTime = new Date();
 
-  // Validate the incoming data
   if (!firstName || !lastName || !email || !phone || !streetAddress || !orderType || !productIds || totalAmount === undefined) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
   try {
-    // Create a PaymentIntent with the payment method ID
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(totalAmount * 100), // Convert to cents
       currency: 'aud',
       payment_method: paymentMethodId,
       confirmation_method: 'manual',
-      confirm: true, // Automatically confirm the PaymentIntent after creation
+      confirm: true,
       return_url: `${req.headers.origin}/order-confirmation`,
     });
 
-    console.log('PaymentIntent created:', paymentIntent);
-
-    // Always send the client_secret back to the frontend
     if (paymentIntent.status === 'succeeded') {
       const productIdsString = productIds.join(',');
+      const clientSecret = paymentIntent.client_secret; // Get the client_secret
 
       const query = `
-        INSERT INTO orders (First_Name, Last_Name, Email, Mobile, Street_Address, Order_Type, Product_IDs, Total_Amount, status, created_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?)
+        INSERT INTO orders (First_Name, Last_Name, Email, Mobile, Street_Address, Order_Type, Product_IDs, Total_Amount, client_secret, status, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?)
       `;
 
-      db.query(query, [firstName, lastName, email, phone, streetAddress, orderType, productIdsString, totalAmount, currentDateTime], (err, result) => {
+      db.query(query, [firstName, lastName, email, phone, streetAddress, orderType, productIdsString, totalAmount, clientSecret, currentDateTime], (err, result) => {
         if (err) {
           console.error('Database error:', err);
           return res.status(500).json({ error: 'Failed to create order' });
         }
 
-        res.json({ 
-          id: result.insertId, 
-          client_secret: paymentIntent.client_secret // Send client_secret even if payment succeeded
+        const orderId = result.insertId;
+        const fetchProductsQuery = `SELECT * FROM products WHERE Product_ID IN (${productIds.map(() => '?').join(',')})`;
+        
+        db.query(fetchProductsQuery, productIds.map(pid => pid.split(':')[0]), (err, products) => {
+          if (err) {
+            console.error('Error fetching product details:', err);
+            return res.status(500).json({ error: 'Failed to fetch product details' });
+          }
+
+          res.json({
+            id: orderId,
+            client_secret: paymentIntent.client_secret,
+            products: products,
+          });
         });
       });
     } else if (paymentIntent.status === 'requires_action' || paymentIntent.status === 'requires_source_action') {
@@ -599,6 +605,58 @@ app.post('/api/orders', async (req, res) => {
   } catch (error) {
     console.error('Error processing payment:', error);
     res.status(500).json({ error: 'Failed to process payment' });
+  }
+});
+
+
+// Endpoint to fetch order details by client_secret
+app.get('/api/orders/details', async (req, res) => {
+  const clientSecret = req.query.client_secret;
+
+  if (!clientSecret) {
+    return res.status(400).json({ error: 'Client secret is required' });
+  }
+
+  try {
+    const paymentIntentId = clientSecret.split('_secret_')[0];
+
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+    if (!paymentIntent || paymentIntent.status !== 'succeeded') {
+      return res.status(404).json({ error: 'Payment not found or not successful' });
+    }
+
+    const query = `SELECT * FROM orders WHERE client_secret = ?`;
+    db.query(query, [clientSecret], (err, orderResults) => {
+      if (err) {
+        console.error('Error fetching order details:', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      if (orderResults.length === 0) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+
+      const order = orderResults[0];
+      const productIds = order.Product_IDs.split(',').map(pair => pair.split(':')[0].trim());
+
+      const productsQuery = `SELECT * FROM products WHERE Product_ID IN (${productIds.map(() => '?').join(',')})`;
+
+      db.query(productsQuery, productIds, (err, products) => {
+        if (err) {
+          console.error('Error fetching product details:', err);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        res.json({
+          order,
+          products,
+        });
+      });
+    });
+  } catch (error) {
+    console.error('Error retrieving payment details:', error);
+    res.status(500).json({ error: 'Failed to retrieve payment details' });
   }
 });
 
