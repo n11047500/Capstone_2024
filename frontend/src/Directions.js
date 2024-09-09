@@ -10,10 +10,12 @@ import ReviewPage from "./pages/ReviewPage";
 import CartPage from './pages/CartPage';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
+import ForgotPassword from "./pages/ForgotPassword";
 import UserProfile from './pages/UserProfile';
 import CheckoutPage from './pages/Checkout/CheckoutPage';
 import OrderConfirmation from './pages/Checkout/OrderConfirmation';
 import { CartProvider } from './context/CartContext';
+import ResetPassword from "./pages/ResetPassword";
 
 const Directions = () => {
     return (
@@ -29,12 +31,14 @@ const Directions = () => {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/user/:email" element={<UserProfile />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/order-confirmation" element={<OrderConfirmation />} />
         </Routes>
       </CartProvider>
-    );
+  )
 }
 
 export { Directions };

@@ -265,7 +265,7 @@ const OrderManagement = ({ setActiveForm }) => {
 
   return (
     <div className="order-management">
-      <h3>Order Management</h3>
+      <h2>Order Management</h2>
       {error && <p className="error-message">{error}</p>}
       {loading && <p>Loading...</p>}
 
