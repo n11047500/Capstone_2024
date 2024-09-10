@@ -1,12 +1,14 @@
 // PaymentForm.js
-import React from 'react';
+import React, {useContext} from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useNavigate } from 'react-router-dom';
+import { CartContext } from '../../context/CartContext'; // Import CartContext
 
 const PaymentForm = ({ data, onBack, onChange }) => {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
+  const { clearCart } = useContext(CartContext); // Access clearCart from context
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -66,6 +68,8 @@ const PaymentForm = ({ data, onBack, onChange }) => {
     
       if (response.ok) {
         console.log('Order saved successfully.');
+        // Clear the cart after successful payment
+        clearCart();
         navigate('/order-confirmation?client_secret=' + responseData.client_secret);
       } else if (responseData.client_secret) {
         const { error: confirmError } = await stripe.confirmCardPayment(responseData.client_secret);
