@@ -2,11 +2,17 @@ import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
+import Search from '../components/Search';
 import './Browse.css';
 
 function Browse() {
   const [products, setProducts] = useState([]);
   const [sortType, setSortType] = useState('');
+  const [results, setResults] = useState([]);
+
+  const handleSearchResults = (data) => {
+      setResults(data);
+  };
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/products`)
@@ -46,6 +52,7 @@ function Browse() {
           </select>
         </div>
       </div>
+
       <div className="browse-product-container">
         {sortedProducts.map(product => (
           <ProductCard

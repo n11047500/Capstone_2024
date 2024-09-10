@@ -15,6 +15,7 @@ import UserProfile from './pages/UserProfile';
 import { CartProvider } from './context/CartContext';
 import CustomisedOrder from "./pages/CustomisedOrder";
 import ConfirmationPage from './pages/orderCustom';
+import SearchResults from "./pages/SearchResults";
 
 const Directions = () => {
     return(
@@ -33,6 +34,7 @@ const Directions = () => {
             <Route path="/user/:email" element={<UserProfile />} />
             <Route path="/customise" element={<CustomisedOrder />} />
             <Route path="/confirmation" element={<ConfirmationPage />} />
+            <Route path="/results" element={<SearchResults />} />
 
         </Routes>
       </CartProvider>

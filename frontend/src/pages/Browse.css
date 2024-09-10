@@ -11,6 +11,11 @@ body, html {
   padding-right: 50px;
 }
 
+.browse-search-container {
+  display: flex;
+  margin-left: 20px;
+}
+
 .browse-sort-container {
   margin-right: 24px; 
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import emailjs from 'emailjs-com';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './CustomisedOrder.css';
@@ -82,98 +82,58 @@ const CustomisedOrder = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
-        // Create a new object to hold form data
-        const formDataObj = { ...formData };
-
-        // Ensure colorType is set
-        if (!formDataObj.colorType) {
-            formDataObj.colorType = 'None'; // or set a default value
-        }
-    
-        // Check which field is filled and set the other to 'None'
-        if (formDataObj.color && !formDataObj.customColor) {
-            formDataObj.customColor = 'None';
-        } else if (!formDataObj.color && formDataObj.customColor) {
-            formDataObj.color = 'None';
-        } else if (formDataObj.color && formDataObj.customColor) {
-            if (formDataObj.color === formDataObj.customColor) {
-                formDataObj.customColor = 'None';
-            }
-        }
-    
-        // Add colorType to formDataObj
-        formDataObj.colorType = formData.colorType;
-
-        let fileContent = 'None'; // Default value
-    
-        if (formData.file) {
-            const file = formData.file;
-    
-            // Convert the file to base64
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onloadend = async () => {
-                fileContent = reader.result; // Base64 string with data URI scheme
-    
-                // After getting the base64 string, send the email
-                sendEmailWithAttachments(formDataObj, fileContent);
-
-            };
-        } else {
-            // No file, send the email with 'None'
-            sendEmailWithAttachments(formDataObj, fileContent);
-
-        }
-    };
-    
-    const sendEmailWithAttachments = async (formDataObj, fileContent) => {
-        const templateParams = {
-            firstName: formDataObj.firstName,
-            lastName: formDataObj.lastName,
-            order_id: formDataObj.order_id,
-            colorType: formDataObj.colorType,
-            color: formDataObj.color,
-            customColor: formDataObj.customColor,
-            width: formDataObj.width,
-            wicking: formDataObj.wicking,
-            email: formDataObj.email,
-            comment: formDataObj.comment,
-            file: fileContent // Pass the base64 string or 'None'
-        };
-    
+      
         try {
-            const emailResponse = await emailjs.send(
-                'service_dz5mq6k',
-                'template_0v39twh',
-                templateParams,
-                '6O_l-WGEmkFadQ-Xv'
-            );
-    
-            if (emailResponse.status === 200) {
-                alert('Email sent successfully!');
-                // Reset form fields if necessary
-
-                navigate('/confirmation');
-
-            } else {
-                alert('Failed to send email.');
-            }
+          // Create a new FormData object
+          const formDataObj = new FormData();
+      
+          // Append each field to the FormData object
+          formDataObj.append('colorType', formData.colorType);
+          formDataObj.append('color', formData.color);
+          formDataObj.append('customColor', formData.customColor);
+          formDataObj.append('width', formData.width);
+          formDataObj.append('wicking', formData.wicking);
+          formDataObj.append('firstName', formData.firstName);
+          formDataObj.append('lastName', formData.lastName);
+          formDataObj.append('email', formData.email);
+          formDataObj.append('comment', formData.comment);
+      
+          // If a file is selected, append it to the FormData object
+          if (formData.file) {
+            formDataObj.append('file', formData.file);
+          }
+      
+          // Check which color fields are filled and set the other to 'None'
+          if (formData.color && !formData.customColor) {
+            formDataObj.set('customColor', 'None');
+          } else if (!formData.color && formData.customColor) {
+            formDataObj.set('color', 'None');
+          } else if (formData.color === formData.customColor) {
+            formDataObj.set('customColor', 'None');
+          }
+      
+          // Send form data to the backend, making sure to not set Content-Type explicitly (FormData will set it)
+          const response = await fetch('http://localhost:3001/submit-form', {
+            method: 'POST',
+            body: formDataObj, // Send FormData directly
+          });
+      
+          if (response.ok) {
+            console.log('Form submitted successfully');
+            alert('Email sent successfully!');
+            // Redirect after successful submission
+            navigate('/confirmation');
+          } else {
+            alert('Failed to send form.');
+            console.error('Error submitting form');
+          }
         } catch (error) {
-            console.error('Failed to send email:', error.text || error);
-            alert('Failed to send email.');
+          console.error('Error:', error);
         }
-    };
-    
-    
-    
-    
-    
-    
-    
-    
-
-
+      };
+      
+      
+      
 
 
     return (
