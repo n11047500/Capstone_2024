@@ -8,7 +8,7 @@ const ShippingMethodForm = ({ data, onNext, onBack, onChange }) => {
   };
 
   return (
-    <div className="form-section">
+    <div className="form-details">
       <h2>Shipping Method</h2>
       <div className="shipping-options">
         <div>

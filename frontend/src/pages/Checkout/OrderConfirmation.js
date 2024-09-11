@@ -139,6 +139,12 @@ const OrderConfirmationPage = () => {
 };
 
 
+  const currencyFormatter = new Intl.NumberFormat('en-AU', {
+    style: 'currency',
+    currency: 'AUD',
+    minimumFractionDigits: 2,
+  });
+
   return (
     <>
       <Header />
@@ -180,7 +186,7 @@ const OrderConfirmationPage = () => {
                     <td>{product.Product_Name}</td>
                     <td>{product.option || 'Default'}</td>
                     <td>{product.quantity}</td>
-                    <td>{currencyFormatter.format(product.totalPrice)}</td>
+                    <td>{currencyFormatter.format(product.Product_Price * product.quantity)}</td>
                   </tr>
                 ))}
               </tbody>

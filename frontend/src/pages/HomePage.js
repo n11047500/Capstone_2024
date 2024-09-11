@@ -7,25 +7,33 @@ import './HomePage.css';
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [sliceCount, setSliceCount] = useState(1); // Default slice count
 
   // Function to calculate the number of slices based on window size
   const calculateSliceCount = (width) => {
     if (width > 1200) {
       return 10; // Large screen (desktop)
+    } else if (width > 1024) {
+      return 8; // Medium-large screen (small desktop)
     } else if (width > 768) {
       return 6; // Medium screen (tablet)
-    } else {
+    } else if (width > 600) {
+      return 4; // Small-medium screen (large mobile or small tablet)
+    } else if (width > 480) {
       return 3; // Small screen (mobile)
+    } else {
+      return 2; // Extra-small screen (small mobile)
     }
   };
+  
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [sliceCount, setSliceCount] = useState(1); // Default slice count
 
   // Handle window resize and update slice count
   useEffect(() => {
     const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-      setSliceCount(calculateSliceCount(window.innerWidth));
+      const currentWidth = window.innerWidth;
+      setWindowWidth(currentWidth);
+      setSliceCount(calculateSliceCount(currentWidth));
     };
 
     // Listen for window resize

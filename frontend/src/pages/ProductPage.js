@@ -49,6 +49,11 @@ const ProductPage = () => {
   var optionArray = options.split(',');
   product.Product_Options = optionArray;
 
+  const averageRating = new Intl.NumberFormat('en-AU', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(product.averageRating);
+
   return (
     <>
       <Header />
@@ -63,7 +68,7 @@ const ProductPage = () => {
             <p className="product-dimensions product-page"><strong>Dimensions:</strong> {product.Product_Dimensions}</p>
             <p className="product-price product-page">${product.Product_Price}</p>
             <div className="product-reviews product-page">
-              <span className="star product-page">⭐</span> {Number(product.averageRating).toFixed(1)} &nbsp;·&nbsp;  
+            <span className="star product-page">⭐</span> {averageRating} &nbsp;·&nbsp;  
               <Link to={`/reviews/${productId}`} className="product-page">{product.reviewCount} reviews</Link>
             </div>
             {product.Product_Options.length > 1 && (

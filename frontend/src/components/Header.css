@@ -6,6 +6,7 @@
   padding: 10px 3%;
   width: 100%;
   z-index: 1;
+  box-sizing: border-box;
 }
 
 .site-header .menu-icon {

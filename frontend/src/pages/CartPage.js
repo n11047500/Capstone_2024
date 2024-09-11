@@ -9,9 +9,15 @@ const CartPage = () => {
   const { cart, removeFromCart, updateQuantity, clearCart } = useContext(CartContext);
   const navigate = useNavigate();
 
-  // Function to calculate total price
+
+  const currencyFormatter = new Intl.NumberFormat('en-AU', {
+    style: 'currency',
+    currency: 'AUD',
+    minimumFractionDigits: 2,
+  });
+
   const calculateTotal = () => {
-    return cart.reduce((total, item) => total + Number(item.Product_Price) * item.quantity, 0).toFixed(2);
+    return cart.reduce((total, item) => total + item.Product_Price * item.quantity, 0)
   };
 
   // Handle checkout navigation
@@ -56,7 +62,7 @@ const CartPage = () => {
                       {item.selectedOption && <p className="cart-item-option">{item.selectedOption}</p>}
                     </div>
                   </td>
-                  <td>${Number(item.Product_Price).toFixed(2)}</td>
+                  <td>{currencyFormatter.format(item.Product_Price)}</td>
                   <td>
                     <input 
                       type="number" 
@@ -66,7 +72,7 @@ const CartPage = () => {
                       className="quantity-input"
                     />
                   </td>
-                  <td>${(Number(item.Product_Price) * item.quantity).toFixed(2)}</td>
+                  <td>{currencyFormatter.format(item.Product_Price * item.quantity)}</td>
                   <td>
                     <button onClick={() => removeFromCart(item.Product_ID, item.selectedOption)} className="remove-button">✖</button>
                   </td>
@@ -76,12 +82,14 @@ const CartPage = () => {
           </table>
         )}
         <div className="cart-summary">
-          <p>Subtotal: ${calculateTotal()}</p>
+        <p>Subtotal: {currencyFormatter.format(calculateTotal())}</p>
           <button className="clear-cart-button" onClick={clearCart}>Clear Cart</button>
         </div>
         <div className="cart-actions">
           <button className="continue-shopping-button" onClick={handleContinueShopping}>Continue Shopping</button>
-          <button className="checkout-button" onClick={handleCheckout}>Checkout</button>
+          <button className="checkout-button" 
+          onClick={handleCheckout}
+          disabled={cart.length === 0}>Checkout</button>
         </div>
       </div>
       <Footer />

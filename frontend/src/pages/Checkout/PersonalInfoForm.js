@@ -8,7 +8,7 @@ const PersonalInfoForm = ({ data, onNext, onChange }) => {
   };
 
   return (
-    <div className="form-section">
+    <div className="form-details">
       <h2>Personal Information</h2>
       <div className="form-group">
         <input

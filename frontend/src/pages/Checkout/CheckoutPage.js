@@ -24,9 +24,14 @@ const CheckoutPage = () => {
   // Access cart data from CartContext
   const { cart } = useContext(CartContext);
 
+  const currencyFormatter = new Intl.NumberFormat('en-AU', {
+    style: 'currency',
+    currency: 'AUD',
+  });
+
   // Function to calculate total (since subtotal is the same as the total)
   const calculateTotal = () => {
-    return cart.reduce((total, item) => total + item.Product_Price * item.quantity, 0).toFixed(2);
+    return cart.reduce((total, item) => total + item.Product_Price * item.quantity, 0);
   };
 
   const handleNextStep = () => setStep((prev) => prev + 1);
@@ -81,12 +86,12 @@ const CheckoutPage = () => {
           {cart.map((item, index) => (
             <div key={index} className="summary-item">
               <span>{item.Product_Name} x {item.quantity}</span>
-              <span>${(item.Product_Price * item.quantity).toFixed(2)}</span>
+              <span>{currencyFormatter.format(item.Product_Price * item.quantity)}</span>
             </div>
           ))}
           <div className="summary-item total">
             <span>Total</span>
-            <span>${calculateTotal()}</span>
+            <span>{currencyFormatter.format(calculateTotal())}</span>
           </div>
         </div>
       </div>
