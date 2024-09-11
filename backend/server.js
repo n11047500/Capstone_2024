@@ -773,7 +773,138 @@ app.post('/send-contact-email', async (req, res) => {
   }
 });
 
-// Payment processing and order creation
+// Contact us email sending function
+app.post('/send-confirmation-email', async (req, res) => {
+  const { first_name, last_name, email, order_number, order_date, Product_Image_URL, product_name, product_option, product_quantity, total_price } = req.body;
+
+  try {
+    // Initialize Nodemailer transporter
+    const transporter = nodemailer.createTransport({
+      service: 'Outlook365',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    // Email options
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email, // Send to customer email
+      subject: 'Order Confirmation',
+      html: `<h3>Thank you ${first_name} ${last_name} for your order!</h3>
+             <h4>Order Information</h4>
+             <p><strong>Order Number:</strong> ${order_number}</p>
+             <p><strong>Order Date:</strong> ${order_date ? formatDate(order_date) : 'N/A'}</p>
+             <p><strong>Total Amount:</strong> ${total_price}</p>
+             
+             <h4>Purchased Items:</h4>
+             <table>
+               <thead>
+                 <tr>
+                   <th>Image</th>
+                   <th>Product Name</th>
+                   <th>Option</th>
+                   <th>Quantity</th>
+                   <th>Price</th>
+                 </tr>
+               </thead>
+               <tbody>
+                 ${product_name.map((name, index) => `
+                   <tr>
+                     <td><img src="${Product_Image_URL[index]}" alt="${name}" /></td>
+                     <td>${name}</td>
+                     <td>${product_option[index]}</td>
+                     <td>${product_quantity[index]}</td>
+                     <td>${(total_price[index] / product_quantity[index]).toFixed(2)}</td>
+                   </tr>
+                 `).join('')}
+               </tbody>
+             </table>`,
+    };
+
+    // Send email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+        return res.status(500).json({ message: 'Error sending email' });
+      }
+      res.status(200).json({ message: 'Email sent successfully!' });
+    });
+  } catch (error) {
+    console.error('Error during email sending:', error);
+    return res.status(500).json({ message: 'Error during email sending' });
+  }
+});
+
+
+
+// // Contact us email sending function
+// app.post('/send-confirmation-email', async (req, res) => {
+//   const { first_name, last_name, email, order_number, order_date, Product_Image_URL, product_name, product_option, product_quantity, total_price} = req.body;
+ 
+//   try {
+//     // Verify reCAPTCHA token with Google API
+//     const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
+//       params: {
+//         secret: process.env.RECAPTCHA_SECRET_KEY, // Your reCAPTCHA secret key
+//         response: captchaToken
+//       }
+//     });
+
+//     console.log(response.data); // Log Google's reCAPTCHA response
+
+//     const { success, 'error-codes': errorCodes } = response.data;
+
+//     if (!success) {
+//       return res.status(400).json({ message: 'Captcha verification failed', errorCodes });
+//     }
+
+//     const transporter = nodemailer.createTransport({
+//       service: 'Outlook365',
+//       auth: {
+//         user: process.env.EMAIL_USER,
+//         pass: process.env.EMAIL_PASS,
+//       },
+//     });
+
+//     const mailOptions = {
+//       from: process.env.EMAIL_USER,
+//       to: 'james.lansley02@gmail.com',
+//       subject: 'New Contact Us Inquiry',
+//       html: `<h3>Thank you ${first_name} for your order!</h3>
+//             <h4>Order Information</h4>
+//             <p><strong>Order Number:</strong> {orderDetails.Order_ID ${order_number} order_number}</p>
+//             <p><strong>Order Date:</strong> {orderDetails.created_at ? formatDate(orderDetails.created_at ${order_date} : 'N/A'}</p>
+//             <p><strong>Order Type:</strong> {orderDetails.Order_Type}</p>
+//             <p><strong>Email:</strong> {orderDetails.Email}</p>
+//             <p><strong>Phone Number:</strong> {orderDetails.Mobile}</p>
+//             {orderDetails.Order_Type === 'Delivery' && (
+//               <p><strong>Delivery Address:</strong> {orderDetails.Street_Address}</p>
+//             )}
+            
+      
+//       Hi Team, <br><br> You have received a new inquiry from the contact form on your website. Here are the details:<br><br>
+//       <p><strong>Name:</strong> ${first_name} ${last_name}</p>
+//       <p><strong>Email:</strong> ${email}</p>
+//       <p><strong>Mobile:</strong> ${mobile}</p>
+//       <p><strong>Inquiry:</strong> ${inquiry}</p><br><br>
+//       <p>Thank you</p>`,
+//     };
+
+//     transporter.sendMail(mailOptions, (error, info) => {
+//       if (error) {
+//         console.error('Error sending email:', error);
+//         return res.status(500).json({ message: 'Error sending email' });
+//       }
+//       res.status(200).json({ message: 'Email sent successfully!' });
+//     });
+//   } catch (error) {
+//     console.error('Error verifying reCAPTCHA token:', error);
+//     return res.status(500).json({ message: 'Error verifying reCAPTCHA token' });
+//   }
+// });
+
 app.post('/api/orders', async (req, res) => {
   const { firstName, lastName, email, phone, streetAddress, orderType, productIds, totalAmount, paymentMethodId } = req.body;
   const currentDateTime = new Date();
@@ -790,11 +921,13 @@ app.post('/api/orders', async (req, res) => {
       confirmation_method: 'manual',
       confirm: true,
       return_url: `${req.headers.origin}/order-confirmation`,
+      // Set `off_session` to true if you want to handle the payment without user interaction.
+      off_session: true,
     });
 
     if (paymentIntent.status === 'succeeded') {
       const productIdsString = productIds.join(',');
-      const clientSecret = paymentIntent.client_secret; // Get the client_secret
+      const clientSecret = paymentIntent.client_secret;
 
       const query = `
         INSERT INTO orders (First_Name, Last_Name, Email, Mobile, Street_Address, Order_Type, Product_IDs, Total_Amount, client_secret, status, created_at) 
@@ -834,8 +967,6 @@ app.post('/api/orders', async (req, res) => {
   }
 });
 
-
-// Endpoint to fetch order details by client_secret
 app.get('/api/orders/details', async (req, res) => {
   const clientSecret = req.query.client_secret;
 
@@ -885,7 +1016,6 @@ app.get('/api/orders/details', async (req, res) => {
     res.status(500).json({ error: 'Failed to retrieve payment details' });
   }
 });
-
 
 app.listen(3001, () => {
   console.log('Server is running on port 3001');
