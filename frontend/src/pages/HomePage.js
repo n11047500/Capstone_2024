@@ -5,6 +5,8 @@ import Footer from '../components/Footer';
 import Slideshow from '../components/Slideshow';
 import './HomePage.css';
 
+import { Link } from 'react-router-dom';
+
 const HomePage = () => {
   const [products, setProducts] = useState([]);
 
@@ -24,7 +26,7 @@ const HomePage = () => {
       return 2; // Extra-small screen (small mobile)
     }
   };
-  
+
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [sliceCount, setSliceCount] = useState(1); // Default slice count
 
@@ -81,6 +83,16 @@ const HomePage = () => {
           ))}
         </div>
       </div>
+
+      <div className="home_customised_section">
+        <h2 className="order-text">Order Customised Ezee Planter Box</h2>
+        <h3 className="order-text-small">Ezee Planter Boxes provides customers a customisable design of their own if they so choose.</h3>
+
+        <div className="order_customised">
+          <button className="order-button"><Link to={`/customise`}>Order Customised Ezee Planter Box</Link></button>
+        </div> <br />
+      </div>
+
       <Footer />
     </div>
   );

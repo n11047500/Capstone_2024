@@ -8,11 +8,16 @@ const jwt = require('jsonwebtoken');
 const axios = require('axios');
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const multer = require('multer');
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
+
+// Configure Multer for file uploads
+const storage = multer.memoryStorage(); // Stores file in memory
+const uploadFile = multer({ storage: storage });
 
 app.get('/', (req, res) => {
   res.send('Server is running.');
@@ -1016,6 +1021,152 @@ app.get('/api/orders/details', async (req, res) => {
     res.status(500).json({ error: 'Failed to retrieve payment details' });
   }
 });
+
+// Nodemailer sendEmail function
+const sendEmail = async (formDataObj) => {
+  try {
+    // Nodemailer transporter configuration
+    const transporter = nodemailer.createTransport({
+      service: 'Outlook365',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    // HTML email template
+    const emailHTML = `
+      <style>
+        p {
+          text-align: center;
+        }
+        table, th, td {
+          border: 1px solid black;
+          width: 50%;
+        }
+        .center {
+          margin-left: auto;
+          margin-right: auto;
+        }
+      </style>
+
+      <h3 style="text-align:center;">Thank You for Your Order!</h3>
+      <p>We’ve received your custom planter box order with the following details:</p>
+
+      <table class="center">
+        <tr>
+          <th colspan="2">Product Information</th>
+        </tr>
+        <tr>
+          <td>Color Type:</td>
+          <td>${formDataObj.colorType}</td>
+        </tr>
+        <tr>
+          <td>Selected Color:</td>
+          <td>${formDataObj.color}</td>
+        </tr>
+        <tr>
+          <td>Custom Color:</td>
+          <td>${formDataObj.customColor}</td>
+        </tr>
+        <tr>
+          <td>Width (cm):</td>
+          <td>${formDataObj.width}</td>
+        </tr>
+        <tr>
+          <td>Wicking:</td>
+          <td>${formDataObj.wicking}</td>
+        </tr>
+      </table>
+
+      <br><br>
+
+      <table class="center">
+        <tr>
+          <th colspan="2">Personal Information</th>
+        </tr>
+        <tr>
+          <td>First Name:</td>
+          <td>${formDataObj.firstName}</td>
+        </tr>
+        <tr>
+          <td>Last Name:</td>
+          <td>${formDataObj.lastName || 'N/A'}</td>
+        </tr>
+        <tr>
+          <td>Email:</td>
+          <td>${formDataObj.email}</td>
+        </tr>
+      </table>
+
+      <br><br>
+
+      <table class="center">
+        <tr>
+          <th colspan="2">Additional Information</th>
+        </tr>
+        <tr>
+          <td style="width:70%" colspan="2"><strong>Comments: </strong>${formDataObj.comment || 'No comments'}</td>
+        </tr>
+      </table>
+    `;
+
+    // Email options, including the file attachment
+    let mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: 'n11043377@qut.edu.au',
+      subject: 'Your Custom Planter Box Order',
+      html: emailHTML,
+      attachments: formDataObj.file ? [{
+        filename: formDataObj.file.originalname,
+        content: formDataObj.file.buffer,
+        cid: formDataObj.file.filename
+      }] : []
+    };
+
+    // Send email
+    let info = await transporter.sendMail(mailOptions);
+    console.log('Email sent: ' + info.response);
+  } catch (error) {
+    console.error('Error sending email:', error);
+  }
+};
+
+
+app.use(express.urlencoded({ extended: true }));
+
+// POST route for form submission
+app.post('/submit-form', uploadFile.single('file'), async (req, res) => {
+  try {
+    // Extract form data from the request body
+    const formData = req.body;
+    const file = req.file; // Get the file from multer
+
+    // Prepare the form data object
+    const formDataObj = {
+      colorType: formData.colorType,
+      color: formData.color,
+      customColor: formData.customColor,
+      width: formData.width,
+      wicking: formData.wicking,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      comment: formData.comment,
+      file: file // Include file data
+    };
+
+    // After saving data, send the email
+    await sendEmail(formDataObj);
+
+    // Respond with a success message
+    res.status(200).json({ message: 'Form submitted and email sent successfully' });
+  } catch (error) {
+    console.error('Error in form submission:', error);
+    res.status(500).json({ message: 'Error in form submission' });
+  }
+});
+
 
 app.listen(3001, () => {
   console.log('Server is running on port 3001');

@@ -15,6 +15,8 @@ import UserProfile from './pages/UserProfile';
 import CheckoutPage from './pages/Checkout/CheckoutPage';
 import OrderConfirmation from './pages/Checkout/OrderConfirmation';
 import { CartProvider } from './context/CartContext';
+import CustomisedOrder from "./pages/CustomisedOrder";
+import ConfirmationPage from './pages/orderCustom';
 import ResetPassword from "./pages/ResetPassword";
 
 const Directions = () => {
@@ -34,6 +36,8 @@ const Directions = () => {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/user/:email" element={<UserProfile />} />
+            <Route path="/customise" element={<CustomisedOrder />} />
+            <Route path="/confirmation" element={<ConfirmationPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/order-confirmation" element={<OrderConfirmation />} />
         </Routes>
