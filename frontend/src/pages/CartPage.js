@@ -85,7 +85,9 @@ const CartPage = () => {
         </div>
         <div className="cart-actions">
           <button className="continue-shopping-button" onClick={handleContinueShopping}>Continue Shopping</button>
-          <button className="checkout-button" onClick={handleCheckout}>Checkout</button>
+          <button className="checkout-button" 
+          onClick={handleCheckout}
+          disabled={cart.length === 0}>Checkout</button>
         </div>
       </div>
       <Footer />
