@@ -52,6 +52,47 @@ body, html {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow for depth */
 }
 
+/* The Modal (background) */
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  background-color: rgba(0, 0, 0, 0.9); /* Black background with opacity */
+}
+
+/* Modal Content (Image) */
+.modal-content {
+  max-width: 80%; /* Limit modal width */
+  max-height: 80%; /* Limit modal height */
+  margin: auto;
+  display: block;
+  border-radius: 8px;
+}
+
+/* Close Button */
+.close {
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 /* Responsive styles */
 @media (max-width: 1024px) {
   .gallery-column {

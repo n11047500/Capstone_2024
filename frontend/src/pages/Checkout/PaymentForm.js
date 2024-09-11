@@ -95,7 +95,7 @@ const PaymentForm = ({ data, onBack, onChange }) => {
   };
 
   return (
-    <div className="form-section">
+    <div className="form-details">
       <h2>Payment Method</h2>
       <form onSubmit={handleSubmit}>
         <CardElement options={cardElementOptions}/>

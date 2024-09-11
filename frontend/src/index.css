@@ -1,9 +1,11 @@
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   height: 100%;
   display: flex;
-  overflow-x: hidden; /* Prevent horizontal scrolling */
+  overflow-x: hidden;
+  /* Prevent horizontal scrolling */
   flex-direction: column;
   max-width: 100%;
 }
@@ -24,31 +26,9 @@ main {
   box-sizing: border-box;
 }
 
-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #edf1ec;
-  padding: 10px 3%;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  z-index: 1;
-}
-
-.site-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #edf1ec;
-  padding: 10px 3%;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  z-index: 1;
-}
-
-.cart-page-container, .login-page-container, .product-page-container {
+.cart-page-container,
+.login-page-container,
+.product-page-container {
   padding: 40px 20px;
   max-width: 1200px;
   margin: 0 auto;
@@ -56,7 +36,8 @@ footer {
   box-sizing: border-box;
 }
 
-.cart-table, .login-form {
+.cart-table,
+.login-form {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
