@@ -6,11 +6,68 @@ import Footer from '../../components/Footer';
 import './OrderConfirmation.css';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+const groupProducts = (productIds, productDetails) => {
+  const grouped = {};
+  const productDetailMap = new Map(
+    productDetails.map(p => [String(p.Product_ID), p])
+  );
+
+  console.log('Product IDs:', productIds);
+  console.log('Product Details:', productDetails);
+
+  const productPairs = productIds.split(',').map(pair => {
+    const [productId, option] = pair.split(':').map(item => item.trim());
+    return { productId, option };
+  });
+
+  productPairs.forEach(product => {
+    const key = `${product.productId}-${product.option || 'Default'}`;
+    const productDetail = productDetailMap.get(String(product.productId));
+
+    if (!productDetail) {
+      console.error(`Product details not found for Product_ID: ${product.productId}`);
+      console.error('Available product details:', productDetails);
+      return;
+    }
+
+    const productPrice = parseFloat(productDetail.Product_Price); 
+
+    if (isNaN(productPrice)) {
+      console.error(`Invalid Product_Price for Product_ID: ${product.productId}`);
+      return;
+    }
+
+    if (!grouped[key]) {
+      grouped[key] = {
+        productId: product.productId,
+        option: product.option,
+        quantity: 1,
+        Product_Price: productPrice,
+        Product_Name: productDetail.Product_Name,
+        Product_Image_URL: productDetail.Product_Image_URL,
+        totalPrice: productPrice
+      };
+    } else {
+      grouped[key].quantity += 1;
+      grouped[key].totalPrice = grouped[key].Product_Price * grouped[key].quantity;
+    }
+  });
+
+  Object.values(grouped).forEach(product => {
+    product.totalPrice = Number(product.totalPrice);
+  });
+
+  console.log('Grouped products:', grouped);
+  return Object.values(grouped);
+};
+
+
 
 const OrderConfirmationPage = () => {
   const [status, setStatus] = useState('loading');
   const [searchParams] = useSearchParams();
   const [products, setProducts] = useState([]); // State to hold purchased products
+  const [groupedProducts, setGroupedProducts] = useState([]); // State to hold grouped products
   const [orderDetails, setOrderDetails] = useState({}); // State to hold additional order details
 
   useEffect(() => {
@@ -35,9 +92,16 @@ const OrderConfirmationPage = () => {
           if (orderResponse.ok) {
             setProducts(orderData.products); // Store the purchased products
             setOrderDetails(orderData.order); // Store the order details
+            
+            const productIds = orderData.order.Product_IDs;
+            const productDetails = orderData.products; // Assuming productDetails come from the same endpoint or adjust as needed
+            const groupedProducts = groupProducts(productIds, productDetails);
+            setGroupedProducts(groupedProducts);
 
             // Debugging to check fetched products
             console.log("Fetched products:", orderData.products);
+            console.log("Fetched grouped products:", groupedProducts);
+
           } else {
             console.error('Error fetching order details:', orderData.error);
           }
@@ -55,33 +119,13 @@ const OrderConfirmationPage = () => {
     checkPaymentStatus();
   }, [searchParams]);
 
-  // Function to group products by Product ID and Option, while accumulating quantity
-  const groupProducts = (products) => {
-    const grouped = {};
-
-    products.forEach((product) => {
-      const key = `${product.Product_ID}-${product.option || 'Default'}`;
-      if (!grouped[key]) {
-        grouped[key] = {
-          ...product,
-          quantity: product.Quantity ? parseInt(product.Quantity, 10) : 1, // Ensure quantity is a number
-        };
-      } else {
-        grouped[key].quantity += product.Quantity ? parseInt(product.Quantity, 10) : 1; // Accumulate the quantity
-      }
-    });
-
-    console.log("Grouped products:", grouped); // Debugging to check grouping logic
-
-    return Object.values(grouped);
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const groupedProducts = groupProducts(products);
-
-  // Format the date properly
-  const formattedDate = orderDetails.Order_Date
-    ? new Date(orderDetails.Order_Date).toLocaleDateString()
-    : 'N/A';
+  console.log('Order Date:', orderDetails.Order_Date);
+  console.log('Selected Order:', orderDetails); // Log the entire order object
 
   return (
     <>
@@ -96,7 +140,7 @@ const OrderConfirmationPage = () => {
             {/* Display order information */}
             <h4>Order Information</h4>
             <p><strong>Order Number:</strong> {orderDetails.Order_ID}</p>
-            <p><strong>Order Date:</strong> {formattedDate}</p>
+            <p><strong>Order Date:</strong> {orderDetails.created_at ? formatDate(orderDetails.created_at) : 'N/A'}</p>
             <p><strong>Order Type:</strong> {orderDetails.Order_Type}</p>
             <p><strong>Email:</strong> {orderDetails.Email}</p>
             <p><strong>Phone Number:</strong> {orderDetails.Mobile}</p>
@@ -107,7 +151,7 @@ const OrderConfirmationPage = () => {
 
             {/* Display purchased items */}
             <h4>Items Purchased:</h4>
-            <table className='order_confirmation_table'>
+            <table>
               <thead>
                 <tr>
                   <th>Image</th>
@@ -117,17 +161,22 @@ const OrderConfirmationPage = () => {
                   <th>Price (AUD)</th>
                 </tr>
               </thead>
+            
               <tbody>
-                {groupedProducts.map((product) => (
-                  <tr key={`${product.Product_ID}-${product.option}`}>
-                    <td><img src={product.Product_Image_URL} alt={product.Product_Name} /></td>
-                    <td>{product.Product_Name}</td>
-                    <td>{product.option || 'Default'}</td>
-                    <td>{product.quantity}</td>
-                    <td>${(product.Product_Price * product.quantity).toFixed(2)}</td>
-                  </tr>
-                ))}
-              </tbody>
+  {groupedProducts.map((product) => {
+    const totalPrice = Number(product.totalPrice); // Ensure totalPrice is a number
+    console.log(`Product: ${product.Product_Name}, Total Price: ${totalPrice}`);
+    return (
+      <tr key={`${product.productId}-${product.option}`}>
+        <td><img src={product.Product_Image_URL} alt={product.Product_Name} /></td>
+        <td>{product.Product_Name}</td>
+        <td>{product.option || 'Default'}</td>
+        <td>{product.quantity}</td>
+        <td>${totalPrice.toFixed(2)}</td> {/* Ensure totalPrice is a number */}
+      </tr>
+    );
+  })}
+</tbody>
             </table>
           </div>
         )}
