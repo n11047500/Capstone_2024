@@ -1,6 +1,59 @@
 import React, { useState, useEffect } from 'react';
 import './OrderManagement.css';
 
+const groupProducts = (productIds, productDetails = []) => {
+  if (!productDetails || productDetails.length === 0) {
+    console.error('No product details provided.');
+    return [];
+  }
+
+  const grouped = {};
+
+  // Convert productDetails to a map for quick lookup
+  const productDetailMap = new Map(
+    productDetails.map(p => [String(p.Product_ID), p])
+  );
+
+  console.log('Product IDs:', productIds);
+  console.log('Product Details:', productDetails);
+
+  // Parse the product IDs and options
+  const productPairs = productIds.split(',').map(pair => {
+    const [productId, option] = pair.split(':').map(item => item.trim());
+    return { productId, option };
+  });
+
+  productPairs.forEach(product => {
+    const key = `${product.productId}-${product.option || 'Default'}`;
+    const productDetail = productDetailMap.get(String(product.productId));
+
+    if (!productDetail) {
+      console.error(`Product details not found for Product_ID: ${product.productId}`);
+      return;
+    }
+
+    if (!grouped[key]) {
+      grouped[key] = {
+        productId: product.productId,
+        option: product.option,
+        quantity: 1,
+        Product_Price: productDetail.Product_Price,
+        Product_Name: productDetail.Product_Name,
+        Product_Image_URL: productDetail.Product_Image_URL,
+        totalPrice: parseFloat(productDetail.Product_Price) // Ensure it's a number
+      };
+    } else {
+      grouped[key].quantity += 1;
+      grouped[key].totalPrice = grouped[key].Product_Price * grouped[key].quantity;
+    }
+  });
+
+  console.log('Grouped products:', grouped);
+  return Object.values(grouped);
+};
+
+
+
 const OrderManagement = ({ setActiveForm }) => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -362,14 +415,14 @@ const OrderManagement = ({ setActiveForm }) => {
                 </tr>
               </thead>
               <tbody>
-                {selectedOrder.products ? (
-                  selectedOrder.products.map(product => (
-                    <tr key={product.Product_ID}>
+                {selectedOrder && selectedOrder.products ? (
+                  groupProducts(selectedOrder.Product_IDs, selectedOrder.products).map(product => (
+                    <tr key={product.productId}>
                       <td><img src={product.Product_Image_URL} alt={product.Product_Name} style={{ width: '50px', height: '50px' }} /></td>
                       <td>{product.Product_Name}</td>
                       <td>{product.option}</td>
-                      <td>1</td>
-                      <td>${product.Product_Price}</td>
+                      <td>{product.quantity}</td>
+                      <td>${isNaN(product.totalPrice) ? 'N/A' : product.totalPrice.toFixed(2)}</td>
                     </tr>
                   ))
                 ) : (
@@ -377,7 +430,7 @@ const OrderManagement = ({ setActiveForm }) => {
                     <td colSpan="5">No products available for this order.</td>
                   </tr>
                 )}
-              </tbody>
+             </tbody>
             </table>
             <br></br>
             <br></br>

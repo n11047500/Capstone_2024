@@ -9,6 +9,7 @@ const CartPage = () => {
   const { cart, removeFromCart, updateQuantity, clearCart } = useContext(CartContext);
   const navigate = useNavigate();
 
+
   const currencyFormatter = new Intl.NumberFormat('en-AU', {
     style: 'currency',
     currency: 'AUD',
@@ -19,11 +20,12 @@ const CartPage = () => {
     return cart.reduce((total, item) => total + item.Product_Price * item.quantity, 0)
   };
 
+  // Handle checkout navigation
   const handleCheckout = () => {
-    // Navigate to the custom checkout page
     navigate('/checkout');
   };
 
+  // Handle continue shopping navigation
   const handleContinueShopping = () => {
     navigate('/browse');
   };

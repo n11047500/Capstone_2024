@@ -18,6 +18,7 @@ const ProductPage = () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/products/${productId}`);
         const data = await response.json();
+        data.averageRating = Number(data.averageRating); // Ensure it's a number
         setProduct(data);
       } catch (error) {
         console.error('Error fetching product:', error);
