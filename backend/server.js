@@ -887,6 +887,28 @@ app.get('/api/orders/details', async (req, res) => {
 });
 
 
+// Search route
+app.get('/api/search', (req, res) => {
+  const query = req.query.query;  // Get the query from the request
+
+  if (!query) {
+    return res.status(400).json({ error: 'Query parameter is required' });
+  }
+
+  const sql = `SELECT * FROM products WHERE Product_Name LIKE ? OR Description LIKE ?`;
+  const values = [`%${query}%`, `%${query}%`];  // Use the query in both conditions
+
+  db.query(sql, values, (err, results) => {  // Pass both values into the query
+    if (err) {
+      console.error('Database query error:', err);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    res.json(results);  // Send back the results as JSON
+  });
+});
+
+
 app.listen(3001, () => {
   console.log('Server is running on port 3001');
 });
