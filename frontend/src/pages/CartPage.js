@@ -9,15 +9,17 @@ const CartPage = () => {
   const { cart, removeFromCart, updateQuantity, clearCart } = useContext(CartContext);
   const navigate = useNavigate();
 
+  // Function to calculate total price
   const calculateTotal = () => {
-    return cart.reduce((total, item) => total + item.Product_Price * item.quantity, 0).toFixed(2);
+    return cart.reduce((total, item) => total + Number(item.Product_Price) * item.quantity, 0).toFixed(2);
   };
 
+  // Handle checkout navigation
   const handleCheckout = () => {
-    // Navigate to the custom checkout page
     navigate('/checkout');
   };
 
+  // Handle continue shopping navigation
   const handleContinueShopping = () => {
     navigate('/browse');
   };
@@ -54,7 +56,7 @@ const CartPage = () => {
                       {item.selectedOption && <p className="cart-item-option">{item.selectedOption}</p>}
                     </div>
                   </td>
-                  <td>${item.Product_Price.toFixed(2)}</td>
+                  <td>${Number(item.Product_Price).toFixed(2)}</td>
                   <td>
                     <input 
                       type="number" 
@@ -64,7 +66,7 @@ const CartPage = () => {
                       className="quantity-input"
                     />
                   </td>
-                  <td>${(item.Product_Price * item.quantity).toFixed(2)}</td>
+                  <td>${(Number(item.Product_Price) * item.quantity).toFixed(2)}</td>
                   <td>
                     <button onClick={() => removeFromCart(item.Product_ID, item.selectedOption)} className="remove-button">✖</button>
                   </td>

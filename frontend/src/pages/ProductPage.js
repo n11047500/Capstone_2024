@@ -18,6 +18,7 @@ const ProductPage = () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/products/${productId}`);
         const data = await response.json();
+        data.averageRating = Number(data.averageRating); // Ensure it's a number
         setProduct(data);
       } catch (error) {
         console.error('Error fetching product:', error);
@@ -62,7 +63,7 @@ const ProductPage = () => {
             <p className="product-dimensions product-page"><strong>Dimensions:</strong> {product.Product_Dimensions}</p>
             <p className="product-price product-page">${product.Product_Price}</p>
             <div className="product-reviews product-page">
-              <span className="star product-page">⭐</span> {product.averageRating.toFixed(1)} &nbsp;·&nbsp;  
+              <span className="star product-page">⭐</span> {Number(product.averageRating).toFixed(1)} &nbsp;·&nbsp;  
               <Link to={`/reviews/${productId}`} className="product-page">{product.reviewCount} reviews</Link>
             </div>
             {product.Product_Options.length > 1 && (

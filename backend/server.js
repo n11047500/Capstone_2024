@@ -519,7 +519,9 @@ app.get('/orders/:id', (req, res) => {
         return product ? { ...product, option: pair.option } : null;
       }).filter(product => product !== null);
 
-      res.json({ ...orderDetails, products: productsWithOptions });
+      res.json({ ...orderDetails,
+        Order_Date: orderDetails.Order_Date,  // Ensure this field is passed back
+        products: productsWithOptions });
     });
   });
 });
