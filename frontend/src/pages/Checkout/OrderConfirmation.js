@@ -83,6 +83,12 @@ const OrderConfirmationPage = () => {
     ? new Date(orderDetails.Order_Date).toLocaleDateString()
     : 'N/A';
 
+  const currencyFormatter = new Intl.NumberFormat('en-AU', {
+    style: 'currency',
+    currency: 'AUD',
+    minimumFractionDigits: 2,
+  });
+
   return (
     <>
       <Header />
@@ -124,7 +130,7 @@ const OrderConfirmationPage = () => {
                     <td>{product.Product_Name}</td>
                     <td>{product.option || 'Default'}</td>
                     <td>{product.quantity}</td>
-                    <td>${(product.Product_Price * product.quantity).toFixed(2)}</td>
+                    <td>{currencyFormatter.format(product.Product_Price * product.quantity)}</td>
                   </tr>
                 ))}
               </tbody>

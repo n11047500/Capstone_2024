@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './ReviewPage.css';
@@ -61,12 +61,13 @@ const ReviewPage = () => {
   }
 
   console.log('Product ID:', productId);
-   
-  
-
-
 
   const productImage = product.Product_Image_URL;
+
+  const ratingFormatter = new Intl.NumberFormat('en-AU', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
 
   return (
     <>
@@ -82,7 +83,7 @@ const ReviewPage = () => {
               <h1 className="review-title review-page">Create a review</h1>
               <br />
               <div className="review-small">
-                <span className="star product-page">⭐</span> {averageRating.toFixed(1)} · {reviewCount} reviews
+              <span className="star product-page">⭐</span> {ratingFormatter.format(averageRating)} · {reviewCount} reviews
                 {/*Displays average rating to one decimal place and the total number of reviews for said product*/}
               </div>
 

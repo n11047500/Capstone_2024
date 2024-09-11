@@ -1,13 +1,17 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 
 let connection;
 
 function handleDisconnect() {
   connection = mysql.createConnection({
-    host: process.env.DB_HOST || 'sql12.freesqldatabase.com',
-    user: process.env.DB_USER || 'sql12706499',
-    password: process.env.DB_PASSWORD || 'TApP5UqBDM',
-    database: process.env.DB_NAME || 'sql12706499'
+    host: process.env.DB_HOST || 'db-mysql-ezee-planter-boxes-do-user-17736031-0.e.db.ondigitalocean.com',
+    port: process.env.DB_PORT || '25060',
+    user: process.env.DB_USER || 'doadmin',
+    password: process.env.DB_PASSWORD || 'AVNS_xqbdexEl3Y8JCM8uL78',
+    database: process.env.DB_NAME || 'defaultdb',
+    ssl: {
+      rejectUnauthorized: false
+    }
   });
 
   connection.connect((err) => {

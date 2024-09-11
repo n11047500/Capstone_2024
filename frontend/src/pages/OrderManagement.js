@@ -7,6 +7,12 @@ const OrderManagement = ({ setActiveForm }) => {
   const [orderStatusFilter, setOrderStatusFilter] = useState('Pending');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedCarrier, setSelectedCarrier] = useState(''); // New state for selected carrier
+
+  const currencyFormatter = new Intl.NumberFormat('en-AU', {
+    style: 'currency',
+    currency: 'AUD',
+  });
 
   useEffect(() => {
     setLoading(true);
@@ -52,7 +58,24 @@ const OrderManagement = ({ setActiveForm }) => {
     if (!confirmation) return;
 
     if (selectedOrder.Order_Type === 'Delivery') {
+      if (!selectedCarrier) {
+        alert('Please select a carrier before proceeding.');
+        return;
+      }
+
+      const carrierTrackingURLs = {
+        "Australia Post": "https://auspost.com.au/mypost/track/#/details/",
+        "StarTrack": "https://startrack.com.au/track/",
+        "Toll": "https://www.tollgroup.com/tools/mytoll",
+        "CouriersPlease": "https://www.couriersplease.com.au/Tools/Track",
+        "DHL": "https://www.dhl.com/en/express/tracking.html?AWB=",
+        "Aramex": "https://www.aramex.com.au/tools/track/",
+        "Sendle": "https://track.sendle.com/tracking?ref="
+      };
+
       const trackingNumber = window.prompt('Enter the tracking number for this delivery (leave blank if no tracking number is available):');
+
+      const trackingLink = trackingNumber ? `<a href="${carrierTrackingURLs[selectedCarrier]}${trackingNumber}" target="_blank">Track your order here</a>` : '';
 
       const productDetailsTable = selectedOrder.products
         .map(
@@ -64,7 +87,7 @@ const OrderManagement = ({ setActiveForm }) => {
               <td style="padding: 8px; border: 1px solid #ddd;">${product.Product_Name}</td>
               <td style="padding: 8px; border: 1px solid #ddd;">${product.option}</td>
               <td style="padding: 8px; border: 1px solid #ddd;">1</td>
-              <td style="padding: 8px; border: 1px solid #ddd;">$${product.Product_Price.toFixed(2)}</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">${currencyFormatter.format(product.Product_Price)}</td>
             </tr>`
         )
         .join('');
@@ -79,7 +102,7 @@ const OrderManagement = ({ setActiveForm }) => {
         <h4>Order Details:</h4>
         <p><strong>Order ID:</strong> ${selectedOrder.Order_ID}</p>
         <p><strong>Order Date:</strong> ${formatDate(selectedOrder.Order_Date)}</p>
-        <p><strong>Total Amount:</strong> $${selectedOrder.Total_Amount.toFixed(2)}</p>
+        <p><strong>Total Amount:</strong> ${currencyFormatter.format(selectedOrder.Total_Amount)}</p>
       
         <h4>Products Ordered:</h4>
         <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
@@ -99,8 +122,9 @@ const OrderManagement = ({ setActiveForm }) => {
       
         <p>Your tracking details are as follows:</p>
         <p><strong>Tracking Number:</strong> ${trackingNumber}</p>
+        <p><strong>Carrier:</strong> ${selectedCarrier}</p>
+        ${trackingLink}
       
-        <p>You can track your order using the tracking number provided through the carrier's website.</p>
         <p>If you have any questions or need further assistance, please don't hesitate to contact our customer support team.</p>
       
         <p>Thank you for choosing EZee Planter Boxes!</p>
@@ -119,7 +143,7 @@ const OrderManagement = ({ setActiveForm }) => {
         <h4>Order Details:</h4>
         <p><strong>Order ID:</strong> ${selectedOrder.Order_ID}</p>
         <p><strong>Order Date:</strong> ${formatDate(selectedOrder.Order_Date)}</p>
-        <p><strong>Total Amount:</strong> $${selectedOrder.Total_Amount.toFixed(2)}</p>
+        <p><strong>Total Amount:</strong> ${currencyFormatter.format(selectedOrder.Total_Amount)}</p>
       
         <h4>Products Ordered:</h4>
         <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
@@ -160,7 +184,7 @@ const OrderManagement = ({ setActiveForm }) => {
               <td style="padding: 8px; border: 1px solid #ddd;">${product.Product_Name}</td>
               <td style="padding: 8px; border: 1px solid #ddd;">${product.option}</td>
               <td style="padding: 8px; border: 1px solid #ddd;">1</td>
-              <td style="padding: 8px; border: 1px solid #ddd;">$${product.Product_Price.toFixed(2)}</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">${currencyFormatter.format(product.Product_Price)}</td>
             </tr>`
         )
         .join('');
@@ -174,7 +198,7 @@ const OrderManagement = ({ setActiveForm }) => {
         <h4>Order Details:</h4>
         <p><strong>Order ID:</strong> ${selectedOrder.Order_ID}</p>
         <p><strong>Order Date:</strong> ${formatDate(selectedOrder.Order_Date)}</p>
-        <p><strong>Total Amount:</strong> $${selectedOrder.Total_Amount.toFixed(2)}</p>
+        <p><strong>Total Amount:</strong> ${currencyFormatter.format(selectedOrder.Total_Amount)}</p>
       
         <h4>Products Ordered:</h4>
         <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
@@ -200,7 +224,7 @@ const OrderManagement = ({ setActiveForm }) => {
       
         <p>If you have any questions, please do not hesitate to contact us.</p>
       
-        <p>Best regards,</p>
+        <p>With thanks,</p>
         <p><strong>EZee Planter Boxes</strong><br>Customer Support Team</p>
       </body>
       </html>
@@ -355,7 +379,28 @@ const OrderManagement = ({ setActiveForm }) => {
                 )}
               </tbody>
             </table>
-            <br />
+            <br></br>
+            <br></br>
+            {selectedOrder.Order_Type === 'Delivery' && (
+              <>
+                <label htmlFor="carrier">Select Carrier:</label>
+                <select
+                  id="carrier"
+                  value={selectedCarrier}
+                  onChange={(e) => setSelectedCarrier(e.target.value)}
+                >
+                  <option value="">Choose a carrier</option>
+                  <option value="Australia Post">Australia Post</option>
+                  <option value="StarTrack">StarTrack</option>
+                  <option value="Toll">Toll</option>
+                  <option value="CouriersPlease">CouriersPlease</option>
+                  <option value="DHL">DHL</option>
+                  <option value="Aramex">Aramex</option>
+                  <option value="Sendle">Sendle</option>
+                </select>
+              </>
+            )}
+
             {selectedOrder.status === 'Pending' && (
               <button
                 onClick={() => handleOrderStatusChange(selectedOrder.Order_ID, 'Completed')}
