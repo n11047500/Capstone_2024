@@ -138,13 +138,6 @@ const OrderConfirmationPage = () => {
     navigate('/browse');
 };
 
-
-  const currencyFormatter = new Intl.NumberFormat('en-AU', {
-    style: 'currency',
-    currency: 'AUD',
-    minimumFractionDigits: 2,
-  });
-
   return (
     <>
       <Header />
@@ -169,7 +162,7 @@ const OrderConfirmationPage = () => {
 
             {/* Display purchased items */}
             <h4>Items Purchased:</h4>
-            <table>
+            <table className='order_confirmation_table'>
               <thead>
                 <tr>
                   <th>Image</th>
