@@ -89,13 +89,16 @@ const PaymentForm = ({ data, onBack, onChange }) => {
       alert('An error occurred while processing your order. Please try again.');
     }
   };
-  
+
+  const cardElementOptions = {
+    hidePostalCode: true,
+  };
 
   return (
     <div className="form-section">
       <h2>Payment Method</h2>
       <form onSubmit={handleSubmit}>
-        <CardElement />
+        <CardElement options={cardElementOptions}/>
         <div className="button-group">
           <button type="button" onClick={onBack}>
             Back

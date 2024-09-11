@@ -8,6 +8,11 @@ const OrderManagement = ({ setActiveForm }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const currencyFormatter = new Intl.NumberFormat('en-AU', {
+    style: 'currency',
+    currency: 'AUD',
+  });
+
   useEffect(() => {
     setLoading(true);
     fetch(`${process.env.REACT_APP_API_URL}/orders?status=${orderStatusFilter}`)
@@ -64,7 +69,7 @@ const OrderManagement = ({ setActiveForm }) => {
               <td style="padding: 8px; border: 1px solid #ddd;">${product.Product_Name}</td>
               <td style="padding: 8px; border: 1px solid #ddd;">${product.option}</td>
               <td style="padding: 8px; border: 1px solid #ddd;">1</td>
-              <td style="padding: 8px; border: 1px solid #ddd;">$${product.Product_Price.toFixed(2)}</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">${currencyFormatter.format(product.Product_Price)}</td>
             </tr>`
         )
         .join('');
@@ -79,7 +84,7 @@ const OrderManagement = ({ setActiveForm }) => {
         <h4>Order Details:</h4>
         <p><strong>Order ID:</strong> ${selectedOrder.Order_ID}</p>
         <p><strong>Order Date:</strong> ${formatDate(selectedOrder.Order_Date)}</p>
-        <p><strong>Total Amount:</strong> $${selectedOrder.Total_Amount.toFixed(2)}</p>
+        <p><strong>Total Amount:</strong> ${currencyFormatter.format(selectedOrder.Total_Amount)}</p>
       
         <h4>Products Ordered:</h4>
         <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
@@ -119,7 +124,7 @@ const OrderManagement = ({ setActiveForm }) => {
         <h4>Order Details:</h4>
         <p><strong>Order ID:</strong> ${selectedOrder.Order_ID}</p>
         <p><strong>Order Date:</strong> ${formatDate(selectedOrder.Order_Date)}</p>
-        <p><strong>Total Amount:</strong> $${selectedOrder.Total_Amount.toFixed(2)}</p>
+        <p><strong>Total Amount:</strong> ${currencyFormatter.format(selectedOrder.Total_Amount)}</p>
       
         <h4>Products Ordered:</h4>
         <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
@@ -160,7 +165,7 @@ const OrderManagement = ({ setActiveForm }) => {
               <td style="padding: 8px; border: 1px solid #ddd;">${product.Product_Name}</td>
               <td style="padding: 8px; border: 1px solid #ddd;">${product.option}</td>
               <td style="padding: 8px; border: 1px solid #ddd;">1</td>
-              <td style="padding: 8px; border: 1px solid #ddd;">$${product.Product_Price.toFixed(2)}</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">${currencyFormatter.format(product.Product_Price)}</td>
             </tr>`
         )
         .join('');
@@ -174,7 +179,7 @@ const OrderManagement = ({ setActiveForm }) => {
         <h4>Order Details:</h4>
         <p><strong>Order ID:</strong> ${selectedOrder.Order_ID}</p>
         <p><strong>Order Date:</strong> ${formatDate(selectedOrder.Order_Date)}</p>
-        <p><strong>Total Amount:</strong> $${selectedOrder.Total_Amount.toFixed(2)}</p>
+        <p><strong>Total Amount:</strong> ${currencyFormatter.format(selectedOrder.Total_Amount)}</p>
       
         <h4>Products Ordered:</h4>
         <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
