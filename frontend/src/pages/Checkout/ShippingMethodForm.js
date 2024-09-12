@@ -33,7 +33,7 @@ const ShippingMethodForm = ({ data, onNext, onBack, onChange }) => {
         </div>
       </div>
       <button onClick={onBack}>Back</button>
-      <button onClick={onNext}>Next</button>
+      <button onClick={onNext} className='next-button'>Next</button>
     </div>
   );
 };

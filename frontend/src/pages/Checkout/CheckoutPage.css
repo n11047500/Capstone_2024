@@ -84,6 +84,11 @@
   width: 100%; /* Ensure full width on small screens */
 }
 
+.summary-image {
+  max-width: 80px;
+  margin-right: 20px;
+}
+
 .summary-section h3 {
   font-size: 20px;
   margin-bottom: 10px;
@@ -94,6 +99,7 @@
   justify-content: space-between;
   margin-bottom: 10px;
   font-size: 16px;
+  align-items: center;
 }
 
 .summary-section .total {
@@ -120,6 +126,14 @@ button {
 
 button:hover {
   background-color: #45a049;
+}
+
+.next-button {
+  margin-left: 10px;
+}
+
+.back-payment-button {
+  margin-right: 10px;
 }
 
 /* Media Queries for Smaller Devices */
@@ -156,6 +170,11 @@ button:hover {
 
   .form-group {
     flex-direction: column; /* Stack input fields vertically */
+  }
+
+  .summary-image {
+    max-width: 60px;
+    margin-right: 20px;
   }
 
   .button-group {
