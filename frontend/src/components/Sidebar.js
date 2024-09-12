@@ -11,6 +11,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         <Link to="/products" onClick={toggleSidebar}>Products</Link>
         <Link to="/about" onClick={toggleSidebar}>About Us</Link>
         <Link to="/contact" onClick={toggleSidebar}>Contact Us</Link>
+        <Link to="/customise" onClick={toggleSidebar}>Custom Planter Box</Link>
       </nav>
     </div>
   );

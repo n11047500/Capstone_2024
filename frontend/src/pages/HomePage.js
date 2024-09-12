@@ -5,8 +5,6 @@ import Footer from '../components/Footer';
 import Slideshow from '../components/Slideshow';
 import './HomePage.css';
 
-import { Link } from 'react-router-dom';
-
 const HomePage = () => {
   const [products, setProducts] = useState([]);
 
@@ -27,14 +25,13 @@ const HomePage = () => {
     }
   };
 
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [sliceCount, setSliceCount] = useState(1); // Default slice count
+  const [sliceCount, setSliceCount] = useState(10);
 
   // Handle window resize and update slice count
   useEffect(() => {
     const handleResize = () => {
       const currentWidth = window.innerWidth;
-      setWindowWidth(currentWidth);
+
       setSliceCount(calculateSliceCount(currentWidth));
     };
 
@@ -65,9 +62,6 @@ const HomePage = () => {
     <div className="HomePage">
       <Header />
       <Slideshow>
-        <div className='motto_section'>
-          <h1 className='motto_text'>The pain-free gardening solution suitable for everybody.</h1>
-        </div>
       </Slideshow>
       <div className="home_product_section">
         <h2>Featured Products</h2>
@@ -83,16 +77,6 @@ const HomePage = () => {
           ))}
         </div>
       </div>
-
-      <div className="home_customised_section">
-        <h2 className="order-text">Order Customised Ezee Planter Box</h2>
-        <h3 className="order-text-small">Ezee Planter Boxes provides customers a customisable design of their own if they so choose.</h3>
-
-        <div className="order_customised">
-          <button className="order-button"><Link to={`/customise`}>Order Customised Ezee Planter Box</Link></button>
-        </div> <br />
-      </div>
-
       <Footer />
     </div>
   );

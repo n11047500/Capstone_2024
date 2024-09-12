@@ -20,16 +20,13 @@
   opacity: 1;
 }
 
-.motto_section {
+.motto_text {
   position: absolute;
-  top: 50%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
   width: 80%;
-}
-
-.motto_text {
   font-size: 5vw;
   color: #eec4ff;
   text-shadow:
@@ -42,6 +39,82 @@
     0.02em -0.02em black,
     0.02em 0.02em black;
 }
+
+button.prev, button.next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0);
+  color: white;
+  border: none;
+  font-size: 30px; /* Larger font for arrow symbols */
+  padding: 10px;
+  cursor: pointer;
+  z-index: 1; /* Make sure buttons are on top of the slides */
+}
+
+button.prev {
+  left: 10px;
+}
+
+button.next {
+  right: 10px;
+}
+
+button.prev:hover, button.next:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.customised_slide_text {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 80%;
+  font-size: 5vw;
+  color: #eec4ff;
+  text-shadow:
+    0.02em 0 black,
+    0 0.02em black,
+    -0.02em 0 black,
+    0 -0.02em black,
+    -0.02em -0.02em black,
+    -0.02em 0.02em black,
+    0.02em -0.02em black,
+    0.02em 0.02em black;
+}
+
+.order_customised {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.order-button {
+  display: flex;
+  padding: 15px 20px;
+  background-color: #eec4ff;
+  color: white;
+  border: solid black;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  font-size: 1.5vw; /* Scale button text */
+  position: absolute;
+  bottom: 20%;
+  left: 37.5%;
+}
+
+.order-button a {
+  text-decoration: none;
+  color: black;
+}
+
+.order-button:hover {
+  background-color: #e7a9ff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 
 /* Media Queries for Smaller Screens */
 @media (max-width: 768px) {
