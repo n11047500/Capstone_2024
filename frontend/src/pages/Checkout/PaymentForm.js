@@ -100,7 +100,7 @@ const PaymentForm = ({ data, onBack, onChange }) => {
       <form onSubmit={handleSubmit}>
         <CardElement options={cardElementOptions}/>
         <div className="button-group">
-          <button type="button" onClick={onBack}>
+          <button type="button" onClick={onBack} className='back-payment-button'>
             Back
           </button>
           <button type="submit" disabled={!stripe}>

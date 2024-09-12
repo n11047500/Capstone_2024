@@ -85,6 +85,7 @@ const CheckoutPage = () => {
           <h3>Summary</h3>
           {cart.map((item, index) => (
             <div key={index} className="summary-item">
+              <img src={item.Product_Image_URL} alt={item.Product_Name} className="summary-image" />
               <span>{item.Product_Name} x {item.quantity}</span>
               <span>{currencyFormatter.format(item.Product_Price * item.quantity)}</span>
             </div>

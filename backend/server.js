@@ -1114,7 +1114,7 @@ const sendEmail = async (formDataObj) => {
     // Email options, including the file attachment
     let mailOptions = {
       from: process.env.EMAIL_USER,
-      to: 'n11043377@qut.edu.au',
+      to: email,
       subject: 'Your Custom Planter Box Order',
       html: emailHTML,
       attachments: formDataObj.file ? [{
