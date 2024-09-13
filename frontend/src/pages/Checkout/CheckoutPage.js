@@ -1,4 +1,3 @@
-// CheckoutPage.js
 import React, { useState, useContext } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
@@ -86,8 +85,11 @@ const CheckoutPage = () => {
           {cart.map((item, index) => (
             <div key={index} className="summary-item">
               <img src={item.Product_Image_URL} alt={item.Product_Name} className="summary-image" />
-              <span>{item.Product_Name} x {item.quantity}</span>
-              <span>{currencyFormatter.format(item.Product_Price * item.quantity)}</span>
+              <div className="summary-details">
+                <span>{item.Product_Name} x {item.quantity}</span>
+                {item.selectedOption && <span className="product-option">{item.selectedOption}</span>}
+                <span>{currencyFormatter.format(item.Product_Price * item.quantity)}</span>
+              </div>
             </div>
           ))}
           <div className="summary-item total">

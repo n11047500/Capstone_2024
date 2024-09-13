@@ -107,6 +107,15 @@
   margin-top: 10px;
 }
 
+.product-option {
+  display: block;
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 4px;
+  padding-bottom: 10px;
+}
+
+
 .button-group {
   display: flex;
   justify-content: flex-end;
@@ -183,7 +192,6 @@ button:hover {
   }
 }
 
-/* Shipping Option Styles */
 .shipping-options {
   display: flex;
   justify-content: space-around;
