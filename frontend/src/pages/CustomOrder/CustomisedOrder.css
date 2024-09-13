@@ -1,0 +1,238 @@
+.customised-order-container {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f0f0f0;
+    flex-wrap: wrap;
+    /* Allow wrapping on smaller screens */
+    gap: 20px;
+    /* Add consistent spacing between all flex children */
+}
+
+.customised-steps {
+    flex: 0 0 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
+    background-color: #f5f5f5;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    /* Add margin for better spacing on smaller screens */
+}
+
+.customised-steps span {
+    font-size: 18px;
+    margin: 15px 0;
+    cursor: pointer;
+}
+
+.customised-steps .active {
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+.customised-form-section {
+    flex: 1;
+    padding: 20px;
+    background-color: #f5f5f5;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+    /* Add this for spacing between form-section and summary-section */
+    width: 100%;
+    /* Ensure it uses full width on small screens */
+}
+
+.custom-form-section {
+    flex: 1;
+    padding: 20px;
+    background-color: #f5f5f5;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+    /* Add this for spacing between form-section and summary-section */
+    width: 100%;
+    /* Ensure it uses full width on small screens */
+}
+
+.form-custom-group {
+    display: flex;
+    flex-wrap: wrap;
+    /* Allow input fields to wrap on smaller screens */
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.customised-order-form input[type="text"],
+.customised-order-form input[type="email"] {
+    flex: 1 1 calc(50% - 10px);
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    min-width: 200px;
+    /* Ensure inputs have a minimum width */
+}
+
+.customised-order-form input,
+.customised-order-form select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    /* Allow buttons to wrap if screen is small */
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    transition: background-color 0.3s ease;
+    /* Smooth transition for hover */
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.next-button {
+    margin-left: 10px;
+}
+
+.back-payment-button {
+    margin-right: 10px;
+}
+
+.form-custom-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    /* Ensures the label text is centered with the radio button */
+}
+
+.label-small {
+    font-size: 14px;
+}
+
+.radio-group-container {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    /* Adjust the gap between the radio buttons as needed */
+}
+
+.radio-group {
+    display: flex;
+    align-items: center;
+    padding: 16px 0;
+    gap: 5px;
+    /* Adjust the gap between radio button and label */
+}
+
+.radio-group input[type="radio"] {
+    margin-right: 8px;
+    transform: translateY(-1px);
+}
+
+.input-with-icon {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.input-with-icon input[type="text"] {
+    flex: 1;
+    padding-right: 40px;
+    /* Space for the icon */
+}
+
+.file-upload-label {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+}
+
+.file-upload-label i {
+    font-size: 18px;
+    /* Size of the icon */
+    color: #333;
+    /* Color of the icon */
+}
+
+
+/* Media Queries for Smaller Devices */
+@media (max-width: 768px) {
+    .customised-order-container {
+        flex-direction: column;
+        /* Stack items vertically */
+        align-items: center;
+    }
+
+    .customised-steps {
+        width: 100%;
+        /* Full width for small screens */
+        margin-right: 0;
+    }
+
+    .form-section {
+        width: 100%;
+    }
+
+    .summary-section {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .customised-order-form input[type="text"],
+    .customised-order-form input[type="email"] {
+        width: 100%;
+        /* Full width for inputs on small screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .checkout-steps span {
+        font-size: 16px;
+        /* Adjust font size for very small screens */
+    }
+
+    .customised-steps {
+        flex-direction: column;
+        /* Stack input fields vertically */
+    }
+
+    .summary-image {
+        max-width: 60px;
+        margin-right: 20px;
+    }
+
+    .button-group {
+        justify-content: center;
+        /* Center buttons on small screens */
+        width: 100%;
+    }
+}

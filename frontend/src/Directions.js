@@ -15,8 +15,8 @@ import UserProfile from './pages/UserProfile';
 import CheckoutPage from './pages/Checkout/CheckoutPage';
 import OrderConfirmation from './pages/Checkout/OrderConfirmation';
 import { CartProvider } from './context/CartContext';
-import CustomisedOrder from "./pages/CustomisedOrder";
-import ConfirmationPage from './pages/orderCustom';
+import CustomisedOrder from "./pages/CustomOrder/CustomisedOrder";
+import ConfirmationPage from './pages/CustomOrder/orderCustom';
 import ResetPassword from "./pages/ResetPassword";
 
 const Directions = () => {

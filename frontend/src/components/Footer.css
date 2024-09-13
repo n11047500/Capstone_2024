@@ -39,6 +39,11 @@
   margin: 0;
 }
 
+.footer-links a{
+  text-decoration: none;
+  color: black;
+}
+
 .footer-businesses img {
   width: 100px; /* Adjust width as necessary to make logos smaller */
   padding: 5px; /* Adds space around each logo */
