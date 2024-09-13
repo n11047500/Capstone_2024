@@ -114,15 +114,32 @@ const PaymentForm = ({ data, onBack, onChange }) => {
 
   const cardElementOptions = {
     hidePostalCode: true,
+    style: {
+      base: {
+        color: '#333',
+        fontSize: '16px',
+        fontFamily: '"Arial", sans-serif',
+        '::placeholder': {
+          color: '#888',
+        },
+        iconColor: '#888',
+      },
+      invalid: {
+        color: '#e74c3c',
+        iconColor: '#e74c3c',
+      },
+    },
   };
 
   return (
-    <div className="form-details">
-      <h2>Payment Method</h2>
-      <form onSubmit={handleSubmit}>
-        <CardElement options={cardElementOptions}/>
+    <div className="payment-form">
+      <h2 className="payment-form__title">Payment Method</h2>
+      <form onSubmit={handleSubmit} className="payment-form__form">
+        <div className="payment-form__card-element-container">
+          <CardElement className="payment-form__card-element" options={cardElementOptions} />
+        </div>
         <div className="button-group">
-          <button type="button" onClick={onBack} className='back-payment-button'>
+          <button type="button" onClick={onBack} className="back-payment-button">
             Back
           </button>
           <button type="submit" disabled={!stripe}>
@@ -130,8 +147,11 @@ const PaymentForm = ({ data, onBack, onChange }) => {
           </button>
         </div>
       </form>
+      <br />
+      <p className="payment-form__note">Payment is processed securely using Stripe</p>
     </div>
   );
 };
+
 
 export default PaymentForm;

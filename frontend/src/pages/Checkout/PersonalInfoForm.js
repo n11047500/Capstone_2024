@@ -1,15 +1,18 @@
 import React from 'react';
 import { useLoadScript } from '@react-google-maps/api';
-const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
 // Load the Google Maps script
 const libraries = ['places'];
 
 const PersonalInfoForm = ({ data, onNext, onChange }) => {
+  // Access the API key from environment variables
+  const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+
   // Load the Google Maps script
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: apiKey, // Replace with your Google Maps API Key
+    googleMapsApiKey: apiKey,
     libraries,
+    id: 'google-maps-script',
   });
 
   const handleChange = (e) => {
@@ -24,7 +27,7 @@ const PersonalInfoForm = ({ data, onNext, onChange }) => {
     }
   };
 
-  // Initialize the autocomplete input once the Google Maps script is loaded
+  // Initialise the autocomplete input once the Google Maps script is loaded
   const initializeAutocomplete = (input) => {
     if (!input || !isLoaded) return;
 
