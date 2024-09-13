@@ -182,3 +182,45 @@ button:hover {
     width: 100%;
   }
 }
+
+/* Shipping Option Styles */
+.shipping-options {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.shipping-option {
+  cursor: pointer;
+  padding: 20px;
+  text-align: center;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  transition: border-color 0.3s, background-color 0.3s;
+  width: 200px;
+  background-color: #f5f5f5;
+}
+
+.shipping-option.selected {
+  border-color: #4CAF50;
+  background-color: #e8f5e9; /* Light green background for selected option */
+}
+
+.shipping-image {
+  width: 100px;
+  height: auto;
+  margin-bottom: 8px;
+}
+
+/* Ensure responsive behavior */
+@media (max-width: 768px) {
+  .shipping-options {
+    flex-direction: column;
+  }
+  .shipping-option {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+

@@ -70,6 +70,28 @@ const PaymentForm = ({ data, onBack, onChange }) => {
         console.log('Order saved successfully.');
         // Clear the cart after successful payment
         clearCart();
+
+         // Send confirmation email
+        fetch('/send-confirmation-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+              email: orderDetails.email,
+              firstName: orderDetails.firstName,
+              lastName: orderDetails.lastName,
+              orderId: responseData.id,
+              totalAmount: orderDetails.totalAmount
+          })
+      }).then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Confirmation email sent successfully.');
+            } else {
+                console.error('Failed to send confirmation email:', data.error);
+            }
+        })
+        .catch(error => console.error('Error sending confirmation email:', error));
+
         navigate('/order-confirmation?client_secret=' + responseData.client_secret);
       } else if (responseData.client_secret) {
         const { error: confirmError } = await stripe.confirmCardPayment(responseData.client_secret);

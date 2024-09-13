@@ -778,138 +778,7 @@ app.post('/send-contact-email', async (req, res) => {
   }
 });
 
-// Contact us email sending function
-app.post('/send-confirmation-email', async (req, res) => {
-  const { first_name, last_name, email, order_number, order_date, Product_Image_URL, product_name, product_option, product_quantity, total_price } = req.body;
-
-  try {
-    // Initialize Nodemailer transporter
-    const transporter = nodemailer.createTransport({
-      service: 'Outlook365',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    // Email options
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email, // Send to customer email
-      subject: 'Order Confirmation',
-      html: `<h3>Thank you ${first_name} ${last_name} for your order!</h3>
-             <h4>Order Information</h4>
-             <p><strong>Order Number:</strong> ${order_number}</p>
-             <p><strong>Order Date:</strong> ${order_date ? formatDate(order_date) : 'N/A'}</p>
-             <p><strong>Total Amount:</strong> ${total_price}</p>
-             
-             <h4>Purchased Items:</h4>
-             <table>
-               <thead>
-                 <tr>
-                   <th>Image</th>
-                   <th>Product Name</th>
-                   <th>Option</th>
-                   <th>Quantity</th>
-                   <th>Price</th>
-                 </tr>
-               </thead>
-               <tbody>
-                 ${product_name.map((name, index) => `
-                   <tr>
-                     <td><img src="${Product_Image_URL[index]}" alt="${name}" /></td>
-                     <td>${name}</td>
-                     <td>${product_option[index]}</td>
-                     <td>${product_quantity[index]}</td>
-                     <td>${(total_price[index] / product_quantity[index]).toFixed(2)}</td>
-                   </tr>
-                 `).join('')}
-               </tbody>
-             </table>`,
-    };
-
-    // Send email
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error('Error sending email:', error);
-        return res.status(500).json({ message: 'Error sending email' });
-      }
-      res.status(200).json({ message: 'Email sent successfully!' });
-    });
-  } catch (error) {
-    console.error('Error during email sending:', error);
-    return res.status(500).json({ message: 'Error during email sending' });
-  }
-});
-
-
-
-// // Contact us email sending function
-// app.post('/send-confirmation-email', async (req, res) => {
-//   const { first_name, last_name, email, order_number, order_date, Product_Image_URL, product_name, product_option, product_quantity, total_price} = req.body;
- 
-//   try {
-//     // Verify reCAPTCHA token with Google API
-//     const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
-//       params: {
-//         secret: process.env.RECAPTCHA_SECRET_KEY, // Your reCAPTCHA secret key
-//         response: captchaToken
-//       }
-//     });
-
-//     console.log(response.data); // Log Google's reCAPTCHA response
-
-//     const { success, 'error-codes': errorCodes } = response.data;
-
-//     if (!success) {
-//       return res.status(400).json({ message: 'Captcha verification failed', errorCodes });
-//     }
-
-//     const transporter = nodemailer.createTransport({
-//       service: 'Outlook365',
-//       auth: {
-//         user: process.env.EMAIL_USER,
-//         pass: process.env.EMAIL_PASS,
-//       },
-//     });
-
-//     const mailOptions = {
-//       from: process.env.EMAIL_USER,
-//       to: 'james.lansley02@gmail.com',
-//       subject: 'New Contact Us Inquiry',
-//       html: `<h3>Thank you ${first_name} for your order!</h3>
-//             <h4>Order Information</h4>
-//             <p><strong>Order Number:</strong> {orderDetails.Order_ID ${order_number} order_number}</p>
-//             <p><strong>Order Date:</strong> {orderDetails.created_at ? formatDate(orderDetails.created_at ${order_date} : 'N/A'}</p>
-//             <p><strong>Order Type:</strong> {orderDetails.Order_Type}</p>
-//             <p><strong>Email:</strong> {orderDetails.Email}</p>
-//             <p><strong>Phone Number:</strong> {orderDetails.Mobile}</p>
-//             {orderDetails.Order_Type === 'Delivery' && (
-//               <p><strong>Delivery Address:</strong> {orderDetails.Street_Address}</p>
-//             )}
-            
-      
-//       Hi Team, <br><br> You have received a new inquiry from the contact form on your website. Here are the details:<br><br>
-//       <p><strong>Name:</strong> ${first_name} ${last_name}</p>
-//       <p><strong>Email:</strong> ${email}</p>
-//       <p><strong>Mobile:</strong> ${mobile}</p>
-//       <p><strong>Inquiry:</strong> ${inquiry}</p><br><br>
-//       <p>Thank you</p>`,
-//     };
-
-//     transporter.sendMail(mailOptions, (error, info) => {
-//       if (error) {
-//         console.error('Error sending email:', error);
-//         return res.status(500).json({ message: 'Error sending email' });
-//       }
-//       res.status(200).json({ message: 'Email sent successfully!' });
-//     });
-//   } catch (error) {
-//     console.error('Error verifying reCAPTCHA token:', error);
-//     return res.status(500).json({ message: 'Error verifying reCAPTCHA token' });
-//   }
-// });
-
+// Sending order details to the customer and database
 app.post('/api/orders', async (req, res) => {
   const { firstName, lastName, email, phone, streetAddress, orderType, productIds, totalAmount, paymentMethodId } = req.body;
   const currentDateTime = new Date();
@@ -926,7 +795,6 @@ app.post('/api/orders', async (req, res) => {
       confirmation_method: 'manual',
       confirm: true,
       return_url: `${req.headers.origin}/order-confirmation`,
-      // Set `off_session` to true if you want to handle the payment without user interaction.
       off_session: true,
     });
 
@@ -954,10 +822,77 @@ app.post('/api/orders', async (req, res) => {
             return res.status(500).json({ error: 'Failed to fetch product details' });
           }
 
-          res.json({
-            id: orderId,
-            client_secret: paymentIntent.client_secret,
-            products: products,
+          // Construct the HTML email body
+          const productDetailsTable = products.map(product => `
+            <tr>
+              <td style="padding: 8px; border: 1px solid #ddd;">
+                <img src="${product.Product_Image_URL}" alt="${product.Product_Name}" style="width: 50px; height: 50px;" />
+              </td>
+              <td style="padding: 8px; border: 1px solid #ddd;">${product.Product_Name}</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">${product.Product_Option || 'Default'}</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">1</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">${product.Product_Price}</td>
+            </tr>
+          `).join('');
+
+          const emailHTML = `
+          <html>
+          <body>
+            <p>Dear ${firstName},</p>
+            <p>Thank you for your payment! Your order has been received and is currently being processed.</p>
+            
+            <h4>Order Details:</h4>
+            <p><strong>Order ID:</strong> ${orderId}</p>
+            <p><strong>Order Date:</strong> ${currentDateTime.toLocaleDateString('en-AU', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p><strong>Total Amount:</strong> $${totalAmount.toFixed(2)}</p>
+          
+            <h4>Products Ordered:</h4>
+            <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+              <thead>
+                <tr>
+                  <th style="padding: 8px; border: 1px solid #ddd;">Image</th>
+                  <th style="padding: 8px; border: 1px solid #ddd;">Product Name</th>
+                  <th style="padding: 8px; border: 1px solid #ddd;">Option</th>
+                  <th style="padding: 8px; border: 1px solid #ddd;">Quantity</th>
+                  <th style="padding: 8px; border: 1px solid #ddd;">Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${productDetailsTable}
+              </tbody>
+            </table>
+          
+            <p>We will notify you once your order has been shipped.</p>
+            <p>If you have any questions or need further assistance, please don't hesitate to contact our customer support team.</p>
+          
+            <p>Thank you for choosing EZee Planter Boxes!</p>
+          
+            <p>Best regards,</p>
+            <p><strong>EZee Planter Boxes</strong><br>Customer Support Team</p>
+          </body>
+          </html>
+          `;
+
+          const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Order Payment Confirmation',
+            html: emailHTML
+          };
+
+          transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+              console.error('Error sending confirmation email:', error);
+              return res.status(500).json({ error: 'Failed to send email' });
+            }
+            console.log('Confirmation email sent:', info.response);
+
+            // Return success response including order details and payment client secret
+            res.json({
+              id: orderId,
+              client_secret: paymentIntent.client_secret,
+              products: products,
+            });
           });
         });
       });
@@ -971,6 +906,7 @@ app.post('/api/orders', async (req, res) => {
     res.status(500).json({ error: 'Failed to process payment' });
   }
 });
+
 
 app.get('/api/orders/details', async (req, res) => {
   const clientSecret = req.query.client_secret;

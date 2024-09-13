@@ -15,15 +15,17 @@ const PersonalInfoForm = ({ data, onNext, onChange }) => {
           type="text"
           name="firstName"
           placeholder="First Name"
-          value={data.firstName || ''}
+          value={data.firstName}
           onChange={handleChange}
+          required
         />
         <input
           type="text"
           name="lastName"
           placeholder="Last Name"
-          value={data.lastName || ''}
+          value={data.lastName}
           onChange={handleChange}
+          required
         />
       </div>
       <div className="form-group">
@@ -31,23 +33,26 @@ const PersonalInfoForm = ({ data, onNext, onChange }) => {
           type="email"
           name="email"
           placeholder="Email"
-          value={data.email || ''}
+          value={data.email}
           onChange={handleChange}
+          required
         />
         <input
           type="text"
           name="phone"
           placeholder="Phone Number"
-          value={data.phone || ''}
+          value={data.phone}
           onChange={handleChange}
+          required
         />
       </div>
       <input
         type="text"
         name="address"
         placeholder="Address"
-        value={data.address || ''}
+        value={data.address}
         onChange={handleChange}
+        required
       />
       <button onClick={onNext}>Continue to Shipping</button>
     </div>
