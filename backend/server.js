@@ -97,7 +97,9 @@ app.get('/products/:id', (req, res) => {
 // Fetch reviews for a product
 app.get('/reviews/:id', (req, res) => {
   const productId = req.params.id;
+  console.log(`Received request for productId: ${productId}`); // Log the request
 
+  // Query to get reviews and first names
   db.query(`
     SELECT r.review_id, r.product_id, r.rating, r.comment, u.first_name
     FROM Reviews r
@@ -110,10 +112,47 @@ app.get('/reviews/:id', (req, res) => {
     }
 
     if (reviews.length === 0) {
+      console.log('No reviews found for productId:', productId); // Log when no reviews are found
       return res.status(404).json({ error: 'No reviews found for this product' });
     }
 
-    res.json(reviews);
+    console.log('Reviews found:', reviews); // Log the reviews found
+
+    // Query to get ratings
+    db.query('SELECT rating FROM Reviews WHERE product_id = ?', [productId], (err, results) => {
+      if (err) {
+        console.error('Database error:', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      const ratings = results.map(result => result.rating); // Extract all rating values
+      console.log('Fetched ratings for product:', ratings); // Log all the ratings for the product
+
+      // Query to count the total number of reviews
+      db.query('SELECT COUNT(*) AS review_count FROM Reviews WHERE product_id = ?', [productId], (err, countResults) => {
+        if (err) {
+          console.error('Database error:', err);
+          return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        const reviewCount = countResults[0].review_count; // Get the review count from the result
+        console.log('Total review count for product:', reviewCount); // Log the review count
+
+        // Query to calculate the average rating
+        db.query('SELECT AVG(rating) AS average_rating FROM Reviews WHERE product_id = ?', [productId], (err, avgResults) => {
+          if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ error: 'Internal Server Error' });
+          }
+
+          const averageRating = avgResults[0].average_rating || 0; // Get the average rating from the result
+          console.log('Average rating for product:', averageRating); // Log the average rating
+
+          // Send the reviews, ratings, review count, and average rating to the frontend
+          return res.json({ reviews, ratings, reviewCount, averageRating });
+        });
+      });
+    });
   });
 });
 
