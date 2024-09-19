@@ -18,6 +18,8 @@
   width: 100%;
   padding-bottom: 10px;
   max-width: 400px;
+  max-height: 400px;
+  object-fit: cover;
   border-radius: 8px;
   height: auto;
   transition: transform 0.3s ease-in-out;
@@ -31,6 +33,7 @@
   font-size: 20px;
   margin: 10px 0;
   color: #5a3d5c;
+  max-width: 400px;
 }
 
 .product-price {

@@ -49,8 +49,8 @@ const PersonalInfoForm = ({ data, onNext, onBack, onChange }) => {
         value={data.address || ''}
         onChange={handleChange}
       />
-      <button onClick={onBack}>Back</button>
-      <button onClick={onNext} className='next-button'>Next</button>
+      <button onClick={onBack} className='back-custom-button'>Back</button>
+      <button onClick={onNext} className='next-custom-button'>Next</button>
     </div>
   );
 };
