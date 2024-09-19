@@ -3,25 +3,49 @@
     align-items: center;
 }
 
-.search-container input {
+.search-input {
     padding: 8px;
-    font-size: 16px;
     border: 1px solid #ccc;
-    border-radius: 4px 0 0 4px; /* Rounded corners on the left */
-    flex: 1; /* Allow input to grow and fill available space */
+    border-radius: 4px 0 0 4px;
+    flex: 1;
+    font-size: 1.9vw; /* Default: larger screens use vw units */
 }
 
 .search-container .search-icon {
-    padding: 8px;
+    padding: 0;
+    width: 48px; /* Set the width and height of the green box */
+    height: 48px;
     border: 1px solid #ccc;
-    border-left: none; /* Remove border between icon and input */
-    border-radius: 0 4px 4px 0; /* Rounded corners on the right */
+    border-left: none;
+    border-radius: 0 4px 4px 0;
     background-color: #20c146;
     color: white;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.search-container .search-image {
+    width: 75%; /* Set the image to take up 75% of the box */
+    height: 75%; /* Maintain the aspect ratio of the image */
+}
+
+/* Media query for smaller screens (768px and below) */
+@media (max-width: 868px) {
+    .search-input {
+        font-size: 16px; /* Adjust font size */
+    }
+
+    .search-container .search-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .search-container .search-image {
+        width: 70%;
+        height: 70%;
+    }
 }
 
 .search-container .search-icon:hover {

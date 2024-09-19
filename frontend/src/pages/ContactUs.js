@@ -57,81 +57,108 @@ function ContactUs() {
 
   return (
     <div className="ContactUs">
-      <Header />
-      <div className='contact_section'>
-        <h1>Contact Us</h1>
-        <h2>We'd love to hear all general enquiries you may have about Ezee Planter Boxes. Contact us via the form below, call our office on 07 3284 8180, or drop in for a chat in our office at: 21 Huntington Street, Clontarf QLD 4019</h2>
-        <div className='contact-flexbox'>
-
-          <div className="contact-flexbox left-box">
-            <p className="contact-container">
-              <div className="img-container">
-                <img src={email} alt="email" className="Img" />
-              </div>
-              <span className="contact-text"><b>Email</b> <br /> sales@ezeeind.com.au</span>
-            </p>
-            <p className="contact-container">
-              <div className="img-container"> <img src={phone} alt="phone" className="Img" /> </div>
-              <span className="contact-text"><b>Phone</b> <br /> 07 3284 8180</span>
-            </p>
-            <p className="contact-container">
-              <div className="img-container">
-                <img src={clock} alt="clock" className="Img" />
-              </div>
-              <span className="contact-text"><b>Opening Hours</b><br /> Mon-Thurs 7:30am – 4pm <br /> Friday 7:30am – 2pm</span>
-            </p>
+  <Header />
+  <div className='contact_section'>
+    <h1>Contact Us</h1>
+    <h2>We'd love to hear all general enquiries you may have about Ezee Planter Boxes. Contact us via the form below, call our office on 07 3284 8180, or drop in for a chat in our office at: 21 Huntington Street, Clontarf QLD 4019</h2>
+    
+    <div className='contact-flexbox'>
+      {/* Left Box */}
+      <div className="contact-flexbox left-box">
+        {/* Email */}
+        <div className="contact-container">
+          <div className="img-container">
+            <img src={email} alt="email" className="Img" />
           </div>
-
-          <div className="contact-flexbox right-box">
-            <form onSubmit={handleSubmit} className="contact-form">
-              <table className="form-table">
-                <tbody>
-                  <tr>
-                    <td>
-                      <label htmlFor="first_name">First Name:</label><br />
-                      <input type="text" id="first_name" name="first_name" placeholder="Your First Name..." value={formData.first_name} onChange={handleChange} required /><br />
-                    </td>
-                    <td>
-                      <label htmlFor="last_name">Last Name:</label><br />
-                      <input type="text" id="last_name" name="last_name" placeholder="Your Last Name..." value={formData.last_name} onChange={handleChange} required /><br />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <label htmlFor="email">Email:</label><br />
-                      <input type="email" id="email" name="email" placeholder="Your Email..." value={formData.email} onChange={handleChange} required /><br />
-                    </td>
-                    <td>
-                      <label htmlFor="mobile">Mobile Number:</label><br />
-                      <input type="text" id="mobile" name="mobile" placeholder="(optional)" value={formData.mobile} onChange={handleChange} /><br />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colSpan="2">
-                      <label htmlFor="inquiry">Enquiry:</label><br />
-                      <textarea id="inquiry" name="inquiry" placeholder="Write your inquiry here..." value={formData.inquiry} onChange={handleChange} required></textarea>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <ReCAPTCHA
-                sitekey={process.env.RECAPTCHA_SITE_KEY || '6LfpyS4qAAAAACV-9rKjHiyxg9LR0FOr6nVUUu2j'}
-                onChange={handleCaptcha}
-              />
-              <button type="submit" className="submit-button">Submit Form</button>
-            </form>
-            {message && <p className="response-message">{message}</p>}
-          </div>
-
+          <p className="contact-text">
+            <b>Email</b> <br /> sales@ezeeind.com.au
+          </p>
         </div>
 
+        {/* Phone */}
+        <div className="contact-container">
+          <div className="img-container">
+            <img src={phone} alt="phone" className="Img" />
+          </div>
+          <p className="contact-text">
+            <b>Phone</b> <br /> 07 3284 8180
+          </p>
+        </div>
+
+        {/* Opening Hours */}
+        <div className="contact-container">
+          <div className="img-container">
+            <img src={clock} alt="clock" className="Img" />
+          </div>
+          <p className="contact-text">
+            <b>Opening Hours</b><br />
+            Mon-Thurs 7:30am – 4pm <br />
+            Friday 7:30am – 2pm
+          </p>
+        </div>
       </div>
-      <div className='map_section'>
-        <iframe loading="lazy" src="https://maps.google.com/maps?q=21%20Huntington%20Street%2C%20Clontarf%20QLD%204019&amp;t=m&amp;z=16&amp;output=embed&amp;iwloc=near"
-          title="21 Huntington Street, Clontarf QLD 4019" aria-label="21 Huntington Street, Clontarf QLD 4019" width='100%' height='85%' frameBorder="0"></iframe>
+
+      {/* Right Box */}
+      <div className="contact-flexbox right-box">
+        <form onSubmit={handleSubmit} className="contact-form">
+          <table className="form-table">
+            <tbody>
+              <tr>
+                <td>
+                  <label htmlFor="first_name">First Name:</label><br />
+                  <input type="text" id="first_name" name="first_name" placeholder="Your First Name..." value={formData.first_name} onChange={handleChange} required /><br />
+                </td>
+                <td>
+                  <label htmlFor="last_name">Last Name:</label><br />
+                  <input type="text" id="last_name" name="last_name" placeholder="Your Last Name..." value={formData.last_name} onChange={handleChange} required /><br />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label htmlFor="email">Email:</label><br />
+                  <input type="email" id="email" name="email" placeholder="Your Email..." value={formData.email} onChange={handleChange} required /><br />
+                </td>
+                <td>
+                  <label htmlFor="mobile">Mobile Number:</label><br />
+                  <input type="text" id="mobile" name="mobile" placeholder="(optional)" value={formData.mobile} onChange={handleChange} /><br />
+                </td>
+              </tr>
+              <tr>
+                <td colSpan="2">
+                  <label htmlFor="inquiry">Enquiry:</label><br />
+                  <textarea id="inquiry" name="inquiry" placeholder="Write your inquiry here..." value={formData.inquiry} onChange={handleChange} required></textarea>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <ReCAPTCHA
+            sitekey={process.env.RECAPTCHA_SITE_KEY || '6LfpyS4qAAAAACV-9rKjHiyxg9LR0FOr6nVUUu2j'}
+            onChange={handleCaptcha}
+          />
+          <button type="submit" className="submit-button">Submit Form</button>
+        </form>
+
+        {message && <p className="response-message">{message}</p>}
       </div>
-      <Footer />
     </div>
+  </div>
+
+  <div className='map_section'>
+    <iframe
+      loading="lazy"
+      src="https://maps.google.com/maps?q=21%20Huntington%20Street%2C%20Clontarf%20QLD%204019&amp;t=m&amp;z=16&amp;output=embed&amp;iwloc=near"
+      title="21 Huntington Street, Clontarf QLD 4019"
+      aria-label="21 Huntington Street, Clontarf QLD 4019"
+      width='100%'
+      height='85%'
+      frameBorder="0">
+    </iframe>
+  </div>
+
+  <Footer />
+</div>
+
   );
 
 }

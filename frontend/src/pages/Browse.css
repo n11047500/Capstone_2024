@@ -49,7 +49,7 @@ body, html {
 
 .browse-sort-dropdown {
   padding: 8px 16px;
-  font-size: 16px;
+  font-size: 18px;
   border: 2px solid #ccc;
   border-radius: 4px;
   background-color: white;
@@ -69,6 +69,15 @@ body, html {
 }
 
 /* Responsive styles */
+@media (min-width: 1024px) {
+  .browse-sort-dropdown {
+    font-size: 1.3vw;
+    
+  }
+}
+
+
+/* Responsive styles */
 @media (max-width: 1024px) {
   .browse-product-card {
     flex-basis: 50%;
@@ -85,4 +94,10 @@ body, html {
   .browse-product-card {
     padding: 10px;
   }
+}
+
+
+@media (min-width: 2400px) { 
+  
+
 }

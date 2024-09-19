@@ -122,6 +122,129 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+
+/* Media Queries for Responsiveness */
+@media (min-width: 2200px) {
+  
+.product-page-container {
+  padding: 40px 20px;
+  max-width: 2000px;
+}
+
+.product-container.product-page {
+  display: flex;
+  flex-direction: row; /* Align image and text side by side by default */
+}
+
+.product-image.product-page {
+  flex: 1;
+}
+
+.product-image.product-page img {
+  width: 25.5vw !important;
+  max-width: none !important;
+  height: auto;
+  border-radius: 8px;
+  margin: 0 auto;
+}
+
+.product-details.product-page {
+  flex: 1;
+  padding: 20px 40px;
+  background-color: #EDF1EC;
+  border-top: 1px solid #e0e0e0;
+  max-width: 50%; /* Ensure the text doesn't overflow the container */
+}
+
+.product-title.product-page {
+  font-size: 2.25vw;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.product-description.product-page {
+  font-size: 1.23vw;
+  margin-bottom: 20px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.product-dimensions.product-page {
+  font-size: 1.1vw;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.product-price.product-page {
+  font-size: 1.95vw;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #000;
+}
+
+.product-reviews.product-page {
+  font-size: 1.25vw;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.product-reviews.product-page .star {
+  color: gold;
+}
+
+.product-options.product-page {
+  font-size: 1.125vw;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.quantity-container.product-page {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.quantity-container.product-page label {
+  font-size: 1.125vw;
+  margin-right: 10px;
+}
+
+.quantity-input.product-page {
+  width: 60px;
+  padding: 8px;
+  font-size: 1.125vw;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.add-to-cart.product-page {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 15px 20px;
+  font-size: 1.26vw;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.add-to-cart.product-page:hover {
+  background-color: #45a049;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+}
+
+
+
+
+
+
+
+
+
 /* Media Queries for Responsiveness */
 @media (max-width: 1024px) {
   .product-container.product-page {
