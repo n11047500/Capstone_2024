@@ -51,6 +51,7 @@ function ForgotPassword() {
             <ReCAPTCHA
                 sitekey={process.env.RECAPTCHA_SITE_KEY || '6LfpyS4qAAAAACV-9rKjHiyxg9LR0FOr6nVUUu2j'}
                 onChange={handleCaptcha}
+                className='captcha-forgot-container'
               />
             <button type="submit" className="send-link-button">Send Reset Link</button>
         </form>

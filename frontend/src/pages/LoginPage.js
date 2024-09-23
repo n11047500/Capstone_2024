@@ -72,6 +72,7 @@ const LoginPage = () => {
             <ReCAPTCHA
               sitekey={process.env.RECAPTCHA_SITE_KEY || '6LfpyS4qAAAAACV-9rKjHiyxg9LR0FOr6nVUUu2j'}
               onChange={handleCaptcha}
+              className='captcha-login-container'
             />
             <button type="submit" className="login-button">Login</button>
           </form>

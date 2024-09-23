@@ -15,6 +15,8 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 
+const connection = db.getConnection(); // Get the active connection
+
 // Configure Multer for file uploads
 const storage = multer.memoryStorage(); // Stores file in memory
 const uploadFile = multer({ storage: storage });
@@ -33,7 +35,7 @@ app.get('/products', (req, res) => {
       SELECT * FROM products WHERE Product_ID IN (${ids.map(() => '?').join(',')});
     `;
 
-    db.query(query, ids, (err, results) => {
+    connection.query(query, ids, (err, results) => {
       if (err) {
         console.error('Error fetching products by IDs:', err);
         return res.status(500).json({ error: 'Internal Server Error' });
@@ -43,7 +45,7 @@ app.get('/products', (req, res) => {
     });
   } else {
     // If no IDs are provided, fetch all products
-    db.query('SELECT * FROM products', (err, results) => {
+    connection.query('SELECT * FROM products', (err, results) => {
       if (err) {
         console.error('Error fetching all products:', err);
         return res.status(500).json({ error: 'Internal Server Error' });
@@ -58,7 +60,7 @@ app.get('/products', (req, res) => {
 app.get('/products/:id', (req, res) => {
   const productId = req.params.id;
 
-  db.query('SELECT * FROM products WHERE Product_ID = ?', [productId], (err, productResults) => {
+  connection.query('SELECT * FROM products WHERE Product_ID = ?', [productId], (err, productResults) => {
     if (err) {
       console.error('Database error:', err);
       return res.status(500).send('Internal Server Error');
@@ -70,7 +72,7 @@ app.get('/products/:id', (req, res) => {
 
     const product = productResults[0];
 
-    db.query(`
+    connection.query(`
       SELECT AVG(rating) AS average_rating, COUNT(*) AS review_count
       FROM Reviews
       WHERE product_id = ?
@@ -98,7 +100,7 @@ app.get('/products/:id', (req, res) => {
 app.get('/reviews/:id', (req, res) => {
   const productId = req.params.id;
 
-  db.query(`
+  connection.query(`
     SELECT r.review_id, r.product_id, r.rating, r.comment, u.first_name
     FROM Reviews r
     LEFT JOIN users u ON r.user_id = u.user_id
@@ -130,7 +132,7 @@ app.post('/reviews', (req, res) => {
   const query = 'INSERT INTO Reviews (product_ID, user_ID, rating, comment) VALUES (?, ?, ?, ?)';
   const params = [productId, userId, rating, comment];
 
-  db.query(query, params, (err, results) => {
+  connection.query(query, params, (err, results) => {
     if (err) {
       console.error('Database error:', err);
       return res.status(500).json({ error: 'Internal Server Error' });
@@ -166,7 +168,7 @@ app.post('/register', async (req, res) => {
     }
 
     const checkQuery = 'SELECT * FROM users WHERE email = ?';
-    db.query(checkQuery, [email], (err, results) => {
+    connection.query(checkQuery, [email], (err, results) => {
       if (err) {
         console.error('Error checking existing user:', err);
         return res.status(500).json({ error: 'Error creating user. Please try again.' });
@@ -183,7 +185,7 @@ app.post('/register', async (req, res) => {
         }
 
         const query = 'INSERT INTO users (first_name, last_name, email, password, mobile_number, date_of_birth, role) VALUES (?, ?, ?, ?, ?, ?, ?)';
-        db.query(query, [firstName, lastName, email, hash, mobileNumber, dateOfBirth, role], (err, result) => {
+        connection.query(query, [firstName, lastName, email, hash, mobileNumber, dateOfBirth, role], (err, result) => {
           if (err) {
             console.error('Error inserting user into database:', err);
             return res.status(500).json({ error: 'Error creating user. Please try again.' });
@@ -226,7 +228,7 @@ app.post('/login', async (req, res) => {
     }
 
     const query = 'SELECT * FROM users WHERE email = ?';
-    db.query(query, [email], (err, results) => {
+    connection.query(query, [email], (err, results) => {
       if (err) {
         console.error('Error fetching user from database:', err);
         return res.status(500).json({ error: 'An error occurred. Please try again.' });
@@ -267,7 +269,7 @@ app.get('/user/:email', (req, res) => {
   const userQuery = 'SELECT user_id, first_name, last_name, email, mobile_number, date_of_birth, role FROM users WHERE email = ?';
   const addressesQuery = 'SELECT type, address FROM addresses WHERE user_id = ?';
 
-  db.query(userQuery, [email], (err, userResults) => {
+  connection.query(userQuery, [email], (err, userResults) => {
     if (err) {
       console.error('Error fetching user from database:', err);
       return res.status(500).json({ error: 'An error occurred. Please try again.' });
@@ -279,7 +281,7 @@ app.get('/user/:email', (req, res) => {
 
     const user = userResults[0];
 
-    db.query(addressesQuery, [user.user_id], (err, addressResults) => {
+    connection.query(addressesQuery, [user.user_id], (err, addressResults) => {
       if (err) {
         console.error('Error fetching addresses from database:', err);
         return res.status(500).json({ error: 'An error occurred. Please try again.' });
@@ -312,7 +314,7 @@ app.put('/user/:email', (req, res) => {
   const getUserIDQuery = 'SELECT user_id FROM users WHERE email = ?';
   const updateAddressQuery = 'INSERT INTO addresses (user_id, type, address) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE address = VALUES(address)';
 
-  db.query(updateUserQuery, [firstName, lastName, mobileNumber, dateOfBirth, email], (err, result) => {
+  connection.query(updateUserQuery, [firstName, lastName, mobileNumber, dateOfBirth, email], (err, result) => {
     if (err) {
       console.error('Error updating user:', err);
       return res.status(500).json({ error: 'Failed to update user information.' });
@@ -322,7 +324,7 @@ app.put('/user/:email', (req, res) => {
       return res.status(404).json({ error: 'User not found.' });
     }
 
-    db.query(getUserIDQuery, [email], (err, userIDResults) => {
+    connection.query(getUserIDQuery, [email], (err, userIDResults) => {
       if (err) {
         console.error('Error fetching user ID:', err);
         return res.status(500).json({ error: 'Failed to update user information.' });
@@ -330,13 +332,13 @@ app.put('/user/:email', (req, res) => {
 
       const userId = userIDResults[0].user_id;
 
-      db.query(updateAddressQuery, [userId, 'shipping', shippingAddress], (err) => {
+      connection.query(updateAddressQuery, [userId, 'shipping', shippingAddress], (err) => {
         if (err) {
           console.error('Error updating shipping address:', err);
           return res.status(500).json({ error: 'Failed to update user information.' });
         }
 
-        db.query(updateAddressQuery, [userId, 'billing', billingAddress], (err) => {
+        connection.query(updateAddressQuery, [userId, 'billing', billingAddress], (err) => {
           if (err) {
             console.error('Error updating billing address:', err);
             return res.status(500).json({ error: 'Failed to update user information.' });
@@ -353,7 +355,7 @@ app.put('/user/:email', (req, res) => {
 app.post('/update-role', (req, res) => {
   const { email, role } = req.body;
 
-  db.query('UPDATE users SET role = ? WHERE email = ?', [role, email], (err, result) => {
+  connection.query('UPDATE users SET role = ? WHERE email = ?', [role, email], (err, result) => {
     if (err) {
       console.error('Error executing query:', err);
       return res.status(500).json({ message: 'An error occurred during the role update.' });
@@ -395,7 +397,7 @@ app.post('/forgot-password', async (req, res) => {
 
     // Check if the email exists in the database
     const query = 'SELECT * FROM users WHERE email = ?';
-    db.query(query, [email], (err, results) => {
+    connection.query(query, [email], (err, results) => {
       if (err) {
         console.error('Error fetching user from database:', err);
         return res.status(500).json({ error: 'An error occurred. Please try again.' });
@@ -471,7 +473,7 @@ app.post('/reset-password/:token', async (req, res) => {
 
       // Check if the email exists in the database
       const query = 'SELECT * FROM users WHERE email = ?';
-      db.query(query, [email], (err, results) => {
+      connection.query(query, [email], (err, results) => {
         if (err) {
           console.error('Error fetching user from database:', err);
           return res.status(500).json({ error: 'An error occurred. Please try again.' });
@@ -493,7 +495,7 @@ app.post('/reset-password/:token', async (req, res) => {
 
           // Update user password in the database
           const updateQuery = 'UPDATE users SET password = ? WHERE email = ?';
-          db.query(updateQuery, [hashedPassword, email], (updateErr, updateResults) => {
+          connection.query(updateQuery, [hashedPassword, email], (updateErr, updateResults) => {
             if (updateErr) {
               console.error('Error updating password in database:', updateErr);
               return res.status(500).json({ error: 'An error occurred while updating the password.' });
@@ -527,7 +529,7 @@ app.post('/add-product', (req, res) => {
   `;
   const values = [name, price, quantity, description, dimensions, options, imageUrl];
 
-  db.query(query, values, (err, result) => {
+  connection.query(query, values, (err, result) => {
     if (err) {
       console.error('Error adding product:', err);
       return res.status(500).json({ message: 'An error occurred while adding the product.' });
@@ -549,7 +551,7 @@ app.put('/products/:id', (req, res) => {
   `;
   const values = [name, price, quantity, description, dimensions, options, imageUrl, productId];
 
-  db.query(query, values, (err, result) => {
+  connection.query(query, values, (err, result) => {
     if (err) {
       console.error('Error updating product:', err);
       return res.status(500).json({ message: 'An error occurred while updating the product.' });
@@ -568,7 +570,7 @@ app.delete('/products/:id', (req, res) => {
   const productId = req.params.id;
 
   const query = 'DELETE FROM products WHERE Product_ID = ?';
-  db.query(query, [productId], (err, result) => {
+  connection.query(query, [productId], (err, result) => {
     if (err) {
       console.error('Error deleting product:', err);
       return res.status(500).json({ message: 'An error occurred while deleting the product.' });
@@ -593,7 +595,7 @@ app.get('/orders/:id', (req, res) => {
     WHERE Order_ID = ?;
   `;
 
-  db.query(orderQuery, [orderId], (err, orderResults) => {
+  connection.query(orderQuery, [orderId], (err, orderResults) => {
     if (err) {
       console.error('Error fetching order details:', err);
       return res.status(500).json({ error: 'Internal Server Error' });
@@ -616,7 +618,7 @@ app.get('/orders/:id', (req, res) => {
     // Fetch product details from the products table
     const productsQuery = `SELECT * FROM products WHERE Product_ID IN (${productIds.map(() => '?').join(',')})`;
 
-    db.query(productsQuery, productIds, (err, products) => {
+    connection.query(productsQuery, productIds, (err, products) => {
       if (err) {
         console.error('Error fetching product details:', err);
         return res.status(500).json({ error: 'Internal Server Error' });
@@ -646,7 +648,7 @@ app.get('/orders', (req, res) => {
     orderQuery += ` WHERE status = ?`;
   }
 
-  db.query(orderQuery, [status], (err, orderResults) => {
+  connection.query(orderQuery, [status], (err, orderResults) => {
     if (err) {
       console.error('Error fetching orders:', err);
       return res.status(500).json({ error: 'Internal Server Error' });
@@ -671,7 +673,7 @@ app.put('/orders/:id', (req, res) => {
     WHERE Order_ID = ?;
   `;
 
-  db.query(updateOrderQuery, [status, orderId], (err, result) => {
+  connection.query(updateOrderQuery, [status, orderId], (err, result) => {
     if (err) {
       console.error('Error updating order status:', err);
       return res.status(500).json({ error: 'Internal Server Error' });
@@ -807,7 +809,7 @@ app.post('/api/orders', async (req, res) => {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?)
       `;
 
-      db.query(query, [firstName, lastName, email, phone, streetAddress, orderType, productIdsString, totalAmount, clientSecret, currentDateTime], (err, result) => {
+      connection.query(query, [firstName, lastName, email, phone, streetAddress, orderType, productIdsString, totalAmount, clientSecret, currentDateTime], (err, result) => {
         if (err) {
           console.error('Database error:', err);
           return res.status(500).json({ error: 'Failed to create order' });
@@ -816,7 +818,7 @@ app.post('/api/orders', async (req, res) => {
         const orderId = result.insertId;
         const fetchProductsQuery = `SELECT * FROM products WHERE Product_ID IN (${productIds.map(() => '?').join(',')})`;
         
-        db.query(fetchProductsQuery, productIds.map(pid => pid.split(':')[0]), (err, products) => {
+        connection.query(fetchProductsQuery, productIds.map(pid => pid.split(':')[0]), (err, products) => {
           if (err) {
             console.error('Error fetching product details:', err);
             return res.status(500).json({ error: 'Failed to fetch product details' });
@@ -925,7 +927,7 @@ app.get('/api/orders/details', async (req, res) => {
     }
 
     const query = `SELECT * FROM orders WHERE client_secret = ?`;
-    db.query(query, [clientSecret], (err, orderResults) => {
+    connection.query(query, [clientSecret], (err, orderResults) => {
       if (err) {
         console.error('Error fetching order details:', err);
         return res.status(500).json({ error: 'Internal Server Error' });
@@ -940,7 +942,7 @@ app.get('/api/orders/details', async (req, res) => {
 
       const productsQuery = `SELECT * FROM products WHERE Product_ID IN (${productIds.map(() => '?').join(',')})`;
 
-      db.query(productsQuery, productIds, (err, products) => {
+      connection.query(productsQuery, productIds, (err, products) => {
         if (err) {
           console.error('Error fetching product details:', err);
           return res.status(500).json({ error: 'Internal Server Error' });
@@ -958,116 +960,116 @@ app.get('/api/orders/details', async (req, res) => {
   }
 });
 
-// Nodemailer sendEmail function
-const sendEmail = async (formDataObj) => {
-  try {
-    // Nodemailer transporter configuration
-    const transporter = nodemailer.createTransport({
-      service: 'Outlook365',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+// // Nodemailer sendEmail function
+// const sendEmail = async (formDataObj) => {
+//   try {
+//     // Nodemailer transporter configuration
+//     const transporter = nodemailer.createTransport({
+//       service: 'Outlook365',
+//       auth: {
+//         user: process.env.EMAIL_USER,
+//         pass: process.env.EMAIL_PASS,
+//       },
+//     });
 
-    // HTML email template
-    const emailHTML = `
-      <style>
-        p {
-          text-align: center;
-        }
-        table, th, td {
-          border: 1px solid black;
-          width: 50%;
-          margin: 0 auto;
-        }
-        .center {
-          margin-left: auto;
-          margin-right: auto;
-        }
-      </style>
+//     // HTML email template
+//     const emailHTML = `
+//       <style>
+//         p {
+//           text-align: center;
+//         }
+//         table, th, td {
+//           border: 1px solid black;
+//           width: 50%;
+//           margin: 0 auto;
+//         }
+//         .center {
+//           margin-left: auto;
+//           margin-right: auto;
+//         }
+//       </style>
 
-      <h3 style="text-align:center;">Thank You for Your Order!</h3>
-      <p>We’ve received your custom planter box order with the following details:</p>
+//       <h3 style="text-align:center;">Thank You for Your Order!</h3>
+//       <p>We’ve received your custom planter box order with the following details:</p>
 
-      <table class="center">
-        <tr>
-          <th colspan="2">Product Information</th>
-        </tr>
-        <tr>
-          <td>Color Type:</td>
-          <td>${formDataObj.colorType || 'N/A'}</td>
-        </tr>
-        <tr>
-          <td>Selected Color:</td>
-          <td>${formDataObj.color || 'N/A'}</td>
-        </tr>
-        <tr>
-          <td>Custom Color:</td>
-          <td>${formDataObj.customColor || 'N/A'}</td>
-        </tr>
-        <tr>
-          <td>Width (cm):</td>
-          <td>${formDataObj.width || 'N/A'}</td>
-        </tr>
-        <tr>
-          <td>Wicking:</td>
-          <td>${formDataObj.wicking || 'N/A'}</td>
-        </tr>
-      </table>
+//       <table class="center">
+//         <tr>
+//           <th colspan="2">Product Information</th>
+//         </tr>
+//         <tr>
+//           <td>Color Type:</td>
+//           <td>${formDataObj.colorType || 'N/A'}</td>
+//         </tr>
+//         <tr>
+//           <td>Selected Color:</td>
+//           <td>${formDataObj.color || 'N/A'}</td>
+//         </tr>
+//         <tr>
+//           <td>Custom Color:</td>
+//           <td>${formDataObj.customColor || 'N/A'}</td>
+//         </tr>
+//         <tr>
+//           <td>Width (cm):</td>
+//           <td>${formDataObj.width || 'N/A'}</td>
+//         </tr>
+//         <tr>
+//           <td>Wicking:</td>
+//           <td>${formDataObj.wicking || 'N/A'}</td>
+//         </tr>
+//       </table>
 
-      <br><br>
+//       <br><br>
 
-      <table class="center">
-        <tr>
-          <th colspan="2">Personal Information</th>
-        </tr>
-        <tr>
-          <td>First Name:</td>
-          <td>${formDataObj.firstName || 'N/A'}</td>
-        </tr>
-        <tr>
-          <td>Last Name:</td>
-          <td>${formDataObj.lastName || 'N/A'}</td>
-        </tr>
-        <tr>
-          <td>Email:</td>
-          <td>${formDataObj.email || 'N/A'}</td>
-        </tr>
-      </table>
+//       <table class="center">
+//         <tr>
+//           <th colspan="2">Personal Information</th>
+//         </tr>
+//         <tr>
+//           <td>First Name:</td>
+//           <td>${formDataObj.firstName || 'N/A'}</td>
+//         </tr>
+//         <tr>
+//           <td>Last Name:</td>
+//           <td>${formDataObj.lastName || 'N/A'}</td>
+//         </tr>
+//         <tr>
+//           <td>Email:</td>
+//           <td>${formDataObj.email || 'N/A'}</td>
+//         </tr>
+//       </table>
 
-      <br><br>
+//       <br><br>
 
-      <table class="center">
-        <tr>
-          <th colspan="2">Additional Information</th>
-        </tr>
-        <tr>
-          <td style="width:70%" colspan="2"><strong>Comments: </strong>${formDataObj.comment || 'No comments'}</td>
-        </tr>
-      </table>
-    `;
+//       <table class="center">
+//         <tr>
+//           <th colspan="2">Additional Information</th>
+//         </tr>
+//         <tr>
+//           <td style="width:70%" colspan="2"><strong>Comments: </strong>${formDataObj.comment || 'No comments'}</td>
+//         </tr>
+//       </table>
+//     `;
 
-    // Email options, including the file attachment
-    let mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Your Custom Planter Box Order',
-      html: emailHTML,
-      attachments: formDataObj.file ? [{
-        filename: formDataObj.file.originalname,
-        content: formDataObj.file.buffer,
-        cid: formDataObj.file.filename
-      }] : []
-    };
+//     // Email options, including the file attachment
+//     let mailOptions = {
+//       from: process.env.EMAIL_USER,
+//       to: email,
+//       subject: 'Your Custom Planter Box Order',
+//       html: emailHTML,
+//       attachments: formDataObj.file ? [{
+//         filename: formDataObj.file.originalname,
+//         content: formDataObj.file.buffer,
+//         cid: formDataObj.file.filename
+//       }] : []
+//     };
 
-    // Send email
-    let info = await transporter.sendMail(mailOptions);
-    console.log('Email sent: ' + info.response);
-  } catch (error) {
-    console.error('Error sending email:', error);
-  }
-};
+//     // Send email
+//     let info = await transporter.sendMail(mailOptions);
+//     console.log('Email sent: ' + info.response);
+//   } catch (error) {
+//     console.error('Error sending email:', error);
+//   }
+// };
 
 
 app.use(express.urlencoded({ extended: true }));
@@ -1116,7 +1118,7 @@ app.get('/api/search', (req, res) => {
   const sql = `SELECT * FROM products WHERE Product_Name LIKE ? OR Description LIKE ?`;
   const values = [`%${query}%`, `%${query}%`];  // Use the query in both conditions
 
-  db.query(sql, values, (err, results) => {  // Pass both values into the query
+  connection.query(sql, values, (err, results) => {  // Pass both values into the query
     if (err) {
       console.error('Database query error:', err);
       return res.status(500).json({ error: 'Internal server error' });
