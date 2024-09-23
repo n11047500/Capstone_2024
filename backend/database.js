@@ -34,6 +34,11 @@ function handleDisconnect() {
   });
 }
 
-module.exports = connection;
+// Export the connection and the connect function
+module.exports = {
+  connect: handleDisconnect,
+  getConnection: () => connection
+};
 
+// Call handleDisconnect to establish the initial connection
 handleDisconnect();

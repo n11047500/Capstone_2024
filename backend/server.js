@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
   res.send('Server is running.');
 });
 
-// Fetch all products or multiple products by IDs
+// Fetch all products or multiple products by IDs {i dont think this is needed}
 app.get('/products', (req, res) => {
   const ids = req.query.ids ? req.query.ids.split(',') : [];
 
@@ -88,7 +88,7 @@ app.get('/products/:id', (req, res) => {
         averageRating,
         reviewCount
       };
-
+      
       res.json(productWithReviewInfo);
     });
   });
