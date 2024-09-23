@@ -119,6 +119,7 @@ function ContactUs() {
                 sitekey={process.env.RECAPTCHA_SITE_KEY || '6LfpyS4qAAAAACV-9rKjHiyxg9LR0FOr6nVUUu2j'}
                 onChange={handleCaptcha}
                 data-testid="captcha-input"
+                className='captcha-contact-container'
               />
               <button type="submit" className="submit-button">Submit Form</button>
             </form>

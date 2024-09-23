@@ -104,6 +104,13 @@ main {
   text-decoration: underline;
 }
 
+.captcha-login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
 /* Media Queries for Better Scaling */
 @media (max-width: 768px) {
   .login-container {
