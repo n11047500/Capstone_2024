@@ -688,15 +688,10 @@ app.put('/orders/:id', (req, res) => {
 });
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp-mail.outlook.com',
-  port: 587,
-  secure: false,
+  service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false,
   },
 });
 
@@ -748,7 +743,7 @@ app.post('/send-contact-email', async (req, res) => {
     }
 
     const transporter = nodemailer.createTransport({
-      service: 'Outlook365',
+      service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
