@@ -49,21 +49,10 @@ const SignUpPage = () => {
 
       const data = await response.json();
       console.log('User created successfully:', data);
+      
+      // Redirect to the login page
+      navigate('/login');
 
-      const userResponse = await fetch(`${process.env.REACT_APP_API_URL}/user/${formData.email}`);
-      if (!userResponse.ok) {
-        throw new Error('Failed to fetch user details after signup.');
-      }
-
-      const userData = await userResponse.json();
-
-      localStorage.setItem('userRole', userData.role);
-
-      if (userData.role === 'employee') {
-        navigate('/employee-dashboard');
-      } else {
-        navigate(`/user/${formData.email}`);
-      }
     } catch (error) {
       console.error('Error creating user:', error);
       setError(error.message);

@@ -960,116 +960,116 @@ app.get('/api/orders/details', async (req, res) => {
   }
 });
 
-// // Nodemailer sendEmail function
-// const sendEmail = async (formDataObj) => {
-//   try {
-//     // Nodemailer transporter configuration
-//     const transporter = nodemailer.createTransport({
-//       service: 'Outlook365',
-//       auth: {
-//         user: process.env.EMAIL_USER,
-//         pass: process.env.EMAIL_PASS,
-//       },
-//     });
+// Nodemailer sendEmail function
+const sendEmail = async (formDataObj) => {
+  try {
+    // Nodemailer transporter configuration
+    const transporter = nodemailer.createTransport({
+      service: 'Outlook365',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
 
-//     // HTML email template
-//     const emailHTML = `
-//       <style>
-//         p {
-//           text-align: center;
-//         }
-//         table, th, td {
-//           border: 1px solid black;
-//           width: 50%;
-//           margin: 0 auto;
-//         }
-//         .center {
-//           margin-left: auto;
-//           margin-right: auto;
-//         }
-//       </style>
+    // HTML email template
+    const emailHTML = `
+      <style>
+        p {
+          text-align: center;
+        }
+        table, th, td {
+          border: 1px solid black;
+          width: 50%;
+          margin: 0 auto;
+        }
+        .center {
+          margin-left: auto;
+          margin-right: auto;
+        }
+      </style>
 
-//       <h3 style="text-align:center;">Thank You for Your Order!</h3>
-//       <p>We’ve received your custom planter box order with the following details:</p>
+      <h3 style="text-align:center;">Thank You for Your Order!</h3>
+      <p>We’ve received your custom planter box order with the following details:</p>
 
-//       <table class="center">
-//         <tr>
-//           <th colspan="2">Product Information</th>
-//         </tr>
-//         <tr>
-//           <td>Color Type:</td>
-//           <td>${formDataObj.colorType || 'N/A'}</td>
-//         </tr>
-//         <tr>
-//           <td>Selected Color:</td>
-//           <td>${formDataObj.color || 'N/A'}</td>
-//         </tr>
-//         <tr>
-//           <td>Custom Color:</td>
-//           <td>${formDataObj.customColor || 'N/A'}</td>
-//         </tr>
-//         <tr>
-//           <td>Width (cm):</td>
-//           <td>${formDataObj.width || 'N/A'}</td>
-//         </tr>
-//         <tr>
-//           <td>Wicking:</td>
-//           <td>${formDataObj.wicking || 'N/A'}</td>
-//         </tr>
-//       </table>
+      <table class="center">
+        <tr>
+          <th colspan="2">Product Information</th>
+        </tr>
+        <tr>
+          <td>Color Type:</td>
+          <td>${formDataObj.colorType || 'N/A'}</td>
+        </tr>
+        <tr>
+          <td>Selected Color:</td>
+          <td>${formDataObj.color || 'N/A'}</td>
+        </tr>
+        <tr>
+          <td>Custom Color:</td>
+          <td>${formDataObj.customColor || 'N/A'}</td>
+        </tr>
+        <tr>
+          <td>Width (cm):</td>
+          <td>${formDataObj.width || 'N/A'}</td>
+        </tr>
+        <tr>
+          <td>Wicking:</td>
+          <td>${formDataObj.wicking || 'N/A'}</td>
+        </tr>
+      </table>
 
-//       <br><br>
+      <br><br>
 
-//       <table class="center">
-//         <tr>
-//           <th colspan="2">Personal Information</th>
-//         </tr>
-//         <tr>
-//           <td>First Name:</td>
-//           <td>${formDataObj.firstName || 'N/A'}</td>
-//         </tr>
-//         <tr>
-//           <td>Last Name:</td>
-//           <td>${formDataObj.lastName || 'N/A'}</td>
-//         </tr>
-//         <tr>
-//           <td>Email:</td>
-//           <td>${formDataObj.email || 'N/A'}</td>
-//         </tr>
-//       </table>
+      <table class="center">
+        <tr>
+          <th colspan="2">Personal Information</th>
+        </tr>
+        <tr>
+          <td>First Name:</td>
+          <td>${formDataObj.firstName || 'N/A'}</td>
+        </tr>
+        <tr>
+          <td>Last Name:</td>
+          <td>${formDataObj.lastName || 'N/A'}</td>
+        </tr>
+        <tr>
+          <td>Email:</td>
+          <td>${formDataObj.email || 'N/A'}</td>
+        </tr>
+      </table>
 
-//       <br><br>
+      <br><br>
 
-//       <table class="center">
-//         <tr>
-//           <th colspan="2">Additional Information</th>
-//         </tr>
-//         <tr>
-//           <td style="width:70%" colspan="2"><strong>Comments: </strong>${formDataObj.comment || 'No comments'}</td>
-//         </tr>
-//       </table>
-//     `;
+      <table class="center">
+        <tr>
+          <th colspan="2">Additional Information</th>
+        </tr>
+        <tr>
+          <td style="width:70%" colspan="2"><strong>Comments: </strong>${formDataObj.comment || 'No comments'}</td>
+        </tr>
+      </table>
+    `;
 
-//     // Email options, including the file attachment
-//     let mailOptions = {
-//       from: process.env.EMAIL_USER,
-//       to: email,
-//       subject: 'Your Custom Planter Box Order',
-//       html: emailHTML,
-//       attachments: formDataObj.file ? [{
-//         filename: formDataObj.file.originalname,
-//         content: formDataObj.file.buffer,
-//         cid: formDataObj.file.filename
-//       }] : []
-//     };
+    // Email options, including the file attachment
+    let mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Your Custom Planter Box Order',
+      html: emailHTML,
+      attachments: formDataObj.file ? [{
+        filename: formDataObj.file.originalname,
+        content: formDataObj.file.buffer,
+        cid: formDataObj.file.filename
+      }] : []
+    };
 
-//     // Send email
-//     let info = await transporter.sendMail(mailOptions);
-//     console.log('Email sent: ' + info.response);
-//   } catch (error) {
-//     console.error('Error sending email:', error);
-//   }
-// };
+    // Send email
+    let info = await transporter.sendMail(mailOptions);
+    console.log('Email sent: ' + info.response);
+  } catch (error) {
+    console.error('Error sending email:', error);
+  }
+};
 
 
 app.use(express.urlencoded({ extended: true }));

@@ -68,7 +68,7 @@ const ProductPage = () => {
             <p className="product-dimensions product-page"><strong>Dimensions:</strong> {product.Product_Dimensions}</p>
             <p className="product-price product-page">${product.Product_Price}</p>
             <div className="product-reviews product-page">
-            <span className="star product-page">⭐</span> {averageRating} &nbsp;·&nbsp;  
+              <span className="star product-page">⭐</span> {averageRating} &nbsp;·&nbsp;
               <Link to={`/reviews/${productId}`} className="product-page">{product.reviewCount} reviews</Link>
             </div>
             {product.Product_Options.length > 1 && (
@@ -95,9 +95,7 @@ const ProductPage = () => {
                 className="quantity-input product-page"
               />
             </div>
-            <button className="add-to-cart product-page" onClick={handleAddToCart}>
-              Add to Cart
-            </button>
+            <button className="add-to-cart product-page" onClick={handleAddToCart}>Add to Cart</button>
           </div>
         </div>
       </div>

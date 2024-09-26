@@ -47,7 +47,7 @@ const UserProfile = () => {
     e.preventDefault();
     // Add form submission logic here
   };
-  
+
   return (
     <>
       <Header />
@@ -69,7 +69,7 @@ const UserProfile = () => {
                 value={formData.firstName}
                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
               />
-              
+
               <label htmlFor="lastName">Last Name:</label>
               <input
                 type="text"
@@ -132,11 +132,11 @@ const UserProfile = () => {
 
               <button type="submit" className="update-button">Update Profile</button>
             </form>
-      )}
-    </div>
-</main>
-<Footer />
-      </>
+          )}
+        </div>
+      </main>
+      <Footer />
+    </>
   );
 };
 

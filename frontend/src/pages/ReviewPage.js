@@ -14,7 +14,6 @@ const ReviewPage = () => {
   const [ratings, setRatings] = useState([]);
   const [reviewCount, setReviewCount] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
-
   const [error, setError] = useState(null);
 
 
@@ -26,6 +25,7 @@ const ReviewPage = () => {
         setProduct(data);
       } catch (error) {
         console.error('Error fetching product:', error);
+        setError('Failed to load product details');
       }
     };
 
@@ -36,96 +36,76 @@ const ReviewPage = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Fetched reviews data:', data);
         setReviews(data.reviews || []);
         setRatings(data.ratings || []);
-        setReviewCount(data.reviewCount || 0); // Set review count from the response
-        setAverageRating(data.averageRating || 0); // Set average rating from the response
+        setReviewCount(data.reviewCount || 0);
+        setAverageRating(data.averageRating || 0);
       } catch (error) {
         console.error('Error fetching reviews:', error);
-        setError(error.message);
+        setError('Failed to load reviews');
         setReviews([]);
         setRatings([]);
-        setReviewCount(0); // Set default review count in case of error
-        setAverageRating(0); // Set default average rating in case of error
+        setReviewCount(0);
+        setAverageRating(0);
       }
-    };    
-
+    };
 
     fetchProduct();
     fetchReviews();
   }, [productId]);
 
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   if (!product) {
     return <div>Loading...</div>;
   }
 
-  console.log('Product ID:', productId);
-
   const productImage = product.Product_Image_URL;
-
   const ratingFormatter = new Intl.NumberFormat('en-AU', {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });
 
+
   return (
     <>
       <Header />
-        <div className="review-page-container">
-          <div className="product-container product-page">
-            <div className="product-image product-page">
-                {productImage && <img src={productImage} alt={product.Product_Name} />}
-            </div>
-
-            <div className="review-description">
-              <br />
-              <h1 className="review-title review-page">Create a review</h1>
-              <br />
-              <div className="review-small">
+      <div className="review-page-container">
+        <div className="product-container product-page">
+          <div className="product-image product-page">
+            {productImage && <img src={productImage} alt={product.Product_Name} />}
+          </div>
+          <div className="review-description">
+            <h1 className="review-title review-page">Create a review</h1>
+            <div className="review-small">
               <span className="star product-page">⭐</span> {ratingFormatter.format(averageRating)} · {reviewCount} reviews
-                {/*Displays average rating to one decimal place and the total number of reviews for said product*/}
-              </div>
-
-              <br />
-              <br />
-
-              
-                <ReviewForm productId={productId} />
-                  
             </div>
+            <ReviewForm productId={productId} />
           </div>
         </div>
+      </div>
 
-          <div className="user-comments-container">
-            <div>
-              <h1>Reviews</h1>
-              
-              {reviews.length > 0 ? (
-              <ul>
-                <div classname="comments-flex">
-                  <div className="user-comments">
-
-                    {reviews.map((review, index) => (
-                      <li key={index}>
-                        <h3>{review.first_name ? review.first_name : 'Guest User'}</h3>
-                        <StarRating rating={ratings[index]} /> {/* Display star rating */}
-                        <p>{review.comment}</p>
-                        <br />
-                      </li>
-                    ))}
-                  </div>
-                </div>
-              </ul>
-               ) : (
-                <p>No reviews for this product.</p>
-               )}
-
-            </div>
-          </div>          
+      <div className="user-comments-container">
+        <h1>Reviews</h1>
+        {reviews.length > 0 ? (
+          <ul className="comments-flex">
+            {reviews.map((review, index) => (
+              <li key={index} className="user-comments">
+                <h3>{review.first_name ? review.first_name : 'Guest User'}</h3>
+                <StarRating rating={ratings[index]} />
+                <p>{review.comment}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No reviews for this product.</p>
+        )}
+      </div>
       <Footer />
     </>
   );
-}
+};
 
 export default ReviewPage;

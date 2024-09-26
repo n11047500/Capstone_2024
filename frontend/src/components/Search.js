@@ -16,7 +16,7 @@ const Search = ({ onSearch }) => {
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search..."
       />
-      <div className="search-icon" onClick={handleSearch}>
+      <div className="search-icon" onClick={handleSearch}  data-testid="search-icon">
         <svg width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
           <path d="M11.742 10.742a5.5 5.5 0 1 0-1.436 1.436l4.536 4.536a1 1 0 0 0 1.415-1.414l-4.536-4.536zM12.5 5.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0z" />
         </svg>
