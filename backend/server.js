@@ -958,7 +958,6 @@ app.get('/api/orders/details', async (req, res) => {
   }
 });
 
-// Nodemailer sendEmail function
 const sendEmail = async (formDataObj) => {
   try {
     // Nodemailer transporter configuration
@@ -979,6 +978,7 @@ const sendEmail = async (formDataObj) => {
         table, th, td {
           border: 1px solid black;
           width: 50%;
+          margin: 0 auto;
         }
         .center {
           margin-left: auto;
@@ -995,23 +995,23 @@ const sendEmail = async (formDataObj) => {
         </tr>
         <tr>
           <td>Color Type:</td>
-          <td>${formDataObj.colorType}</td>
+          <td>${formDataObj.colorType || 'N/A'}</td>
         </tr>
         <tr>
           <td>Selected Color:</td>
-          <td>${formDataObj.color}</td>
+          <td>${formDataObj.color || 'N/A'}</td>
         </tr>
         <tr>
           <td>Custom Color:</td>
-          <td>${formDataObj.customColor}</td>
+          <td>${formDataObj.customColor || 'N/A'}</td>
         </tr>
         <tr>
           <td>Width (cm):</td>
-          <td>${formDataObj.width}</td>
+          <td>${formDataObj.width || 'N/A'}</td>
         </tr>
         <tr>
           <td>Wicking:</td>
-          <td>${formDataObj.wicking}</td>
+          <td>${formDataObj.wicking || 'N/A'}</td>
         </tr>
       </table>
 
@@ -1023,7 +1023,7 @@ const sendEmail = async (formDataObj) => {
         </tr>
         <tr>
           <td>First Name:</td>
-          <td>${formDataObj.firstName}</td>
+          <td>${formDataObj.firstName || 'N/A'}</td>
         </tr>
         <tr>
           <td>Last Name:</td>
@@ -1031,7 +1031,7 @@ const sendEmail = async (formDataObj) => {
         </tr>
         <tr>
           <td>Email:</td>
-          <td>${formDataObj.email}</td>
+          <td>${formDataObj.email || 'N/A'}</td>
         </tr>
       </table>
 
@@ -1050,7 +1050,7 @@ const sendEmail = async (formDataObj) => {
     // Email options, including the file attachment
     let mailOptions = {
       from: process.env.EMAIL_USER,
-      to: email,
+      to: formDataObj.email || 'default_email@example.com', // Fix for undefined 'email'
       subject: 'Your Custom Planter Box Order',
       html: emailHTML,
       attachments: formDataObj.file ? [{

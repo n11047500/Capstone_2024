@@ -6,7 +6,15 @@ const Search = ({ onSearch }) => {
   const [query, setQuery] = useState('');
 
   const handleSearch = () => {
-    onSearch(query);  // Pass the search query to the Browse component
+    if (query.trim()) {  // Check if the query is not just whitespace
+      onSearch(query);  // Pass the search query to the Browse component
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();  // Call handleSearch when Enter is pressed
+    }
   };
 
   return (
@@ -16,6 +24,7 @@ const Search = ({ onSearch }) => {
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onKeyPress={handleKeyPress} // Add onKeyPress event listener
         placeholder="Search..."
       />
       <button className="search-icon" onClick={handleSearch}>

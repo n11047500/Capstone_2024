@@ -18,18 +18,7 @@ const CustomisedOrder = () => {
         additionalInformation: {},
     });
 
-    // const [formData, setFormData] = useState({
-    //     colorType: 'standard',
-    //     color: '',
-    //     customColor: '',
-    //     width: '',
-    //     wicking: '',
-    //     firstName: '',
-    //     lastName: '',
-    //     email: '',
-    //     comment: '',
-    //     file: null,
-    // });
+
 
     useEffect(() => {
         const fetchProductColour = async () => {
@@ -46,47 +35,6 @@ const CustomisedOrder = () => {
         fetchProductColour();
     }, []);
 
-    // const handleChange = (e) => {
-    //     const { name, value, files } = e.target;
-    
-    //     // Specific logic for color selection
-    //     if (name === "color") {
-    //         if (value === "custom") {
-    //             setFormData((prevData) => ({
-    //                 ...prevData,
-    //                 color: value,
-    //                 customColor: '', // Reset the custom color if 'custom' is selected
-    //             }));
-    //         } else {
-    //             setFormData((prevData) => ({
-    //                 ...prevData,
-    //                 color: value,
-    //                 customColor: value, // Set the selected color as custom color
-    //             }));
-    //         }
-    //     } else if (name === "colorType") {
-    //         if (value === "standard") {
-    //             setFormData((prevData) => ({
-    //                 ...prevData,
-    //                 colorType: value,
-    //                 color: '', // Reset the selected color if switching to standard colors
-    //             }));
-    //         } else {
-    //             setFormData((prevData) => ({
-    //                 ...prevData,
-    //                 colorType: value,
-    //             }));
-    //         }
-    //     } else {
-    //         // Update other form fields
-    //         setFormData((prevData) => ({
-    //             ...prevData,
-    //             [name]: files ? files[0] : value,
-    //         }));
-    //     }
-    // };
-    
-    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -148,8 +96,6 @@ const CustomisedOrder = () => {
         setFormData((prev) => ({ ...prev, [section]: data }));
     };
 
-
-
     return (
         <>
         <Header />
@@ -191,3 +137,60 @@ const CustomisedOrder = () => {
   }
   
   export default CustomisedOrder;
+
+
+      // const [formData, setFormData] = useState({
+    //     colorType: 'standard',
+    //     color: '',
+    //     customColor: '',
+    //     width: '',
+    //     wicking: '',
+    //     firstName: '',
+    //     lastName: '',
+    //     email: '',
+    //     comment: '',
+    //     file: null,
+    // });
+
+    
+    // const handleChange = (e) => {
+    //     const { name, value, files } = e.target;
+    
+    //     // Specific logic for color selection
+    //     if (name === "color") {
+    //         if (value === "custom") {
+    //             setFormData((prevData) => ({
+    //                 ...prevData,
+    //                 color: value,
+    //                 customColor: '', // Reset the custom color if 'custom' is selected
+    //             }));
+    //         } else {
+    //             setFormData((prevData) => ({
+    //                 ...prevData,
+    //                 color: value,
+    //                 customColor: value, // Set the selected color as custom color
+    //             }));
+    //         }
+    //     } else if (name === "colorType") {
+    //         if (value === "standard") {
+    //             setFormData((prevData) => ({
+    //                 ...prevData,
+    //                 colorType: value,
+    //                 color: '', // Reset the selected color if switching to standard colors
+    //             }));
+    //         } else {
+    //             setFormData((prevData) => ({
+    //                 ...prevData,
+    //                 colorType: value,
+    //             }));
+    //         }
+    //     } else {
+    //         // Update other form fields
+    //         setFormData((prevData) => ({
+    //             ...prevData,
+    //             [name]: files ? files[0] : value,
+    //         }));
+    //     }
+    // };
+    
+    

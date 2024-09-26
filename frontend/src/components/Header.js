@@ -61,18 +61,48 @@ function Header() {
         <div className="right-icons">
           {/* User icon with dropdown */}
           <div className="user-icon-container" ref={dropdownRef}>
-            <img src={userIconImage} alt="User Icon" className="user-icon" onClick={() => setIsDropdownOpen(!isDropdownOpen)} />
+            <img
+              src={userIconImage}
+              alt="User Icon"
+              className="user-icon"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              data-testid="user-icon"  
+            />
             {isDropdownOpen && (
-              <div className="dropdown-menu">
+              <div className="dropdown-menu" data-testid="dropdown-menu">
                 {userEmail ? (
                   <>
-                    <NavLink to={`/user/${userEmail}`} className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>Profile</NavLink>
-                    <div className="dropdown-item" onClick={handleLogout}>Log Out</div>
+                    <NavLink
+                      to={`/user/${userEmail}`}
+                      className="dropdown-item"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Profile
+                    </NavLink>
+                    <div
+                      className="dropdown-item"
+                      onClick={handleLogout}
+                      data-testid="logout-button" 
+                    >
+                      Log Out
+                    </div>
                   </>
                 ) : (
                   <>
-                    <NavLink to="/login" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>Login</NavLink>
-                    <NavLink to="/signup" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>Sign Up</NavLink>
+                    <NavLink
+                      to="/login"
+                      className="dropdown-item"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Login
+                    </NavLink>
+                    <NavLink
+                      to="/signup"
+                      className="dropdown-item"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Sign Up
+                    </NavLink>
                   </>
                 )}
               </div>
@@ -90,17 +120,17 @@ function Header() {
       </header>
 
       {/* Sidebar */}
-      <div className={`sidebar ${isOpen ? 'open' : ''}`} ref={sidebarRef}>
-        <button className="close-btn" onClick={() => setIsOpen(false)}>×</button>
-        <nav className="sidebar-nav">
-          <NavLink to="/" onClick={() => setIsOpen(false)}>Home</NavLink>
-          <NavLink to="/browse" onClick={() => setIsOpen(false)}>Browse</NavLink>
-          <NavLink to="/customise" onClick={() => setIsOpen(false)}>Custom Planter Box</NavLink>
-          <NavLink to="/aboutus" onClick={() => setIsOpen(false)}>About Us</NavLink>
-          <NavLink to="/gallery" onClick={() => setIsOpen(false)}>Gallery</NavLink>
-          <NavLink to="/contactus" onClick={() => setIsOpen(false)}>Contact Us</NavLink>
-        </nav>
-      </div>
+      <div className={`sidebar ${isOpen ? 'open' : ''}`} ref={sidebarRef} data-testid="sidebar">
+  <button className="close-btn" onClick={() => setIsOpen(false)}>×</button>
+  <nav className="sidebar-nav">
+    <NavLink to="/" onClick={() => setIsOpen(false)}>Home</NavLink>
+    <NavLink to="/browse" onClick={() => setIsOpen(false)}>Browse</NavLink>
+    <NavLink to="/customise" onClick={() => setIsOpen(false)}>Custom Planter Box</NavLink>
+    <NavLink to="/aboutus" onClick={() => setIsOpen(false)}>About Us</NavLink>
+    <NavLink to="/gallery" onClick={() => setIsOpen(false)}>Gallery</NavLink>
+    <NavLink to="/contactus" onClick={() => setIsOpen(false)}>Contact Us</NavLink>
+  </nav>
+</div>
     </>
   );
 }
