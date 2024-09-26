@@ -49,7 +49,7 @@ function Slideshow({ children }) {
                 <div className="home_customised_section">
                   <h2 className="customised_slide_text">Order Customised Ezee Planter Box</h2>
                     <button className="order-button">
-                      <Link to={`/customise`}>Order Customised Ezee Planter Box</Link>
+                      <Link to={`/customise`}>Order Customised Planter Box</Link>
                     </button>
                 </div>
               )}

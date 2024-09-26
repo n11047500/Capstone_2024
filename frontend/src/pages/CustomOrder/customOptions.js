@@ -2,25 +2,26 @@ import React, {useState} from 'react';
 
 const CustomOptions = ({ data, onNext, onChange }) => {
   const options = [ 
-    { name: 'Surfmist', color: '#EAEAEA' },
-    { name: 'Domain', color: '#4D4D4D' },
-    // 'Paperbark',
-    // 'Riversand',
-    // 'Jasper',
-    // 'Bushland',
-    // 'Pale Eucalypt',
-    // 'Wilderness',
-    // 'Shale Grey',
-    // 'Windspray',
-    // 'Wallaby',
-    // 'Basalt',
-    // 'Woodland Grey',
-    // 'Grey Ridge',
-    // 'Ironstone',
-    // 'Monument',
-    // 'Satin Black',
-    // 'Pearl White'
+    { name: 'Surfmist', color: '#E4E2D5' },
+    { name: 'Domain', color: '#E8DBAE' },
+    { name: 'Paperbark', color: '#CABFA4' },
+    { name: 'Riversand', color: '#9D8D76' },
+    { name: 'Jasper', color: '#6C6153' },
+    { name: 'Bushland', color: '#848377' },
+    { name: 'Pale Eucalypt', color: '#7C846A' },
+    { name: 'Wilderness', color: '#64715E' },
+    { name: 'Shale Grey', color: '#BDBFBA' },
+    { name: 'Windspray', color: '#888B8A' },
+    { name: 'Wallaby', color: '#7F7C78' },
+    { name: 'Basalt', color: '#6D6C6E' },
+    { name: 'Woodland Grey', color: '#4B4C46' },
+    { name: 'Grey Ridge', color: '#4C5050' },
+    { name: 'Ironstone', color: '#3E434C' },
+    { name: 'Monument', color: '#323233' },
+    { name: 'Satin Black', color: '#101820' },
+    { name: 'Pearl White', color: '#F3F4F6' }
   ];
+
 
   const [selectedColor, setSelectedColor] = useState(data.color || '');
   const [dropdownOpen, setDropdownOpen] = useState(false);

@@ -27,7 +27,7 @@ function Browse() {
 
     if (searchQuery) {
       try {
-        const response = await fetch(`http://localhost:3001/api/search?query=${encodeURIComponent(searchQuery)}`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/search?query=${encodeURIComponent(searchQuery)}`);
         const data = await response.json();
         setSearchResults(data);
       } catch (error) {
