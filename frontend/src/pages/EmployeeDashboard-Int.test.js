@@ -1,15 +1,57 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import EmployeeDashboard from './EmployeeDashboard'; // Adjust the import path as necessary
-import '@testing-library/jest-dom/extend-expect';
+import EmployeeDashboard from './EmployeeDashboard'; // Adjust the import path as needed
+import { CartContext } from '../context/CartContext'; // Ensure this path is correct
+import { BrowserRouter as Router } from 'react-router-dom';
 
+beforeEach(() => {
+    global.fetch = jest.fn(() =>
+        Promise.resolve({
+            json: () => Promise.resolve([
+                {
+                    Product_ID: '1',
+                    Product_Name: 'Mini Standard Planter Box',
+                    Product_Price: '250.00',
+                    Quantity_Available: '1',
+                    Description: 'A compact planter box...',
+                    Width: '900',
+                    Depth: '450',
+                    Height: '800',
+                    Product_Image_URL: 'http://example.com/image.jpg',
+                    Product_Options: '',
+                },
+                {
+                    Product_ID: '2',
+                    Product_Name: 'Large Standard Planter Box',
+                    Product_Price: '500.00',
+                    Quantity_Available: '2',
+                    Description: 'A large planter box...',
+                    Width: '1200',
+                    Depth: '600',
+                    Height: '1000',
+                    Product_Image_URL: 'http://example.com/large_image.jpg',
+                    Product_Options: '',
+                },
+            ]),
+        })
+    );
+});
 
-global.fetch = jest.fn(); // Mock fetch globally
+afterEach(() => {
+    jest.clearAllMocks(); // Clear the mock after each test
+});
 
-describe('EmployeeDashboard', () => {
-  beforeEach(() => {
-    fetch.mockClear();
-  });
+describe('Employee Dashboard Integration Tests', () => {
+    const renderWithContext = () => {
+        return render(
+            <Router>
+                <CartContext.Provider value={{ addToCart: jest.fn(), cart: [] }}>
+                    <EmployeeDashboard />
+                </CartContext.Provider>
+            </Router>
+        );
+    };
+
 
   test('should add a new product', async () => {
     // Mock fetch for fetching products
@@ -54,59 +96,64 @@ describe('EmployeeDashboard', () => {
 });
 
 test('should fetch and edit an existing product successfully', async () => {
-    // Mock fetch for fetching products
-    const mockProducts = [
-        {
-            Product_ID: '1',
-            Product_Name: 'Mini Standard Planter Box',
-            Product_Price: '250.00',
-            Quantity_Available: '1',
-            Description: 'A compact, fully welded, powdercoated aluminium planter box...',
-            Width: '900',
-            Depth: '450',
-            Height: '800',
-        },
-    ];
+    // Mock the alert function
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => true);
+    const fetchMock = jest.spyOn(global, 'fetch');
 
-    // Mock the fetch call for fetching products
-    fetch.mockImplementationOnce(() =>
-        Promise.resolve({
-            json: () => Promise.resolve(mockProducts),
-        })
-    );
-
-    render(<EmployeeDashboard />);
+    renderWithContext();
 
     // Simulate clicking the "Edit Product" button
     fireEvent.click(screen.getByText('Edit Product'));
 
-    // Select the existing product to edit
-    fireEvent.change(screen.getByLabelText(/Select a Product to Edit/i), { target: { value: '1' } });
+    // Wait for the dropdown to be populated
+    const productDropdown = await screen.findByLabelText(/Select a Product to Edit/i);
+
+    // Select the product from the dropdown
+    fireEvent.change(productDropdown, { target: { value: '1' } });
 
     // Wait for the product name input to be rendered
-    const productNameInput = await screen.findByTestId('product-name');
-
-    // Check if the product name input is rendered
-    expect(productNameInput).toBeInTheDocument();
+    const productNameInput = await waitFor(() => screen.findByLabelText(/Product Name:/i));
 
     // Fill out the form to edit the product
-    fireEvent.change(productNameInput, { target: { value: 'Updated Mini Standard Planter Box' } }); // Edit product name
-    fireEvent.change(screen.getByLabelText(/Product Price/i), { target: { value: '300.00' } }); // Edit price
+    fireEvent.change(productNameInput, { target: { value: 'Updated Mini Standard Planter Box' } });
+    fireEvent.change(screen.getByLabelText(/Product Price:/i), { target: { value: '300.00' } });
+    fireEvent.change(screen.getByLabelText(/Quantity Available:/i), { target: { value: '2' } });
+    fireEvent.change(screen.getByLabelText(/Description:/i), { target: { value: 'An updated description' } });
 
-    // Mock fetch for editing a product
-    fetch.mockImplementationOnce(() =>
+    // Mock the fetch call for updating the product
+    fetchMock.mockImplementationOnce(() =>
         Promise.resolve({
             ok: true,
             json: () => Promise.resolve({ message: 'Product updated successfully' }),
         })
     );
 
-    // Submit the form
-    fireEvent.click(screen.getByRole('button', { name: /update product/i }));
+    // Simulate clicking the update button
+    const updateButton = screen.getByRole('button', { name: /update product/i });
+    fireEvent.click(updateButton);
 
-    // Check for success message
-    await waitFor(() => expect(screen.getByText('Product updated successfully')).toBeInTheDocument());
+    // Check that the fetch was called with the correct arguments
+    expect(fetchMock).toHaveBeenCalledWith(`${process.env.REACT_APP_API_URL}/products/1`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            name: 'Updated Mini Standard Planter Box',
+            price: '300.00',
+            quantity: '2',
+            description: 'An updated description',
+        }),
+    });
+
+    // Assert that fetch was called only once for the update
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    // Restore the original alert function
+    alertMock.mockRestore();
+    fetchMock.mockRestore(); // Restore fetch mock
 });
+
 
 test('should fetch and remove an existing product successfully', async () => {
     // Mock fetch for fetching products
@@ -160,8 +207,5 @@ test('should fetch and remove an existing product successfully', async () => {
     // Check that the product is removed from the dropdown
     expect(productDropdown).not.toHaveTextContent('Mini Standard Planter Box');
 });
-
-
-
 
 });
