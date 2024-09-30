@@ -1086,7 +1086,7 @@ app.get('/reviews/:id', (req, res) => {
   console.log(`Received request for productId: ${productId}`); // Log the request
 
   // Query to get reviews and first names
-  db.query(`
+  connection.query(`
     SELECT r.review_id, r.product_id, r.rating, r.comment, u.first_name
     FROM Reviews r
     LEFT JOIN users u ON r.user_id = u.user_id
@@ -1105,7 +1105,7 @@ app.get('/reviews/:id', (req, res) => {
     console.log('Reviews found:', reviews); // Log the reviews found
 
     // Query to get ratings
-    db.query('SELECT rating FROM Reviews WHERE product_id = ?', [productId], (err, results) => {
+    connection.query('SELECT rating FROM Reviews WHERE product_id = ?', [productId], (err, results) => {
       if (err) {
         console.error('Database error:', err);
         return res.status(500).json({ error: 'Internal Server Error' });
@@ -1115,7 +1115,7 @@ app.get('/reviews/:id', (req, res) => {
       console.log('Fetched ratings for product:', ratings); // Log all the ratings for the product
 
       // Query to count the total number of reviews
-      db.query('SELECT COUNT(*) AS review_count FROM Reviews WHERE product_id = ?', [productId], (err, countResults) => {
+      connection.query('SELECT COUNT(*) AS review_count FROM Reviews WHERE product_id = ?', [productId], (err, countResults) => {
         if (err) {
           console.error('Database error:', err);
           return res.status(500).json({ error: 'Internal Server Error' });
@@ -1125,7 +1125,7 @@ app.get('/reviews/:id', (req, res) => {
         console.log('Total review count for product:', reviewCount); // Log the review count
 
         // Query to calculate the average rating
-        db.query('SELECT AVG(rating) AS average_rating FROM Reviews WHERE product_id = ?', [productId], (err, avgResults) => {
+        connection.query('SELECT AVG(rating) AS average_rating FROM Reviews WHERE product_id = ?', [productId], (err, avgResults) => {
           if (err) {
             console.error('Database error:', err);
             return res.status(500).json({ error: 'Internal Server Error' });
@@ -1155,7 +1155,7 @@ app.post('/reviews', (req, res) => {
   const query = 'INSERT INTO Reviews (product_ID, user_ID, rating, comment) VALUES (?, ?, ?, ?)';
   const params = [productId, userId, rating, comment];
 
-  db.query(query, params, (err, results) => {
+  connection.query(query, params, (err, results) => {
     if (err) {
       console.error('Database error:', err);
       return res.status(500).json({ error: 'Internal Server Error' });
