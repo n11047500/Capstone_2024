@@ -2,8 +2,8 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
-import { CartContext } from '../src/context/CartContext';
-import Header from '../src/components/Header';
+import { CartContext } from '../../src/context/CartContext';
+import Header from '../../src/components/Header';
 
 // Mocking CartContext to provide test data
 const mockCart = [

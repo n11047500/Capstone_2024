@@ -59,8 +59,8 @@ function Browse() {
       <Header />
       <div className="browse-header-bar">
         <div className="browse-search-container">
-        <Search onSearch={handleSearch} />
-        </div>   
+          <Search onSearch={handleSearch} />
+        </div>
 
         <div className="browse-sort-container">
           <select className="browse-sort-dropdown" value={sortType} onChange={e => setSortType(e.target.value)}>

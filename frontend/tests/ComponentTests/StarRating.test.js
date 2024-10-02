@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import StarRating from '../src/components/StarRating'; // Adjust the import path based on your folder structure
+import StarRating from '../../src/components/StarRating'; // Adjust the import path based on your folder structure
 
 describe('StarRating Component', () => {
     test('renders correct number of stars', () => {

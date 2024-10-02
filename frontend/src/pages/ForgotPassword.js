@@ -41,12 +41,14 @@ function ForgotPassword() {
         <div className='forgot-container'>
         <h1>Forgot Password</h1>
         <form onSubmit={handleSubmit}>
-            <label>Enter your Email</label>
+            <label htmlFor="email">Enter your Email</label>
             <input
+            id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
+            required
             />
             <ReCAPTCHA
                 sitekey={process.env.RECAPTCHA_SITE_KEY || '6LfpyS4qAAAAACV-9rKjHiyxg9LR0FOr6nVUUu2j'}

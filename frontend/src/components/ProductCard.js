@@ -5,7 +5,7 @@ import './ProductCard.css';
 function ProductCard({ productId, title, price, image }) {
   return (
     <Link to={`/product/${productId}`} className="product-card-link">
-      <div className="product-card">
+      <article className="product-card">
         {image && (
           <div className="product-image">
             <img src={image} alt={title} />
@@ -13,7 +13,7 @@ function ProductCard({ productId, title, price, image }) {
         )}
         <div className="product-title">{title}</div>
         <div className="product-price">{price}</div>
-      </div>
+      </article>
     </Link>
   );
 }

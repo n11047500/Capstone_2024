@@ -1,8 +1,7 @@
-// ShippingMethodForm.js
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const ShippingMethodForm = ({ data, onBack, onChange, onSubmit }) => {
+const AdditionalInformation = ({ data, onBack, onChange, onSubmit }) => {
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -102,4 +101,4 @@ const ShippingMethodForm = ({ data, onBack, onChange, onSubmit }) => {
   );
 };
 
-export default ShippingMethodForm;
+export default AdditionalInformation;

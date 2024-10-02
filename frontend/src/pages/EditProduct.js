@@ -75,8 +75,12 @@ const EditProduct = ({ productId }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData,
-          dimensions,
+          name: formData.name,
+          price: formData.price, // Send as a string if necessary
+          quantity: formData.quantity, // Send as a string if necessary
+          description: formData.description,
+          dimensions, // Ensure this is included
+          options: formData.options, // Make sure options is sent
           imageUrl: formData.imageUrl,
         }),
       });

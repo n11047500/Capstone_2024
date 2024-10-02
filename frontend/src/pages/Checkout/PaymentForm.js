@@ -1,4 +1,3 @@
-// PaymentForm.js
 import React, {useContext} from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useNavigate } from 'react-router-dom';

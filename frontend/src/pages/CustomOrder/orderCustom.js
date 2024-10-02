@@ -4,7 +4,7 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import './orderCustom.css';
 
-const ConfirmationPage = () => {
+const OrderCustomisaton = () => {
     const location = useLocation();
     const formData = location.state;
 
@@ -29,4 +29,4 @@ const ConfirmationPage = () => {
     );
 };
 
-export default ConfirmationPage;
+export default OrderCustomisaton;

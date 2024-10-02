@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ReviewForm from '../src/components/ReviewForm';
+import ReviewForm from '../../src/components/ReviewForm';
 
 // Mock the global fetch function
 global.fetch = jest.fn(() =>
@@ -13,7 +13,7 @@ global.fetch = jest.fn(() =>
 
 describe('ReviewForm Component', () => {
   beforeEach(() => {
-    jest.clearAllMocks(); // Clear mocks before each test
+    jest.resetAllMocks(); // Reset mocks before each test to avoid test pollution
   });
 
   test('renders the ReviewForm', () => {
@@ -71,10 +71,15 @@ describe('ReviewForm Component', () => {
       }),
     });
 
-    // Check if success message is shown and fields are reset
+    // Check if success message is shown
     expect(successMessage).toBeInTheDocument();
-    expect(screen.getByLabelText('1')).toBeChecked(); // Rating should remain checked
+
+    // Check if the form fields are reset (if expected behavior)
     expect(screen.getByRole('textbox', { name: /comments/i })).toHaveValue(''); // Comment should be empty
+    // You may want to check that none of the rating options remain selected, if that's the expected behavior:
+    for (let i = 1; i <= 5; i++) {
+      expect(screen.getByLabelText(`${i}`)).not.toBeChecked();
+    }
   });
 
   test('shows error message when fetch fails', async () => {

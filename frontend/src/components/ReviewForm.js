@@ -72,7 +72,6 @@ const ReviewForm = ({ productId }) => {
         rows="8"
         value={comment}
         onChange={(e) => setComment(e.target.value)}
-        required
       ></textarea>
       <br />
       <br />

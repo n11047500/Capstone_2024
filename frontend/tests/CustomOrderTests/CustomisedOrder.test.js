@@ -1,13 +1,13 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom'; // Import MemoryRouter
-import CustomisedOrder from '../src/pages/CustomOrder/CustomisedOrder';
-import { CartContext } from '../src/context/CartContext'; // Import CartContext
+import CustomisedOrder from '../../src/pages/CustomOrder/CustomisedOrder';
+import { CartContext } from '../../src/context/CartContext'; // Import CartContext
 
 // Mock child components
-jest.mock('../src/pages/CustomOrder/customOptions.js', () => jest.fn(() => <div>Custom Options Component</div>));
-jest.mock('../src/pages/CustomOrder/personalInfo', () => jest.fn(() => <div>Personal Info Component</div>));
-jest.mock('../src/pages/CustomOrder/additionalInformation', () => jest.fn(() => <div>Additional Information Component</div>));
+jest.mock('../../src/pages/CustomOrder/customOptions.js', () => jest.fn(() => <div>Custom Options Component</div>));
+jest.mock('../../src/pages/CustomOrder/personalInfo', () => jest.fn(() => <div>Personal Info Component</div>));
+jest.mock('../../src/pages/CustomOrder/additionalInformation', () => jest.fn(() => <div>Additional Information Component</div>));
 
 // Mock CartContext
 const mockCartContextValue = {
