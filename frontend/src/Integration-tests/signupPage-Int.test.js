@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import SignUpPage from './SignUpPage';
+import SignUpPage from '../pages/SignUpPage';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { CartProvider, CartContext } from '../context/CartContext';
 import Header from '../components/Header';

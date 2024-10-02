@@ -1,7 +1,7 @@
 import React from 'react'; 
 import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import Gallery from './Gallery';
+import '@testing-library/jest-dom';
+import Gallery from '../pages/Gallery';
 import { CartProvider } from '../context/CartContext';
 import { BrowserRouter as Router } from 'react-router-dom';
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'; // Import useState for managing state
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import CartPage from './CartPage';
+import CartPage from '../pages/CartPage';
 import { CartContext } from '../context/CartContext'; // Ensure this path is correct
 import { useNavigate } from 'react-router-dom';
 

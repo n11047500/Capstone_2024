@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import LoginPage from './LoginPage';
+import LoginPage from '../pages/LoginPage';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { CartProvider, CartContext } from '../context/CartContext';
 

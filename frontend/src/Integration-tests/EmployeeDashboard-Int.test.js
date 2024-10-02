@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import EmployeeDashboard from './EmployeeDashboard'; // Adjust the import path as needed
+import EmployeeDashboard from '../pages/EmployeeDashboard'; // Adjust the import path as needed
 import { CartContext } from '../context/CartContext'; // Ensure this path is correct
 import { BrowserRouter as Router } from 'react-router-dom';
 

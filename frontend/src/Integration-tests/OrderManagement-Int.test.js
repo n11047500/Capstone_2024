@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import OrderManagement from './OrderManagement';
+import '@testing-library/jest-dom';
+import OrderManagement from '../pages/OrderManagement';
 
 global.fetch = jest.fn();
 

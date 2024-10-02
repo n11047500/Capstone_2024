@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import Browse from './Browse'; // Adjust the import path as needed
+import Browse from '../pages/Browse'; // Adjust the import path as needed
 import { CartContext } from '../context/CartContext'; // Ensure this path is correct
 import { BrowserRouter as Router } from 'react-router-dom';
 import { useParams } from 'react-router-dom';

@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import HomePage from './HomePage'; // Adjust this to the correct path
-import ProductPage from './ProductPage'; // Mock the product page component for navigation test
+import HomePage from '../pages/HomePage'; // Adjust this to the correct path
+import ProductPage from '../pages/ProductPage'; // Mock the product page component for navigation test
 import { CartContext } from '../context/CartContext'; // Adjust path as needed
 
 // Mock product data

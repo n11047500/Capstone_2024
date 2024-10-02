@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import ContactUs from './ContactUs';
+import ContactUs from '../pages/ContactUs';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { CartProvider } from '../context/CartContext'; // Adjust the import path as necessary
 

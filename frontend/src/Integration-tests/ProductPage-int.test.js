@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import ProductPage from './ProductPage';
+import '@testing-library/jest-dom';
+import ProductPage from '../pages/ProductPage';
 import { CartContext } from '../context/CartContext'; // Ensure this path is correct
 import { BrowserRouter as Router } from 'react-router-dom';
 import { useParams } from 'react-router-dom';

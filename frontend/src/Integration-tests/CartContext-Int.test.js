@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, act } from '@testing-library/react';
-import { CartProvider, CartContext } from './CartContext'; // Ensure this path is correct
-import '@testing-library/jest-dom/extend-expect';
+import { CartProvider, CartContext } from '../context/CartContext'; // Ensure this path is correct
+import '@testing-library/jest-dom';
 // Create a TestComponent to interact with the CartContext
 const TestComponent = () => {
   const { cart, addToCart, removeFromCart, updateQuantity, clearCart } = React.useContext(CartContext);
