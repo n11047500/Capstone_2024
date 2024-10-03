@@ -1,26 +1,36 @@
 import React, { useState } from 'react';
 import './Search.css';
+import search_symbol from '../assets/search_symbol.png'; // Ensure correct path and file name
+
 
 const Search = ({ onSearch }) => {
   const [query, setQuery] = useState('');
 
   const handleSearch = () => {
-    onSearch(query);  // Pass the search query to the Browse component
+    if (query.trim()) {  // Check if the query is not just whitespace
+      onSearch(query);  // Pass the search query to the Browse component
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();  // Call handleSearch when Enter is pressed
+    }
   };
 
   return (
     <div className="search-container">
       <input
+        className="search-input"
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onKeyPress={handleKeyPress}
         placeholder="Search..."
       />
-      <div className="search-icon" onClick={handleSearch}  data-testid="search-icon">
-        <svg width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
-          <path d="M11.742 10.742a5.5 5.5 0 1 0-1.436 1.436l4.536 4.536a1 1 0 0 0 1.415-1.414l-4.536-4.536zM12.5 5.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0z" />
-        </svg>
-      </div>
+      <button className="search-icon" onClick={handleSearch}>
+        <img src={search_symbol} alt="Search" className="search-image" />
+      </button>
     </div>
   );
 };
