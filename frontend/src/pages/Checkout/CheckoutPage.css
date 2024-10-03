@@ -13,6 +13,7 @@
   background-color: #f0f0f0;
   flex-wrap: wrap; /* Allow wrapping on smaller screens */
   gap: 20px; /* Add consistent spacing between all flex children */
+  height: 100%;
 }
 
 .checkout-steps {
