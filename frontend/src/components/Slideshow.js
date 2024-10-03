@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Slideshow.css';
 import { Link } from 'react-router-dom';
 import top_image from '../assets/homepage_image1.jpg';
-import image2 from '../assets/gallery/gallery1.jpg';
+import image2 from '../assets/homepage_image2.jpg';
 const imageUrls = [
     top_image,
     image2

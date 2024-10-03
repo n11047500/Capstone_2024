@@ -9,8 +9,17 @@ import gallery4 from '../assets/gallery/gallery4.jpg';
 import gallery5 from '../assets/gallery/gallery5.jpg';
 import gallery6 from '../assets/gallery/gallery6.jpg';
 import gallery7 from '../assets/gallery/gallery7.jpg';
+import gallery8 from '../assets/gallery/gallery8.jpg';
+import gallery9 from '../assets/gallery/gallery9.jpg';
+import gallery10 from '../assets/gallery/gallery10.jpg';
+import gallery11 from '../assets/gallery/gallery11.jpg';
+import gallery12 from '../assets/gallery/gallery12.jpg';
+import gallery13 from '../assets/gallery/gallery13.jpg';
+import gallery14 from '../assets/gallery/gallery14.jpg';
+import gallery15 from '../assets/gallery/gallery15.jpg';
 
-const images = [gallery1, gallery2, gallery3, gallery4, gallery5, gallery6, gallery7]; // Array of images
+
+const images = [gallery1, gallery2, gallery3, gallery4, gallery5, gallery6, gallery7, gallery8, gallery9, gallery10, gallery11, gallery12, gallery13, gallery14, gallery15]; // Array of images
 
 function Gallery() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(null); // State to track the selected image index
@@ -70,25 +79,25 @@ function Gallery() {
 
       <div className="gallery-row">
         <div className="gallery-column">
-          <img src={gallery1} alt="gallery1" onClick={() => handleImageClick(0)} />
-          <img src={gallery2} alt="gallery2" onClick={() => handleImageClick(1)} />
+          <img src={gallery10} alt="gallery10" onClick={() => handleImageClick(9)} />
           <img src={gallery3} alt="gallery3" onClick={() => handleImageClick(2)} />
-          <img src={gallery4} alt="gallery4" onClick={() => handleImageClick(3)} />
+          <img src={gallery12} alt="gallery12" onClick={() => handleImageClick(11)} />
         </div>
         <div className="gallery-column">
           <img src={gallery5} alt="gallery5" onClick={() => handleImageClick(4)} />
           <img src={gallery6} alt="gallery6" onClick={() => handleImageClick(5)} />
-          <img src={gallery2} alt="gallery2" onClick={() => handleImageClick(1)} />
+          <img src={gallery8} alt="gallery8" onClick={() => handleImageClick(7)} />
         </div>
         <div className="gallery-column">
-          <img src={gallery6} alt="gallery6" onClick={() => handleImageClick(5)} />
-          <img src={gallery1} alt="gallery1" onClick={() => handleImageClick(0)} />
+          <img src={gallery14} alt="gallery14" onClick={() => handleImageClick(13)} />
+          <img src={gallery4} alt="gallery4" onClick={() => handleImageClick(3)} />
           <img src={gallery7} alt="gallery7" onClick={() => handleImageClick(6)} />
         </div>
         <div className="gallery-column">
-          <img src={gallery3} alt="gallery3" onClick={() => handleImageClick(2)} />
-          <img src={gallery4} alt="gallery4" onClick={() => handleImageClick(3)} />
-          <img src={gallery6} alt="gallery6" onClick={() => handleImageClick(5)} />
+          <img src={gallery9} alt="gallery9" onClick={() => handleImageClick(8)} />
+          <img src={gallery2} alt="gallery2" onClick={() => handleImageClick(1)} />
+          <img src={gallery11} alt="gallery11" onClick={() => handleImageClick(10)} />
+          <img src={gallery1} alt="gallery1" onClick={() => handleImageClick(0)} />
         </div>
       </div>
 
