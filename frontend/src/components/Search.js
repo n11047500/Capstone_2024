@@ -28,7 +28,7 @@ const Search = ({ onSearch }) => {
         onKeyPress={handleKeyPress}
         placeholder="Search..."
       />
-      <button className="search-icon" onClick={handleSearch}>
+      <button className="search-icon" onClick={handleSearch} data-testid="search-icon" >
         <img src={search_symbol} alt="Search" className="search-image" />
       </button>
     </div>

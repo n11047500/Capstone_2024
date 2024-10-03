@@ -21,7 +21,6 @@ function ContactUs() {
 
   const handleCaptcha = (token) => {
     setCaptchaToken(token); // Set the reCAPTCHA token
-    if (handleCaptcha) handleCaptcha(token);
   };
 
   const handleChange = (e) => {
@@ -132,15 +131,16 @@ function ContactUs() {
               </tr>
             </tbody>
           </table>
-
+          <div className='captcha-submit-container'>
           <ReCAPTCHA
             sitekey={process.env.RECAPTCHA_SITE_KEY || '6LfpyS4qAAAAACV-9rKjHiyxg9LR0FOr6nVUUu2j'}
             onChange={handleCaptcha}
           />
           <button type="submit" className="submit-button">Submit Form</button>
+          </div>
         </form>
 
-        {message && <p className="response-message">{message}</p>}
+        {message && <p className="response-message" role='alert'>{message}</p>}
       </div>
     </div>
   </div>

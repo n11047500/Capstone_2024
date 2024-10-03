@@ -6,7 +6,6 @@ import './ReviewPage.css';
 import ReviewForm from '../components/ReviewForm';
 import StarRating from '../components/StarRating';
 
-
 const ReviewPage = () => {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
@@ -15,7 +14,10 @@ const ReviewPage = () => {
   const [reviewCount, setReviewCount] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
   const [error, setError] = useState(null);
-
+  
+  // State for pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const reviewsPerPage = 5;
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -68,6 +70,26 @@ const ReviewPage = () => {
     maximumFractionDigits: 1,
   });
 
+  // Calculate total pages
+  const totalPages = Math.ceil(reviews.length / reviewsPerPage);
+  
+  // Get the current reviews to display
+  const indexOfLastReview = currentPage * reviewsPerPage;
+  const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
+  const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
+
+  // Handlers for pagination
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   return (
     <>
@@ -89,9 +111,9 @@ const ReviewPage = () => {
 
       <div className="user-comments-container">
         <h1>Reviews</h1>
-        {reviews.length > 0 ? (
+        {currentReviews.length > 0 ? (
           <ul className="comments-flex">
-            {reviews.map((review, index) => (
+            {currentReviews.map((review, index) => (
               <li key={index} className="user-comments">
                 <h3>{review.first_name ? review.first_name : 'Guest User'}</h3>
                 <StarRating rating={ratings[index]} />
@@ -102,6 +124,13 @@ const ReviewPage = () => {
         ) : (
           <p>No reviews for this product.</p>
         )}
+
+        {/* Pagination controls */}
+        <div className="pagination-controls">
+          <button onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
+          <span>Page {currentPage} of {totalPages}</span>
+          <button onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
+        </div>
       </div>
       <Footer />
     </>

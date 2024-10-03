@@ -131,14 +131,12 @@ select {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  /* Adjust the spacing between reCAPTCHA and the button as needed */
-  margin-top: 20px;
-  /* Optional: Adds space above the container */
-  float: right;
+  margin-top: 20px; /* Optional: Adds space above the container */
+  float: right; /* Use with caution, consider flex alignment for responsive design */
 }
 
 .captcha-submit-container iframe {
-  width: 100% !important;
+  width: 100% !important; /* Ensures the iframe takes full width */
 }
 
 .submit-button {
@@ -146,10 +144,9 @@ select {
   color: white;
   padding: 12px 20px;
   border: none;
-  font-size: 1.2vw;
+  font-size: 1.2vw; /* Responsive font size */
   border-radius: 4px;
   cursor: pointer;
-  float: right;
 }
 
 .submit-button:hover {
@@ -220,6 +217,8 @@ h2 {
   .captcha-submit-container {
     max-width: 100%;
     /* Ensure full width on smaller screens */
+    display: flex;
+    flex-direction: column;
   }
 
   input[type=text],

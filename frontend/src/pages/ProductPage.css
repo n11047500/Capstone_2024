@@ -1,12 +1,14 @@
+html,
 body {
   font-family: Arial, sans-serif;
   height: 100%;
+  margin: 0;
 }
 
 .product-page-container {
-  padding: 40px 20px;
+  padding: 100px 20px;
   max-width: 1400px;
-  height: 100%;
+  height: auto;
   margin: 0 auto;
   display: flex;
   justify-content: center;
@@ -21,6 +23,7 @@ body {
   border-radius: 8px;
   overflow: hidden;
   align-items: flex-start;
+  max-width: 1400px; /* Limits the container's width */
 }
 
 .product-image.product-page {
@@ -29,6 +32,7 @@ body {
   text-align: center;
   background-color: #EDF1EC;
   padding: 20px;
+  height: auto;
 }
 
 .product-image.product-page img {
@@ -45,6 +49,7 @@ body {
   background-color: #EDF1EC;
   border-top: 1px solid #e0e0e0;
   max-width: 55%; /* Ensure the text doesn't overflow the container */
+  height: auto;
 }
 
 .product-title.product-page {
@@ -127,8 +132,13 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+
 /* Media Queries for Responsiveness */
 @media (max-width: 1024px) {
+  .product-page-container {
+    padding: 40px 20px;
+  }
+  
   .product-container.product-page {
     flex-direction: column;
     padding: 20px;
@@ -136,7 +146,8 @@ body {
 
   .product-image.product-page, 
   .product-details.product-page {
-    max-width: 100%; /* Take full width on smaller screens */
+    max-width: 100%;
+    height: auto;
   }
 
   .product-image.product-page {
@@ -149,6 +160,10 @@ body {
 }
 
 @media (max-width: 768px) {
+  .product-page-container {
+    padding: 40px 20px;
+  }
+
   .product-title.product-page {
     font-size: 28px;
   }
@@ -162,11 +177,29 @@ body {
   .product-price.product-page {
     font-size: 24px;
   }
+
+  .product-container.product-page {
+    max-width: 100%;
+    padding: 15px;
+    height: auto;
+  }
+
+  .add-to-cart.product-page {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 480px) {
+  .product-page-container {
+    padding: 40px 10px;
+  }
+
   .product-container.product-page {
     padding: 10px;
+    flex-direction: column;
+    height: auto;
   }
 
   .product-title.product-page {
@@ -186,5 +219,11 @@ body {
   .add-to-cart.product-page {
     padding: 12px 15px;
     font-size: 16px;
+    width: 100%; /* Ensure button spans full width */
+  }
+
+  .product-image.product-page {
+    padding: 8px;
+    max-width: 100%;
   }
 }
