@@ -52,13 +52,33 @@ body, html {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow for depth */
 }
 
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 1000; /* Ensure the buttons are above the modal content */
+  padding-bottom: .6%;
+}
+
+.left {
+  left: 10px; /* Adjust as needed */
+}
+
+.right {
+  right: 10px; /* Adjust as needed */
+}
+
 /* The Modal (background) */
 .modal {
   display: flex;
   justify-content: center;
   align-items: center;
   position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
+  z-index: 1000; /* Sit on top */
   left: 0;
   top: 0;
   width: 100%; /* Full width */
@@ -67,12 +87,12 @@ body, html {
 }
 
 /* Modal Content (Image) */
-.modal-content {
-  max-width: 80%; /* Limit modal width */
-  max-height: 80%; /* Limit modal height */
-  margin: auto;
-  display: block;
-  border-radius: 8px;
+.modal-content { 
+  width: 80%;      /* Set the width of the image */
+  max-width: 700px; /* Limit the maximum width */
+  height: auto;    /* Maintain aspect ratio */
+  display: block;  /* Make sure it behaves like a block element */
+  margin: auto;    /* Center the image */
 }
 
 /* Close Button */

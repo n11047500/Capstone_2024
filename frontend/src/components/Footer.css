@@ -1,3 +1,9 @@
+html {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .site-footer {
   display: flex;
   justify-content: space-between;
@@ -66,5 +72,22 @@
     flex-wrap: wrap; /* Allow images to wrap if necessary */
     justify-content: center;
     
+  }
+}
+
+@media screen and (min-width: 1400px) {
+  .site-footer {
+    font-size: 0.92vw;
+    padding-bottom: 50px;
+  }
+  .image-links-container img {
+    width: 5.9vw; /* Set image width to 1.5vw */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 4px; /* Optional: add some border radius for styling */
+
+  }
+  .footer-logo img {
+    width: 10vw;  /* Adjust size accordingly */
+    height: auto;
   }
 }

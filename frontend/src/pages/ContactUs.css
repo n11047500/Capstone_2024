@@ -74,7 +74,6 @@ html {
   align-items: center;
 }
 
-
 .Img {
   max-width: 100%;
   max-height: 100%;
@@ -101,7 +100,6 @@ html {
   width: 100%;
 }
 
-
 .contact_section p {
   font-size: 1.3vw;
   margin-bottom: 20px;
@@ -114,7 +112,6 @@ html {
   font-size: 1.5vw;
   width: 100%;
 }
-
 
 input[type=text],
 input[type=email],
@@ -180,10 +177,7 @@ h2 {
   text-align: center;
 }
 
-
-
-
-@media only screen and (max-width: 750px) {
+@media only screen and (max-width: 600px) {
   h1 {
     font-size: 5.6vw;
   }

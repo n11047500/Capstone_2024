@@ -10,7 +10,6 @@ const HomePage = () => {
   const [error, setError] = useState(null); // To store error messages
 
   const calculateSliceCount = (width) => {
-    if (width > 1200) return 10; // Large screen (desktop)
     if (width > 1024) return 8; // Medium-large screen (small desktop)
     if (width > 768) return 6; // Medium screen (tablet)
     if (width > 600) return 4; // Small-medium screen (large mobile or small tablet)
@@ -18,7 +17,7 @@ const HomePage = () => {
     return 2; // Extra-small screen (small mobile)
   };
 
-  const [sliceCount, setSliceCount] = useState(10);
+  const [sliceCount, setSliceCount] = useState(8);
 
   useEffect(() => {
     const handleResize = () => {

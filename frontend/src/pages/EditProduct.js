@@ -109,11 +109,11 @@ const EditProduct = ({ productId }) => {
     <div className="add-product-form">
       <h2>Edit Product</h2>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="name">Product Name:</label>
+        <label htmlFor="product-name">Product Name:</label>
         <input
           type="text"
-          id="name"
-          name="name"
+          id="product-name"
+          name="product-name"
           value={formData.name}
           onChange={handleChange}
           required

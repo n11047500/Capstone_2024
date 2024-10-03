@@ -70,11 +70,18 @@ const CartPage = () => {
                       value={item.quantity} 
                       onChange={(e) => updateQuantity(item.Product_ID, item.selectedOption, parseInt(e.target.value))} 
                       className="quantity-input"
+                      aria-label="Quantity"
                     />
                   </td>
                   <td>{currencyFormatter.format(item.Product_Price * item.quantity)}</td>
                   <td>
-                    <button onClick={() => removeFromCart(item.Product_ID, item.selectedOption)} className="remove-button">✖</button>
+                    <button 
+                    onClick={() => removeFromCart(item.Product_ID, item.selectedOption)} 
+                    className="remove-button"
+                    aria-label="Remove"
+                    >
+                      ✖
+                    </button>
                   </td>
                 </tr>
               ))}

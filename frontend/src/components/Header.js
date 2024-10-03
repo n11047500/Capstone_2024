@@ -8,7 +8,7 @@ import userIconImage from '../assets/UserIconBlack.png';
 
 function Header() {
   const { cart } = useContext(CartContext);
-  const [isOpen, setIsOpen] = useState(false); 
+  const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const sidebarRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -44,7 +44,7 @@ function Header() {
   };
 
   const userEmail = localStorage.getItem('userEmail');
-
+  
   return (
     <>
       <header className="site-header">
@@ -61,18 +61,48 @@ function Header() {
         <div className="right-icons">
           {/* User icon with dropdown */}
           <div className="user-icon-container" ref={dropdownRef}>
-            <img src={userIconImage} alt="User Icon" className="user-icon" onClick={() => setIsDropdownOpen(!isDropdownOpen)} />
+            <img
+              src={userIconImage}
+              alt="User Icon"
+              className="user-icon"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              data-testid="user-icon"  
+            />
             {isDropdownOpen && (
-              <div className="dropdown-menu">
+              <div className="dropdown-menu" data-testid="dropdown-menu">
                 {userEmail ? (
                   <>
-                    <NavLink to={`/user/${userEmail}`} className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>Profile</NavLink>
-                    <div className="dropdown-item" onClick={handleLogout}>Log Out</div>
+                    <NavLink
+                      to={`/user/${userEmail}`}
+                      className="dropdown-item"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Profile
+                    </NavLink>
+                    <div
+                      className="dropdown-item"
+                      onClick={handleLogout}
+                      data-testid="logout-button" 
+                    >
+                      Log Out
+                    </div>
                   </>
                 ) : (
                   <>
-                    <NavLink to="/login" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>Login</NavLink>
-                    <NavLink to="/signup" className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>Sign Up</NavLink>
+                    <NavLink
+                      to="/login"
+                      className="dropdown-item"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Login
+                    </NavLink>
+                    <NavLink
+                      to="/signup"
+                      className="dropdown-item"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Sign Up
+                    </NavLink>
                   </>
                 )}
               </div>

@@ -135,7 +135,7 @@ const PaymentForm = ({ data, onBack, onChange }) => {
       <h2 className="payment-form__title">Payment Method</h2>
       <form onSubmit={handleSubmit} className="payment-form__form">
         <div className="payment-form__card-element-container">
-          <CardElement className="payment-form__card-element" options={cardElementOptions} />
+          <CardElement className="payment-form__card-element" options={cardElementOptions} data-testid="stripe-card-element" />
         </div>
         <div className="button-group">
           <button type="button" onClick={onBack} className="back-payment-button">
