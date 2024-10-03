@@ -95,14 +95,13 @@ button.prev:hover, button.next:hover {
   padding: 15px 20px;
   background-color: #eec4ff;
   color: white;
-  border: solid black;
   cursor: pointer;
   border-radius: 4px;
   transition: background-color 0.3s, box-shadow 0.3s;
   font-size: 1.5vw; /* Scale button text */
   position: absolute;
   bottom: 20%;
-  left: 37.5%;
+  left: 39%;
 }
 
 .order-button a {

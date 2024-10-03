@@ -90,7 +90,7 @@ function Header() {
       </header>
 
       {/* Sidebar */}
-      <div className={`sidebar ${isOpen ? 'open' : ''}`} ref={sidebarRef} role="navigation" aria-label="sidebar navigation">
+      <div className={`sidebar ${isOpen ? 'open' : ''}`} ref={sidebarRef} role="navigation" aria-label="sidebar navigation" data-testid="sidebar">
         <button className="close-btn" onClick={() => setIsOpen(false)}>×</button>
         <nav className="sidebar-nav">
           <NavLink to="/" onClick={() => setIsOpen(false)}>Home</NavLink>
