@@ -19,6 +19,11 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
+// Mock image imports
+jest.mock('../path/to/your/images/gallery1.jpg', () => 'gallery1.jpg');
+jest.mock('../path/to/your/images/gallery2.jpg', () => 'gallery2.jpg');
+jest.mock('../path/to/your/images/gallery3.jpg', () => 'gallery3.jpg');
+
 // Utility function to render with CartProvider and Router
 const renderWithCartProvider = (ui, { value, ...renderOptions } = {}) => {
   return render(
@@ -47,25 +52,34 @@ describe('Gallery Component Integration Test', () => {
     expect(img3).toBeInTheDocument();
   });
 
-  test('handles image click event', () => {
-    const handleClick = jest.fn();
+  test('handles image click event and changes slide', () => { 
     const images = [
-      { id: 1, src: 'gallery1.jpg', alt: 'gallery1' },
-      { id: 2, src: 'gallery2.jpg', alt: 'gallery2' },
-      { id: 3, src: 'gallery3.jpg', alt: 'gallery3' },
-      { id: 4, src: 'gallery1.jpg', alt: 'gallery1' }, // Duplicate entry for testing
+      'gallery1.jpg',
+      'gallery2.jpg',
+      'gallery3.jpg',
     ];
     
-    renderWithCartProvider(<Gallery images={images} />); // No onImageClick here since we cannot change the component
+    renderWithCartProvider(<Gallery images={images} />); // Render the Gallery component
   
-    const imgElements = screen.getAllByAltText('gallery1'); // Get all images with the alt text 'gallery1'
-    fireEvent.click(imgElements[0]); // Click the first image with alt text 'gallery1'
+    // Click the first image
+    const firstImage = screen.getByAltText('gallery1');
+    fireEvent.click(firstImage);
   
-    // Instead of checking for handleClick, we will check if the modal opens 
-    // and we can mock the state changes instead. 
-    const modalImage = screen.getByAltText('Selected'); // Ensure that the modal content appears
-    expect(modalImage).toBeInTheDocument(); // Check if the modal is displayed
-    expect(modalImage).toHaveAttribute('src', images[0].src); // Check if the correct image is displayed in the modal
+    // Check if the modal displays the first image
+    const modalImage = screen.getByAltText('Selected'); 
+    expect(modalImage).toBeInTheDocument(); 
+    expect(modalImage).toHaveAttribute('src', 'gallery1.jpg'); 
+  
+    // Now click the next button to change to the second image
+    const nextButton = screen.getByRole('button', { name: '>' }); // Ensure this matches your button's role and name
+    fireEvent.click(nextButton);
+  
+    // Re-fetch the modal image after clicking the next button
+    const updatedModalImage = screen.getByAltText('Selected'); 
+  
+    // Check if the modal now displays the second image
+    expect(updatedModalImage).toHaveAttribute('src', 'gallery2.jpg'); // Expect it to change to the second image
   });
   
+
 });
