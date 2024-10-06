@@ -105,6 +105,8 @@ const EmployeeDashboard = () => {
             value={selectedProductId}
             onChange={handleProductSelect}
             className="product-select-dropdown"
+            data-testid="product-select-dropdown" 
+
           >
             <option value="">--Select a Product--</option>
             {products.map(product => (

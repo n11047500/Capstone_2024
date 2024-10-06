@@ -71,29 +71,29 @@ const AdditionalInformation = ({ data, onBack, onChange, onSubmit }) => {
     <form onSubmit={handleSubmit} className="form-details"> 
       <h2>Additional Information</h2>
       <div className="form-custom-group" style={{ display: 'flex', alignItems: 'flex-start', position: 'relative' }}>
-        <label>Comments:</label>
-        <label htmlFor="file-upload" className="file-upload-label" aria-label="Attach a file">
-          <i className="fa fa-paperclip"></i> Add attachment (optional)
-        </label>
-        <input
-          type="file"
-          id="file-upload"
-          className="file-upload-input"
-          name="file"
-          onChange={handleChange}
-          aria-label="Upload a file"
-        />
-        <textarea
-          className="comment-text"
-          name="comment"
-          id="textSize"
-          cols="70"
-          rows="8"
-          value={data.comment}
-          onChange={handleChange}
-          required
-        />
-      </div>
+      <label htmlFor="comment-text">Comments:</label> {/* Added htmlFor here */}
+      <label htmlFor="file-upload" className="file-upload-label" aria-label="Attach a file">
+        <i className="fa fa-paperclip"></i> Add attachment (optional)
+      </label>
+      <input
+        type="file"
+        id="file-upload"
+        className="file-upload-input"
+        name="file"
+        onChange={handleChange}
+        aria-label="Upload a file"
+      />
+      <textarea
+        className="comment-text"
+        name="comment"
+        id="comment-text"  /* Ensure the id matches the htmlFor */
+        cols="70"
+        rows="8"
+        value={data.comment}
+        onChange={handleChange}
+        required
+      />
+    </div>
 
       <button onClick={onBack} className='back-custom-button'>Back</button>
       <button type="submit" className="submit-custom-button">Submit Form</button>

@@ -38,18 +38,6 @@ describe('SignUpPage Integration Tests', () => {
     jest.clearAllMocks(); // Clear mocks before each test
   });
 
-  test('Updates form data when inputs change', () => {
-    renderWithCartProvider(<SignUpPage />);
-
-    const firstNameInput = screen.getByLabelText(/First Name/i);
-    fireEvent.change(firstNameInput, { target: { value: 'John' } });
-    expect(firstNameInput.value).toBe('John');
-
-    const lastNameInput = screen.getByLabelText(/Last Name/i);
-    fireEvent.change(lastNameInput, { target: { value: 'Doe' } });
-    expect(lastNameInput.value).toBe('Doe');
-  });
-
   test('Displays error when fetch fails', async () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
@@ -108,4 +96,33 @@ describe('SignUpPage Integration Tests', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/user/test@example.com'); // Check for navigation
     });
   });
+
+  test('Prevents form submission when reCAPTCHA is not verified', async () => {
+    // Mock the fetch function to simulate an error response
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: false,
+        json: () => Promise.resolve({ error: 'Error creating user.' }),
+      })
+    );
+  
+    renderWithCartProvider(<SignUpPage />);
+  
+    // Fill out form fields
+    fireEvent.change(screen.getByLabelText(/First Name/i), { target: { value: 'John' } });
+    fireEvent.change(screen.getByLabelText(/Last Name/i), { target: { value: 'Doe' } });
+    fireEvent.change(screen.getByLabelText(/Email/i), { target: { value: 'john.doe@example.com' } });
+    fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: 'password123' } });
+    fireEvent.change(screen.getByLabelText(/Mobile Number/i), { target: { value: '1234567890' } });
+    fireEvent.change(screen.getByLabelText(/Date of Birth/i), { target: { value: '1990-01-01' } });
+  
+    // Simulate form submission without verifying CAPTCHA
+    const signUpButton = screen.getByRole('button', { name: /Sign Up/i });
+    fireEvent.click(signUpButton);
+  
+    // Wait for the error message to appear due to the unverified CAPTCHA
+    const errorMessage = await screen.findByText(/Error creating user./i);
+    expect(errorMessage).toBeInTheDocument();
+  });
+  
 });

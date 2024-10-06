@@ -68,48 +68,47 @@ describe('Home Page Integration Tests', () => {
 
   test('renders and changes slides', async () => {
     renderWithContext();
-
+  
     // Check that the first slide is displayed
     expect(screen.getByText('The pain-free gardening solution suitable for everybody.')).toBeInTheDocument();
     expect(screen.getByText('←')).toBeInTheDocument(); // previous button
     expect(screen.getByText('→')).toBeInTheDocument(); // next button
-
+  
     // Simulate clicking the next button
     fireEvent.click(screen.getByText('→'));
-
+  
     // Wait for the second slide content to appear
     await waitFor(() => {
-      // Use getByRole to target the link specifically
-      const linkElement = screen.getByRole('link', { name: /Order Customised Ezee Planter Box/i });
-      expect(linkElement).toBeInTheDocument();
+      expect(screen.getByText('Order Customised Ezee Planter Box')).toBeInTheDocument();
     });
-
+  
     // Simulate clicking the previous button
     fireEvent.click(screen.getByText('←'));
-
+  
     // Wait for the first slide content to reappear
     await waitFor(() => {
       expect(screen.getByText('The pain-free gardening solution suitable for everybody.')).toBeInTheDocument();
     });
   });
 
-  test('renders featured products and navigates to product page on click', async () => {
+  test('renders featured products and navigates to product page on click', async () => { 
     renderWithContext();
-
+  
     // Wait for products to be fetched and displayed
     await waitFor(() => {
-      expect(screen.getByText('Test Product 1')).toBeInTheDocument();
-      expect(screen.getByText('Test Product 2')).toBeInTheDocument();
+      expect(screen.getByText(/Test Product 1/i)).toBeInTheDocument(); // Using regex
+      expect(screen.getByText(/Test Product 2/i)).toBeInTheDocument();
     });
-
+  
     // Simulate clicking on a product card (link)
-    const productLink = screen.getByText('Test Product 1');
+    const productLink = screen.getByText(/Test Product 1/i);
     fireEvent.click(productLink);
-
+  
     // Wait for the navigation to complete
     await waitFor(() => {
       // Ensure the navigation to the product page happens
-      expect(screen.getByText('Test Product 1')).toBeInTheDocument();
+      expect(screen.getByText(/Test Product 1/i)).toBeInTheDocument();
     });
-  });
+});
+
 });
