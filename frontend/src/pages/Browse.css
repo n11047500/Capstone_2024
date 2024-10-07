@@ -6,18 +6,55 @@ body, html {
 
 .browse-header-bar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: center; /* Center the controls */
   padding: 10px 20px;
+}
+
+.browse-controls-container {
+  display: flex; 
+  align-items: center;
+  justify-content: space-between; /* Space between search and sort controls */
+  width: 100%; /* Ensure the container takes full width */
+  max-width: 1200px; /* Optional: set a maximum width for larger screens */
+}
+
+/* Media query for screens less than 800px */
+@media (max-width: 800px) {
+  .browse-controls-container {
+    flex-direction: column; /* Stack the search and sort controls vertically */
+    align-items: center; /* Center items when stacked */
+  }
+
+  .browse-search-container {
+    margin-bottom: 10px; /* Add spacing between search and sort when stacked */
+    margin-right: 0; /* Remove right margin when stacked */
+  }
+
+  .browse-sort-container {
+    margin-left: 0; /* Remove left margin when stacked */
+  }
+}
+
+/* Media query for screens less than 600px */
+@media (max-width: 600px) {
+  .browse-controls-container {
+    justify-content: center; /* Center the controls */
+    width: 100%; /* Ensure it takes the full width */
+  }
+
+  .browse-header-bar {
+    flex-direction: column; /* Stack the header bar elements vertically */
+    align-items: center; /* Center the header elements */
+  }
 }
 
 .browse-search-container {
   display: flex;
-  margin-left: 24px;
+  margin-right: 16px; /* Spacing between search and sort */
 }
 
 .browse-sort-container {
-  margin-right: 24px; 
+  margin-left: 16px; /* Spacing on the left of the sort dropdown */
 }
 
 .browse-product-container {
@@ -26,6 +63,7 @@ body, html {
   flex-wrap: wrap;
   padding: 20px;
 }
+
 
 .browse-product-card {
   flex-basis: 30%;
@@ -90,4 +128,19 @@ body, html {
   .browse-product-card {
     padding: 10px;
   }
+}
+
+
+
+/* Media query for screens 868px and below */
+@media (max-width: 868px) {
+
+  .browse-sort-dropdown {
+      font-size: 16px; /* Set font size for filter dropdown to match search input */
+      padding: 10px; /* Add padding for better appearance */
+      border-radius: 4px; /* Optional: add border-radius for consistency */
+      border: 1px solid #ccc; /* Add border for better styling */
+  }
+
+
 }
