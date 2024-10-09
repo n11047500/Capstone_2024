@@ -1,23 +1,23 @@
 // Import necessary packages and modules
-const express = require('express'); // Express framework for building the API
-const cors = require('cors'); // Middleware for enabling Cross-Origin Resource Sharing
-const bcrypt = require('bcryptjs'); // Library for hashing passwords securely
-const bodyParser = require('body-parser'); // Middleware for parsing request bodies
-const db = require('./database'); // Custom database module for connecting to MySQL
-const nodemailer = require('nodemailer'); // Nodemailer for sending emails
-const jwt = require('jsonwebtoken'); // JSON Web Token library for secure authentication
-const axios = require('axios'); // Axios for making HTTP requests (used for reCAPTCHA)
-require('dotenv').config(); // Load environment variables from a .env file
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Stripe for payment processing
-const multer = require('multer'); // Multer for handling file uploads
+const express = require('express');                               // Express framework for building the API
+const cors = require('cors');                                     // Middleware for enabling Cross-Origin Resource Sharing
+const bcrypt = require('bcryptjs');                               // Library for hashing passwords securely
+const bodyParser = require('body-parser');                        // Middleware for parsing request bodies
+const db = require('./database');                                 // Custom database module for connecting to MySQL
+const nodemailer = require('nodemailer');                         // Nodemailer for sending emails
+const jwt = require('jsonwebtoken');                              // JSON Web Token library for secure authentication
+const axios = require('axios');                                   // Axios for making HTTP requests (used for reCAPTCHA)
+require('dotenv').config();                                       // Load environment variables from a .env file
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);  // Stripe for payment processing
+const multer = require('multer');                                 // Multer for handling file uploads
 
 // Initialise the Express app
 const app = express();
 
 // Middleware configuration
-app.use(cors()); // Enable CORS for all routes
-app.use(bodyParser.json()); // Parse JSON bodies in incoming requests
-app.use(express.json()); // Ensure incoming requests are parsed as JSON
+app.use(cors());              // Enable CORS for all routes
+app.use(bodyParser.json());   // Parse JSON bodies in incoming requests
+app.use(express.json());      // Ensure incoming requests are parsed as JSON
 
 // Get the database connection instance
 const connection = db.getConnection();
