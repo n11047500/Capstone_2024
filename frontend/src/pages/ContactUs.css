@@ -165,22 +165,22 @@ textarea {
 }
 
 h1 {
-  font-size: 2.8vw;
+  font-size: 3.2vw;
   text-align: center;
 }
 
 h2 {
-  font-size: 1.4vw;
+  font-size: 1.6vw;
   text-align: center;
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 800px) {
   h1 {
     font-size: 5.6vw;
   }
 
   h2 {
-    font-size: 3.8vw;
+    font-size: 3.4vw;
   }
 
   .contact-flexbox {
@@ -215,10 +215,14 @@ h2 {
   }
 
   .captcha-submit-container {
-    max-width: 100%;
-    /* Ensure full width on smaller screens */
+    width: 100%; /* Allow the container to take full width of the parent */
     display: flex;
     flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    margin: 0 auto; /* Center the container itself */
+    padding: 20px; /* Optional: add some padding */
+    box-sizing: border-box; /* Include padding in width calculations */
   }
 
   input[type=text],
@@ -226,7 +230,11 @@ h2 {
     font-size: 2vw;
 
   }
+  input[type=email],
+  select {
+    font-size: 2vw;
 
+  }
 
   textarea {
     height: 10vw;
@@ -241,8 +249,12 @@ h2 {
     font-size: 2.5vw;
     border-radius: 4px;
     cursor: pointer;
-    float: right;
-    width: 100%;
+    width: 80%; /* Set button width to 80% of the parent */
+    text-align: center; /* Center text in button */
+    margin-top: 10px; /* Add space above the button */
+    /* Add margin to center the button */
+    margin-left: auto; 
+    margin-right: auto; 
   }
 
 }
