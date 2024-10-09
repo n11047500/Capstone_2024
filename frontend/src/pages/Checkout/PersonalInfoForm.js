@@ -6,7 +6,7 @@ const libraries = ['places'];
 
 const PersonalInfoForm = ({ data, onNext, onChange }) => {
   // Access the Google Maps API key from environment variables
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+  const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
   // Load the Google Maps script with the necessary libraries
   const { isLoaded } = useLoadScript({
