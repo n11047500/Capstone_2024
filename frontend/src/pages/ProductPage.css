@@ -56,6 +56,8 @@ body {
   font-size: 32px;
   margin-bottom: 30px;
   color: #333;
+  margin: 0 auto;
+  width: fit-content; 
 }
 
 .product-description.product-page {
