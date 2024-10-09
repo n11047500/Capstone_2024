@@ -34,6 +34,15 @@ const ReviewPage = () => {
     const fetchReviews = async () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/reviews/${productId}`);
+        if (response.status === 404) {
+          // If 404, treat it as no reviews available for the product
+          setReviews([]);
+          setRatings([]);
+          setReviewCount(0);
+          setAverageRating(0);
+          return;
+        }
+        
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
