@@ -1,19 +1,22 @@
+/* Styling for the profile container */
 .profile-container {
   background-color: #EDF1EC;
   padding: 40px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   max-width: 600px;
-  margin: 40px auto;
+  margin: 40px auto; /* Centered on the page */
   text-align: center;
 }
 
+/* Header text styling within the profile container */
 .profile-container h1 {
   font-size: 24px;
   margin-bottom: 20px;
   color: #333;
 }
 
+/* Styling for labels in the profile form */
 .profile-container label {
   font-size: 16px;
   color: #666;
@@ -22,6 +25,7 @@
   text-align: left;
 }
 
+/* Input fields for text and date within the profile container */
 .profile-container input[type="text"],
 .profile-container input[type="date"] {
   width: 100%;
@@ -30,13 +34,15 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-bottom: 20px;
-  box-sizing: border-box; /* Ensures padding is included within the width */
+  box-sizing: border-box;
 }
 
+/* Checkbox input styling */
 .profile-container input[type="checkbox"] {
   margin-right: 10px;
 }
 
+/* Styling for the update button */
 .profile-container .update-button {
   width: 100%;
   padding: 15px;
@@ -44,51 +50,52 @@
   color: white;
   background-color: #4CAF50;
   border: none;
-  border-radius: 100px;
+  border-radius: 100px; /* Fully rounded button */
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
   margin-top: 20px;
 }
 
+/* Hover effect for the update button */
 .profile-container .update-button:hover {
   background-color: #45a049;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Styling for message text */
 .profile-container .message {
   margin-bottom: 20px;
   font-size: 16px;
   color: black;
 }
 
+/* Form styling */
 .profile-container form {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
+/* Secondary header text styling */
 .profile-container h2 {
   font-size: 20px;
   color: #000000;
   margin-bottom: 16px;
 }
 
-.employee-dashboard h2 {
-  font-size: 18px;
-  color: #333;
-  margin-bottom: 10px;
-}
-
+/* Employee dashboard section styling */
 .employee-dashboard {
   margin-top: 20px;
 }
 
+/* Header text styling for employee dashboard */
 .employee-dashboard h2 {
   font-size: 20px;
   color: #333;
   margin-bottom: 20px;
 }
 
+/* Button styling for employee dashboard */
 .employee-dashboard button {
   padding: 10px 20px;
   font-size: 16px;
@@ -101,22 +108,20 @@
   margin: 5px;
 }
 
+/* Hover effect for buttons in the employee dashboard */
 .employee-dashboard button:hover {
   background-color: #45a049;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Flex container for dashboard buttons */
 .employee-dashboard .dashboard-buttons {
   display: flex;
   justify-content: center;
   gap: 10px;
 }
 
-.employee-dashboard .dashboard-buttons button {
-  flex-grow: 1;
-  text-align: center;
-}
-
+/* Styling for role update form */
 .role-update-form {
   margin-top: 20px;
   display: flex;
@@ -124,6 +129,7 @@
   align-items: center;
 }
 
+/* Label and input styling for role update form */
 .role-update-form label {
   font-size: 16px;
   margin-bottom: 10px;
@@ -140,6 +146,7 @@
   margin-bottom: 15px;
 }
 
+/* Styling for update button in role update form */
 .role-update-form .update-button {
   width: 100%;
   max-width: 300px;
@@ -153,25 +160,14 @@
   transition: background-color 0.3s, box-shadow 0.3s;
 }
 
+/* Hover effect for role update form button */
 .role-update-form .update-button:hover {
   background-color: #45a049;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.employee-dashboard .reset-button {
-  background-color: #f44336;
-  color: white;
-  padding: 10px 20px;
-  margin-left: 10px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.employee-dashboard .reset-button:hover {
-  background-color: #d32f2f;
-}
-
+/* Styling for reset and delete product buttons */
+.employee-dashboard .reset-button,
 .employee-dashboard .delete-product-button {
   background-color: #f44336;
   color: white;
@@ -182,11 +178,12 @@
   border-radius: 5px;
 }
 
+.employee-dashboard .reset-button:hover,
 .employee-dashboard .delete-product-button:hover {
   background-color: #d32f2f;
 }
 
-/* Responsive Design */
+/* Responsive styles for tablets (up to 768px) */
 @media (max-width: 768px) {
   .profile-container {
     padding: 20px;
@@ -202,6 +199,7 @@
   }
 }
 
+/* Responsive styles for mobile devices (up to 480px) */
 @media (max-width: 480px) {
   .profile-container {
     padding: 15px;

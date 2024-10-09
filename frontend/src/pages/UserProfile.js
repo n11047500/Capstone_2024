@@ -6,9 +6,13 @@ import './UserProfile.css';
 import EmployeeDashboard from './EmployeeDashboard';
 
 const UserProfile = () => {
+  // Extract the email parameter from the URL
   const { email } = useParams();
+  // State for storing user information
   const [user, setUser] = useState(null);
+  // State for storing the role (customer or employee)
   const [role, setRole] = useState(localStorage.getItem('userRole') || 'customer');
+  // State for storing form data
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -17,15 +21,19 @@ const UserProfile = () => {
     shippingAddress: '',
     billingAddress: ''
   });
+  // State for checking if the billing address is the same as the shipping address
   const [sameAddress, setSameAddress] = useState(false);
+  // State for storing feedback messages
   const [message, setMessage] = useState('');
 
+  // Fetch user data when the component mounts or email changes
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/user/${email}`);
         const data = await response.json();
         setUser(data);
+        // Populate form data with fetched user details
         setFormData({
           firstName: data.first_name,
           lastName: data.last_name,
@@ -43,6 +51,7 @@ const UserProfile = () => {
     fetchUser();
   }, [email]);
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     // Add form submission logic here
@@ -50,6 +59,7 @@ const UserProfile = () => {
 
   return (
     <>
+      {/* Header component for consistent navigation */}
       <Header />
       <main>
         <div className="profile-container">
@@ -57,9 +67,11 @@ const UserProfile = () => {
           {user && <h2>Welcome, {user.first_name}!</h2>}
           {role === 'employee' ? (
             <>
+              {/* Display the employee dashboard if the user is an employee */}
               <EmployeeDashboard />
             </>
           ) : (
+            // Display the user profile form for customers
             <form onSubmit={handleSubmit}>
               <label htmlFor="firstName">First Name:</label>
               <input
@@ -135,6 +147,7 @@ const UserProfile = () => {
           )}
         </div>
       </main>
+      {/* Footer component for consistent site information */}
       <Footer />
     </>
   );

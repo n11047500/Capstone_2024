@@ -1,3 +1,4 @@
+/* Global styles for body and html */
 body, html {
   margin: 0;
   padding: 0;
@@ -5,9 +6,10 @@ body, html {
   background-color: #EDF1EC;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100vh; /* Ensure full viewport height */
 }
 
+/* Main container for centering content */
 main {
   flex: 1;
   display: flex;
@@ -16,6 +18,7 @@ main {
   justify-content: center;
 }
 
+/* Styling for the signup form container */
 .signup-container {
   background-color: #EDF1EC;
   padding: 40px;
@@ -27,12 +30,14 @@ main {
   margin: 20px;
 }
 
+/* Header styling within the signup container */
 .signup-container h1 {
   font-size: 24px;
   margin-bottom: 20px;
   color: #333;
 }
 
+/* Label styling */
 .signup-container label {
   font-size: 16px;
   color: #666;
@@ -40,6 +45,7 @@ main {
   margin-bottom: 5px;
 }
 
+/* Input field styling for text, email, password, and date inputs */
 .signup-container input[type="text"],
 .signup-container input[type="email"],
 .signup-container input[type="password"],
@@ -50,9 +56,10 @@ main {
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-bottom: 20px;
-  box-sizing: border-box; /* Ensures padding is included within the width */
+  box-sizing: border-box; /* Include padding within the width */
 }
 
+/* Styling for the signup button */
 .signup-container .signup-button {
   width: 100%;
   padding: 15px;
@@ -60,21 +67,24 @@ main {
   color: white;
   background-color: #4CAF50;
   border: none;
-  border-radius: 100px;
+  border-radius: 100px; /* Fully rounded button */
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
 }
 
+/* Hover effect for the signup button */
 .signup-container .signup-button:hover {
   background-color: #45a049;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Styling for error messages */
 .signup-container .error-message {
   color: red;
   margin-top: 10px;
 }
 
+/* Styling for the captcha container */
 .captcha-signup-container {
   display: flex;
   align-items: center;
@@ -82,7 +92,9 @@ main {
   margin-bottom: 20px;
 }
 
-/* Media Queries for Better Scaling */
+/* Media Queries for responsive adjustments */
+
+/* Tablet and smaller screens (up to 768px) */
 @media (max-width: 768px) {
   .signup-container {
     padding: 30px;
@@ -107,6 +119,7 @@ main {
   }
 }
 
+/* Mobile devices (up to 480px) */
 @media (max-width: 480px) {
   .signup-container {
     padding: 20px;

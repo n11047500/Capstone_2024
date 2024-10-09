@@ -18,54 +18,55 @@ import gallery13 from '../assets/gallery/gallery13.jpg';
 import gallery14 from '../assets/gallery/gallery14.jpg';
 import gallery15 from '../assets/gallery/gallery15.jpg';
 
-
-const images = [gallery1, gallery2, gallery3, gallery4, gallery5, gallery6, gallery7, gallery8, gallery9, gallery10, gallery11, gallery12, gallery13, gallery14, gallery15]; // Array of images
+// Array of gallery images
+const images = [gallery1, gallery2, gallery3, gallery4, gallery5, gallery6, gallery7, gallery8, gallery9, gallery10, gallery11, gallery12, gallery13, gallery14, gallery15];
 
 function Gallery() {
-  const [selectedImageIndex, setSelectedImageIndex] = useState(null); // State to track the selected image index
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to track if the modal is open
+  // State for tracking the currently selected image index and whether the modal is open
+  const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Function to handle when an image is clicked
   const handleImageClick = (index) => {
-    setSelectedImageIndex(index); // Set the clicked image index as selected
+    setSelectedImageIndex(index); // Set the clicked image as the selected one
     setIsModalOpen(true); // Open the modal
   };
 
   // Function to close the modal
   const closeModal = () => {
     setIsModalOpen(false); // Close the modal
-    setSelectedImageIndex(null); // Clear the selected image index
+    setSelectedImageIndex(null); // Reset the selected image index
   };
 
-  // Function to go to the next image
+  // Function to navigate to the next image in the modal
   const nextImage = () => {
     setSelectedImageIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
 
-  // Function to go to the previous image
+  // Function to navigate to the previous image in the modal
   const prevImage = () => {
     setSelectedImageIndex((prevIndex) => 
       (prevIndex - 1 + images.length) % images.length
     );
   };
 
-  // Effect to handle keydown events when modal is open
+  // Effect to handle keyboard navigation when the modal is open
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (isModalOpen) {
         if (event.key === 'ArrowRight') {
-          nextImage();
+          nextImage(); // Navigate to the next image with the right arrow key
         } else if (event.key === 'ArrowLeft') {
-          prevImage();
+          prevImage(); // Navigate to the previous image with the left arrow key
         } else if (event.key === 'Escape') {
-          closeModal(); // Close modal on Esc key
+          closeModal(); // Close the modal when the Esc key is pressed
         }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown); // Attach event listener
 
-    // Cleanup event listener on unmount
+    // Cleanup event listener when the component unmounts or modal state changes
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
@@ -73,11 +74,13 @@ function Gallery() {
 
   return (
     <div className="gallery">
+      {/* Header component */}
       <Header />
       <h1>Gallery</h1>
       <h2>Locally designed and manufactured, EZee Planter Boxes bring the health benefits and the joy of gardening to all – including those with mobility adjustments.</h2>
 
       <div className="gallery-row">
+        {/* Four columns of gallery images */}
         <div className="gallery-column">
           <img src={gallery10} alt="gallery10" onClick={() => handleImageClick(9)} />
           <img src={gallery3} alt="gallery3" onClick={() => handleImageClick(2)} />
@@ -104,16 +107,21 @@ function Gallery() {
       {/* Modal for displaying the selected image */}
       {isModalOpen && (
         <div className="modal" onClick={closeModal}>
+          {/* Close button for the modal */}
           <span className="close" onClick={closeModal}>&times;</span>
+          {/* Left arrow for navigating to the previous image */}
           <button className="arrow left" onClick={(event) => { event.stopPropagation(); prevImage(); }}>&lt;</button>
+          {/* Display the selected image */}
           <img className="modal-content" src={images[selectedImageIndex]} alt="Selected" />
+          {/* Right arrow for navigating to the next image */}
           <button className="arrow right" onClick={(event) => { event.stopPropagation(); nextImage(); }}>&gt;</button>
         </div>
       )}
       <br />
+      {/* Footer component */}
       <Footer />
     </div>
   );
 }
 
-export default Gallery;
+export default Gallery; 

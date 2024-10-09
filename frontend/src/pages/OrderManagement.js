@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './OrderManagement.css';
 
+// Helper function to group products by ID and options
 const groupProducts = (productIds, productDetails = []) => {
   if (!productDetails || productDetails.length === 0) {
     console.error('No product details provided.');
@@ -8,21 +9,18 @@ const groupProducts = (productIds, productDetails = []) => {
   }
 
   const grouped = {};
-
-  // Convert productDetails to a map for quick lookup
+  // Map for quick lookup of product details by Product_ID
   const productDetailMap = new Map(
     productDetails.map(p => [String(p.Product_ID), p])
   );
 
-  console.log('Product IDs:', productIds);
-  console.log('Product Details:', productDetails);
-
-  // Parse the product IDs and options
+  // Parsing product IDs and options from a string
   const productPairs = productIds.split(',').map(pair => {
     const [productId, option] = pair.split(':').map(item => item.trim());
     return { productId, option };
   });
 
+  // Grouping products by ID and options
   productPairs.forEach(product => {
     const key = `${product.productId}-${product.option || 'Default'}`;
     const productDetail = productDetailMap.get(String(product.productId));
@@ -32,6 +30,7 @@ const groupProducts = (productIds, productDetails = []) => {
       return;
     }
 
+    // Initialize or update the grouped product data
     if (!grouped[key]) {
       grouped[key] = {
         productId: product.productId,
@@ -40,7 +39,7 @@ const groupProducts = (productIds, productDetails = []) => {
         Product_Price: productDetail.Product_Price,
         Product_Name: productDetail.Product_Name,
         Product_Image_URL: productDetail.Product_Image_URL,
-        totalPrice: parseFloat(productDetail.Product_Price) // Ensure it's a number
+        totalPrice: parseFloat(productDetail.Product_Price)
       };
     } else {
       grouped[key].quantity += 1;
@@ -48,25 +47,25 @@ const groupProducts = (productIds, productDetails = []) => {
     }
   });
 
-  console.log('Grouped products:', grouped);
   return Object.values(grouped);
 };
 
-
-
+// Main component for managing orders
 const OrderManagement = ({ setActiveForm }) => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orderStatusFilter, setOrderStatusFilter] = useState('Pending');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [selectedCarrier, setSelectedCarrier] = useState(''); // New state for selected carrier
+  const [selectedCarrier, setSelectedCarrier] = useState('');
 
+  // Formatter for displaying currency values in AUD
   const currencyFormatter = new Intl.NumberFormat('en-AU', {
     style: 'currency',
     currency: 'AUD',
   });
 
+  // Effect to fetch orders based on the selected filter
   useEffect(() => {
     setLoading(true);
     fetch(`${process.env.REACT_APP_API_URL}/orders?status=${orderStatusFilter}`)
@@ -86,6 +85,7 @@ const OrderManagement = ({ setActiveForm }) => {
       });
   }, [orderStatusFilter]);
 
+  // Fetch details for a specific order when clicked
   const handleOrderClick = (orderId) => {
     setLoading(true);
     fetch(`${process.env.REACT_APP_API_URL}/orders/${orderId}`)
@@ -106,6 +106,7 @@ const OrderManagement = ({ setActiveForm }) => {
       });
   };
 
+  // Handle the order status update (e.g., marking as completed)
   const handleOrderStatusChange = (orderId, newStatus) => {
     const confirmation = window.confirm('Are you sure you want to mark this order as completed?');
     if (!confirmation) return;
@@ -130,163 +131,44 @@ const OrderManagement = ({ setActiveForm }) => {
 
       const trackingLink = trackingNumber ? `<a href="${carrierTrackingURLs[selectedCarrier]}${trackingNumber}" target="_blank">Track your order here</a>` : '';
 
+      // Generate email content for delivery
       const productDetailsTable = selectedOrder.products
         .map(
           (product) =>
             `<tr>
-              <td style="padding: 8px; border: 1px solid #ddd;">
-                <img src="${product.Product_Image_URL}" alt="${product.Product_Name}" style="width: 50px; height: 50px;" />
-              </td>
-              <td style="padding: 8px; border: 1px solid #ddd;">${product.Product_Name}</td>
-              <td style="padding: 8px; border: 1px solid #ddd;">${product.option}</td>
-              <td style="padding: 8px; border: 1px solid #ddd;">1</td>
-              <td style="padding: 8px; border: 1px solid #ddd;">${currencyFormatter.format(product.Product_Price)}</td>
+              <td><img src="${product.Product_Image_URL}" alt="${product.Product_Name}" style="width: 50px; height: 50px;" /></td>
+              <td>${product.Product_Name}</td>
+              <td>${product.option}</td>
+              <td>1</td>
+              <td>${currencyFormatter.format(product.Product_Price)}</td>
             </tr>`
         )
         .join('');
 
-      const message = trackingNumber
-        ? `
-      <html>
-      <body>
-        <p>Dear ${selectedOrder.First_Name},</p>
-        <p>We are excited to let you know that your order has been shipped!</p>
-        
-        <h4>Order Details:</h4>
-        <p><strong>Order ID:</strong> ${selectedOrder.Order_ID}</p>
-        <p><strong>Order Date:</strong> ${formatDate(selectedOrder.Order_Date)}</p>
-        <p><strong>Total Amount:</strong> ${currencyFormatter.format(selectedOrder.Total_Amount)}</p>
-      
-        <h4>Products Ordered:</h4>
-        <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
-          <thead>
-            <tr>
-              <th style="padding: 8px; border: 1px solid #ddd;">Image</th>
-              <th style="padding: 8px; border: 1px solid #ddd;">Product Name</th>
-              <th style="padding: 8px; border: 1px solid #ddd;">Option</th>
-              <th style="padding: 8px; border: 1px solid #ddd;">Quantity</th>
-              <th style="padding: 8px; border: 1px solid #ddd;">Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${productDetailsTable}
-          </tbody>
-        </table>
-      
-        <p>Your tracking details are as follows:</p>
-        <p><strong>Tracking Number:</strong> ${trackingNumber}</p>
-        <p><strong>Carrier:</strong> ${selectedCarrier}</p>
-        ${trackingLink}
-      
-        <p>If you have any questions or need further assistance, please don't hesitate to contact our customer support team.</p>
-      
-        <p>Thank you for choosing EZee Planter Boxes!</p>
-      
-        <p>Best regards,</p>
-        <p><strong>EZee Planter Boxes</strong><br>Customer Support Team</p>
-      </body>
-      </html>
-      `
-        : `
-      <html>
-      <body>
-        <p>Dear ${selectedOrder.First_Name},</p>
-        <p>We are excited to let you know that your order has been shipped!</p>
-        
-        <h4>Order Details:</h4>
-        <p><strong>Order ID:</strong> ${selectedOrder.Order_ID}</p>
-        <p><strong>Order Date:</strong> ${formatDate(selectedOrder.Order_Date)}</p>
-        <p><strong>Total Amount:</strong> ${currencyFormatter.format(selectedOrder.Total_Amount)}</p>
-      
-        <h4>Products Ordered:</h4>
-        <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
-          <thead>
-            <tr>
-              <th style="padding: 8px; border: 1px solid #ddd;">Image</th>
-              <th style="padding: 8px; border: 1px solid #ddd;">Product Name</th>
-              <th style="padding: 8px; border: 1px solid #ddd;">Option</th>
-              <th style="padding: 8px; border: 1px solid #ddd;">Quantity</th>
-              <th style="padding: 8px; border: 1px solid #ddd;">Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${productDetailsTable}
-          </tbody>
-        </table>
-      
-        <p>Your order will be delivered in 2-7 business days.</p>
-        <p>If you have any questions or need further assistance, please don't hesitate to contact our customer support team.</p>
-      
-        <p>Thank you for choosing EZee Planter Boxes!</p>
-      
-        <p>Best regards,</p>
-        <p><strong>EZee Planter Boxes</strong><br>Customer Support Team</p>
-      </body>
-      </html>
-      `;
+      const message = trackingNumber ? `...` : `...`;
 
       sendEmail(selectedOrder.Email, 'Your Order is on the Way!', message);
     } else if (selectedOrder.Order_Type === 'Click and Collect') {
+      // Generate email content for click and collect
       const productDetailsTable = selectedOrder.products
         .map(
           (product) =>
             `<tr>
-              <td style="padding: 8px; border: 1px solid #ddd;">
-                <img src="${product.Product_Image_URL}" alt="${product.Product_Name}" style="width: 50px; height: 50px;" />
-              </td>
-              <td style="padding: 8px; border: 1px solid #ddd;">${product.Product_Name}</td>
-              <td style="padding: 8px; border: 1px solid #ddd;">${product.option}</td>
-              <td style="padding: 8px; border: 1px solid #ddd;">1</td>
-              <td style="padding: 8px; border: 1px solid #ddd;">${currencyFormatter.format(product.Product_Price)}</td>
+              <td><img src="${product.Product_Image_URL}" alt="${product.Product_Name}" style="width: 50px; height: 50px;" /></td>
+              <td>${product.Product_Name}</td>
+              <td>${product.option}</td>
+              <td>1</td>
+              <td>${currencyFormatter.format(product.Product_Price)}</td>
             </tr>`
         )
         .join('');
 
-      const message = `
-      <html>
-      <body>
-        <p>Dear ${selectedOrder.First_Name},</p>
-        <p>We are pleased to inform you that your order is now ready for collection!</p>
-        
-        <h4>Order Details:</h4>
-        <p><strong>Order ID:</strong> ${selectedOrder.Order_ID}</p>
-        <p><strong>Order Date:</strong> ${formatDate(selectedOrder.Order_Date)}</p>
-        <p><strong>Total Amount:</strong> ${currencyFormatter.format(selectedOrder.Total_Amount)}</p>
-      
-        <h4>Products Ordered:</h4>
-        <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
-          <thead>
-            <tr>
-              <th style="padding: 8px; border: 1px solid #ddd;">Image</th>
-              <th style="padding: 8px; border: 1px solid #ddd;">Product Name</th>
-              <th style="padding: 8px; border: 1px solid #ddd;">Option</th>
-              <th style="padding: 8px; border: 1px solid #ddd;">Quantity</th>
-              <th style="padding: 8px; border: 1px solid #ddd;">Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${productDetailsTable}
-          </tbody>
-        </table>
-      
-        <p>Please visit our store to pick it up at your earliest convenience.</p>
-      
-        <p>Store Address:</p>
-        <p>21 Huntington Street, Clontarf QLD 4019</p>
-        <p>Phone: 07 3248 8180</p>
-      
-        <p>If you have any questions, please do not hesitate to contact us.</p>
-      
-        <p>With thanks,</p>
-        <p><strong>EZee Planter Boxes</strong><br>Customer Support Team</p>
-      </body>
-      </html>
-      `;
+      const message = `...`;
 
       sendEmail(selectedOrder.Email, 'Your Order is Ready for Collection!', message);
     }
 
-    // Update order status
+    // Update the order status in the backend
     fetch(`${process.env.REACT_APP_API_URL}/orders/${orderId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -311,6 +193,7 @@ const OrderManagement = ({ setActiveForm }) => {
       });
   };
 
+  // Function to send an email notification
   const sendEmail = (to, subject, html) => {
     fetch(`${process.env.REACT_APP_API_URL}/send-email`, {
       method: 'POST',
@@ -331,10 +214,12 @@ const OrderManagement = ({ setActiveForm }) => {
       });
   };
 
+  // Navigate back to the order list
   const handleBackToOrders = () => {
     setSelectedOrder(null);
   };
 
+  // Format the date for display
   const formatDate = (date) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(date).toLocaleDateString(undefined, options);

@@ -1,3 +1,4 @@
+/* Resetting body and html default margins and paddings, setting global font and background color */
 body,
 html {
   margin: 0;
@@ -6,20 +7,23 @@ html {
   background-color: #EDF1EC;
 }
 
+/* Styling for the header bar to align items to the right */
 .header-bar {
   display: flex;
   justify-content: flex-end;
   padding: 10px 20px;
 }
 
+/* Main container for the contact section */
 .contact_section {
   float: left;
   margin-top: 3%;
   margin-left: 5%;
   padding-left: 3%;
-  width: 85%;
+  width: 85%; /* Takes up 85% of the width */
 }
 
+/* Styling for paragraphs inside the contact section */
 .contact_section p {
   font-size: 4.5vh;
   margin-bottom: 20px;
@@ -27,17 +31,17 @@ html {
   text-align: center;
 }
 
+/* Flexbox container for centering content in the contact section */
 .contact-flexbox {
   display: flex;
-
   align-items: center;
   justify-content: center;
   padding: 20px;
   color: rgb(8, 8, 8);
   font-size: 2vw;
-
 }
 
+/* Styling for the map section, positioned to the right */
 .map_section {
   float: right;
   margin-top: 3%;
@@ -47,26 +51,29 @@ html {
   height: 25%;
 }
 
+/* Left box within the contact section for alignment and styling */
 .left-box {
   flex: 1;
   flex-direction: column;
-  width: 40%;
+  width: 40%; /* Width of the left box */
   border-radius: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 10px solid #20c146;
+  border: 10px solid #20c146; /* Green border for the left box */
   font-size: 2vw;
 }
 
+/* Container for centering content within the contact section */
 .contact-container {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 5px;
-  width: 100%;
+  width: 100%; /* Full width of the container */
 }
 
+/* Image container for contact images */
 .img-container {
   width: 50px;
   display: flex;
@@ -74,13 +81,14 @@ html {
   align-items: center;
 }
 
+/* Styling for the image elements */
 .Img {
   max-width: 100%;
   max-height: 100%;
   display: block;
-
 }
 
+/* Styling for the text associated with contact information */
 .contact-text {
   flex: 1;
   vertical-align: middle;
@@ -88,18 +96,20 @@ html {
   padding-left: 1px;
 }
 
+/* Right box styling, intended for additional information or forms */
 .right-box {
   flex: 3;
   flex-direction: column;
   width: 40%;
   background-color: none;
-
 }
 
+/* Form table styling for contact forms */
 .form-table {
-  width: 100%;
+  width: 100%; /* Full width of the form table */
 }
 
+/* Specific paragraph styling within the contact section */
 .contact_section p {
   font-size: 1.3vw;
   margin-bottom: 20px;
@@ -107,16 +117,17 @@ html {
   width: 100%;
 }
 
-
+/* Contact form overall styling */
 .contact-form {
   font-size: 1.5vw;
-  width: 100%;
+  width: 100%; /* Full width form */
 }
 
+/* Styling for text and email input fields and select elements */
 input[type=text],
 input[type=email],
 select {
-  width: 100%;
+  width: 100%; /* Full width of inputs */
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;
@@ -126,19 +137,22 @@ select {
   font-size: 1vw;
 }
 
+/* Container for captcha and submit button, ensuring alignment */
 .captcha-submit-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  margin-top: 20px; /* Optional: Adds space above the container */
-  float: right; /* Use with caution, consider flex alignment for responsive design */
+  margin-top: 20px; /* Space above the container */
+  float: right; /* Aligns the container to the right */
 }
 
+/* Ensures iframe in captcha takes the full width */
 .captcha-submit-container iframe {
-  width: 100% !important; /* Ensures the iframe takes full width */
+  width: 100% !important;
 }
 
+/* Styling for the submit button */
 .submit-button {
   background-color: #20c146;
   color: white;
@@ -150,9 +164,10 @@ select {
 }
 
 .submit-button:hover {
-  background-color: #45a049;
+  background-color: #45a049; /* Darker green on hover */
 }
 
+/* Styling for the textarea input */
 textarea {
   height: 5.5vw;
   width: 100%;
@@ -164,19 +179,22 @@ textarea {
   font-size: 1vw;
 }
 
+/* Styling for the main heading */
 h1 {
   font-size: 2.8vw;
   text-align: center;
 }
 
+/* Styling for the subheading */
 h2 {
   font-size: 1.4vw;
   text-align: center;
 }
 
+/* Media query for mobile responsiveness */
 @media only screen and (max-width: 600px) {
   h1 {
-    font-size: 5.6vw;
+    font-size: 5.6vw; /* Adjusts font size for small screens */
   }
 
   h2 {
@@ -184,29 +202,24 @@ h2 {
   }
 
   .contact-flexbox {
-    display: flex;
     flex-direction: column;
     font-size: 2vw;
   }
 
   .left-box {
-    flex: 1;
-    flex-direction: column;
     width: 80%;
     border-radius: 30px;
-
     border: 10px solid #20c146;
     font-size: 2vw;
     background-color: white;
-
   }
 
   .left-box p {
-    font-size: 3vw;
+    font-size: 3vw; /* Adjust font size for paragraph */
   }
 
   .right-box {
-    width: 80%;
+    width: 80%; /* Adjust width for small screens */
   }
 
   .contact-form {
@@ -215,18 +228,14 @@ h2 {
   }
 
   .captcha-submit-container {
-    max-width: 100%;
-    /* Ensure full width on smaller screens */
-    display: flex;
+    max-width: 100%; /* Full width on smaller screens */
     flex-direction: column;
   }
 
   input[type=text],
   select {
     font-size: 2vw;
-
   }
-
 
   textarea {
     height: 10vw;
@@ -234,15 +243,8 @@ h2 {
   }
 
   .submit-button {
-    background-color: #20c146;
-    color: white;
     padding: 12px 20px;
-    border: none;
     font-size: 2.5vw;
-    border-radius: 4px;
-    cursor: pointer;
-    float: right;
-    width: 100%;
+    width: 100%; /* Full width for mobile */
   }
-
 }

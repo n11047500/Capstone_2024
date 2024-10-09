@@ -7,19 +7,22 @@ import ReviewForm from '../components/ReviewForm';
 import StarRating from '../components/StarRating';
 
 const ReviewPage = () => {
+  // Extract the product ID from the URL
   const { productId } = useParams();
+  // State variables for product details, reviews, ratings, and error handling
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [ratings, setRatings] = useState([]);
   const [reviewCount, setReviewCount] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
   const [error, setError] = useState(null);
-  
-  // State for pagination
+
+  // State variables for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 5;
 
   useEffect(() => {
+    // Fetch product details based on the product ID
     const fetchProduct = async () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/products/${productId}`);
@@ -31,6 +34,7 @@ const ReviewPage = () => {
       }
     };
 
+    // Fetch reviews and ratings for the product
     const fetchReviews = async () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/reviews/${productId}`);
@@ -56,29 +60,32 @@ const ReviewPage = () => {
     fetchReviews();
   }, [productId]);
 
+  // Show error message if there's an error
   if (error) {
     return <div>Error: {error}</div>;
   }
 
+  // Show loading message while product data is being fetched
   if (!product) {
     return <div>Loading...</div>;
   }
 
+  // Product image and rating formatter
   const productImage = product.Product_Image_URL;
   const ratingFormatter = new Intl.NumberFormat('en-AU', {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });
 
-  // Calculate total pages
+  // Calculate the total number of pages for reviews
   const totalPages = Math.ceil(reviews.length / reviewsPerPage);
   
-  // Get the current reviews to display
+  // Determine the reviews to display on the current page
   const indexOfLastReview = currentPage * reviewsPerPage;
   const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
   const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
 
-  // Handlers for pagination
+  // Handlers for pagination buttons
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
@@ -125,7 +132,7 @@ const ReviewPage = () => {
           <p>No reviews for this product.</p>
         )}
 
-        {/* Pagination controls */}
+        {/* Pagination controls for navigating reviews */}
         <div className="pagination-controls">
           <button onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
           <span>Page {currentPage} of {totalPages}</span>

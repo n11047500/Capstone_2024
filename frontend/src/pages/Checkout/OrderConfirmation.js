@@ -1,27 +1,24 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { CartContext } from '../../context/CartContext';
-import { useSearchParams } from 'react-router-dom';
-import { Link, useNavigate } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import './OrderConfirmation.css';
 
-
+// Initialize Stripe with the publishable key from environment variables
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
+// Function to group products based on product IDs and details
 const groupProducts = (productIds, productDetails) => {
   const grouped = {};
 
-  // Convert productDetails to a map for quick lookup
+  // Create a map for quick lookup of product details by Product_ID
   const productDetailMap = new Map(
     productDetails.map(p => [String(p.Product_ID), p])
   );
 
-  console.log('Product IDs:', productIds);
-  console.log('Product Details:', productDetails);
-
-  // Parse the product IDs and options
+  // Parse product IDs and their options from the string
   const productPairs = productIds.split(',').map(pair => {
     const [productId, option] = pair.split(':').map(item => item.trim());
     return { productId, option };
@@ -31,12 +28,13 @@ const groupProducts = (productIds, productDetails) => {
     const key = `${product.productId}-${product.option || 'Default'}`;
     const productDetail = productDetailMap.get(String(product.productId));
 
+    // If product details are not found, log an error and skip
     if (!productDetail) {
       console.error(`Product details not found for Product_ID: ${product.productId}`);
-      console.error('Available product details:', productDetails);
       return;
     }
 
+    // Group products based on ID and option, updating quantity and price
     if (!grouped[key]) {
       grouped[key] = {
         productId: product.productId,
@@ -45,7 +43,7 @@ const groupProducts = (productIds, productDetails) => {
         Product_Price: productDetail.Product_Price,
         Product_Name: productDetail.Product_Name,
         Product_Image_URL: productDetail.Product_Image_URL,
-        totalPrice: productDetail.Product_Price
+        totalPrice: productDetail.Product_Price,
       };
     } else {
       grouped[key].quantity += 1;
@@ -53,23 +51,20 @@ const groupProducts = (productIds, productDetails) => {
     }
   });
 
-  console.log('Grouped products:', grouped);
   return Object.values(grouped);
 };
 
-
-
-
 const OrderConfirmationPage = () => {
+  // State variables to manage payment status, products, and order details
   const [status, setStatus] = useState('loading');
   const [searchParams] = useSearchParams();
-  const [products, setProducts] = useState([]); // Purchased products
-  const [groupedProducts, setGroupedProducts] = useState([]); // Grouped products
-  const [orderDetails, setOrderDetails] = useState({}); // Order details
-  const { clearCart } = useContext(CartContext); // Access the clearCart method from CartContext
+  const [products, setProducts] = useState([]);
+  const [groupedProducts, setGroupedProducts] = useState([]);
+  const [orderDetails, setOrderDetails] = useState({});
+  const { clearCart } = useContext(CartContext);
   const navigate = useNavigate();
 
-  
+  // Effect to check payment status when the component loads
   useEffect(() => {
     const checkPaymentStatus = async () => {
       const clientSecret = searchParams.get('client_secret');
@@ -82,25 +77,19 @@ const OrderConfirmationPage = () => {
         const stripe = await stripePromise;
         const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
 
+        // Handle different payment statuses
         if (paymentIntent && paymentIntent.status === 'succeeded') {
           setStatus('success');
 
-          // Fetch order details from backend
+          // Fetch order details from the backend
           const orderResponse = await fetch(`/api/orders/details?client_secret=${clientSecret}`);
           const orderData = await orderResponse.json();
 
           if (orderResponse.ok) {
-            setProducts(orderData.products); // Store purchased products
-            setOrderDetails(orderData.order); // Store order details
-            
-            const productIds = orderData.order.Product_IDs;
-            const productDetails = orderData.products; // Assuming productDetails are fetched here
-            const groupedProducts = groupProducts(productIds, productDetails);
-            setGroupedProducts(groupedProducts);
-
-            // Debugging outputs
-            console.log("Fetched products:", orderData.products);
-            console.log("Fetched grouped products:", groupedProducts);
+            setProducts(orderData.products);
+            setOrderDetails(orderData.order);
+            const grouped = groupProducts(orderData.order.Product_IDs, orderData.products);
+            setGroupedProducts(grouped);
           } else {
             console.error('Error fetching order details:', orderData.error);
           }
@@ -118,30 +107,30 @@ const OrderConfirmationPage = () => {
     checkPaymentStatus();
   }, [searchParams]);
 
-   const formatDate = (dateString) => {
+  // Format date for displaying order details
+  const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  console.log('Order Date:', orderDetails.Order_Date);
-  console.log('Selected Order:', orderDetails); // Log the entire order object
-  
-  
+  // Formatter for currency in Australian Dollars (AUD)
   const currencyFormatter = new Intl.NumberFormat('en-AU', {
     style: 'currency',
     currency: 'AUD',
     minimumFractionDigits: 2,
   });
 
+  // Handle continue shopping button click
   const handleContinueShopping = () => {
-    clearCart(); // Clear the cart before navigating
+    clearCart();
     navigate('/browse');
-};
+  };
 
   return (
     <>
       <Header />
       <div className="confirmation-container">
+        {/* Display loading, success, or error messages based on payment status */}
         {status === 'loading' && <p>Loading payment status...</p>}
         {status === 'success' && (
           <div className="order-details">
@@ -151,7 +140,7 @@ const OrderConfirmationPage = () => {
             {/* Display order information */}
             <h4>Order Information</h4>
             <p><strong>Order Number:</strong> {orderDetails.Order_ID}</p>
-            <p><strong> Order Date: </strong>{orderDetails.created_at ? formatDate(orderDetails.created_at) : 'N/A'}</p>
+            <p><strong>Order Date:</strong> {orderDetails.created_at ? formatDate(orderDetails.created_at) : 'N/A'}</p>
             <p><strong>Order Type:</strong> {orderDetails.Order_Type}</p>
             <p><strong>Email:</strong> {orderDetails.Email}</p>
             <p><strong>Phone Number:</strong> {orderDetails.Mobile}</p>
@@ -173,7 +162,7 @@ const OrderConfirmationPage = () => {
                 </tr>
               </thead>
               <tbody>
-              {groupedProducts.map((product) => (
+                {groupedProducts.map((product) => (
                   <tr key={`${product.productId}-${product.option}`}>
                     <td><img src={product.Product_Image_URL} alt={product.Product_Name} /></td>
                     <td>{product.Product_Name}</td>
@@ -200,7 +189,7 @@ const OrderConfirmationPage = () => {
         )}
       </div>
 
-      <div className="return-shopping-container"> 
+      <div className="return-shopping-container">
         <button className="return-shopping-button" onClick={handleContinueShopping}>Continue Shopping</button>
       </div>
       <Footer />
@@ -209,5 +198,3 @@ const OrderConfirmationPage = () => {
 };
 
 export default OrderConfirmationPage;
-
-

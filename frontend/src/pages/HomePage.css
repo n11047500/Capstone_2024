@@ -1,3 +1,4 @@
+/* Resetting body and html default margins and padding, setting global font and background color */
 body, html {
   margin: 0;
   padding: 0;
@@ -5,20 +6,23 @@ body, html {
   background-color: #EDF1EC;
 }
 
+/* Styling for the header bar to align items to the right */
 .header-bar {
   display: flex;
   justify-content: flex-end;
   padding: 10px 5%;
 }
 
+/* Container for the home page product cards */
 .home_product_container {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
   padding: 20px;
-  gap: 20px; /* Adds space between product cards */
+  gap: 20px;
 }
 
+/* Styling for individual product cards on the home page */
 .home_product-card {
   flex-basis: 30%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -28,41 +32,48 @@ body, html {
   background: #fff;
 }
 
+/* Styling for images inside product cards */
 .product-card img {
   height: auto;
   transition: transform 0.3s ease-in-out;
 }
 
+/* Hover effect for product images */
 .product-card:hover img {
   transform: scale(1.05);
 }
 
+/* Styling for the introduction section */
 .intro-section {
   text-align: center;
   padding: 20px;
   background-color: #f4f4f4;
 }
 
+/* Styling for product sections on the home page */
 .home_product_section {
   text-align: center;
   font-size: 1.5vw;
   padding: 1%;
 }
 
+/* Styling for the testimonial section */
 .testimonial-section {
   text-align: center;
   padding: 20px;
   background-color: #f4f4f4;
 }
 
+/* Responsive styles for tablets and larger screens */
 
+/* Adjusts product card width and text sizes for screens up to 1024px */
 @media (max-width: 1024px) {
   .product-card {
     flex-basis: 45%;
   }
 
   .order-text {
-    font-size: 5vw;
+    font-size: 5vw; /* Adjust font size for larger screens */
   }
 
   .order-text-small {
@@ -71,14 +82,16 @@ body, html {
 
   .order-button {
     font-size: 3vw;
-    padding: 9px 18px; 
+    padding: 9px 18px; /* Adjust button padding */
   }
-
 }
 
+/* Responsive styles for tablets and small screens */
+
+/* Adjusts product card width and text sizes for screens up to 768px */
 @media (max-width: 768px) {
   .product-card {
-    flex-basis: 100%;
+    flex-basis: 100%; /* Switches to single column */
   }
 
   .order-text {
@@ -95,9 +108,12 @@ body, html {
   }
 }
 
+/* Responsive styles for mobile devices */
+
+/* Adjusts padding and font sizes for screens up to 480px */
 @media (max-width: 480px) {
   .product-card {
-    padding: 10px;
+    padding: 10px; /* Reduces padding for small screens */
   }
 
   .order-text {
@@ -110,6 +126,6 @@ body, html {
 
   .order-button {
     font-size: 1.5vw;
-    padding: 6px 12px;
+    padding: 6px 12px; /* Adjust padding for mobile */
   }
 }

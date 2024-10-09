@@ -1,15 +1,17 @@
+/* Global styles for body */
 body {
   font-family: Arial, sans-serif;
 }
 
+/* Container for the entire review page */
 .review-page-container {
   display: flex;
   padding: 40px 20px;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 0 auto; /* Center the container */
 }
 
-
+/* Styling for the product image on the review page */
 .product-image.product-page {
   flex: 1;
   max-width: 100%;
@@ -18,22 +20,24 @@ body {
   padding: 20px;
 }
 
+/* Styling for the image within the product image container */
 .product-image.product-page img {
   width: 100%;
   max-width: 600px;
   height: auto;
   border-radius: 8px;
-  margin: 0 auto;
 }
 
+/* Review title and text styling */
 .review-small {
   font-size: 19px;
   font-weight: bold;
   margin-bottom: 20px;
-  color: #333;
   margin-top: 20px;
+  color: #333;
 }
 
+/* Styling for the review description section */
 .review-description {
   flex: 1;
   padding: 20px 40px;
@@ -41,78 +45,67 @@ body {
   border-top: 1px solid #e0e0e0;
 }
 
+/* Review page title styling */
 .review-title.review-page {
   font-size: 36px;
   margin-bottom: 20px;
   color: #333;
 }
 
+/* Styling for description titles */
 .review-description-title {
   font-size: 30px;
   margin-bottom: 20px;
   color: #666;
 }
 
+/* Form container for submitting reviews */
 .review-form {
   flex: 1;
 }
 
+/* Remove bullet points from unordered lists */
 ul {
-  list-style-type: none; /* Removes the bullet points */
-  padding: 0; /* Removes the default padding */
-  margin: 0; /* Removes the default margin */
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
-
+/* Styling for star rating display */
 .star-rating {
   display: inline-flex;
-  font-size: 1.5rem; /* Adjust size as needed */
-  color: #FFD700; /* Gold color for stars */
+  font-size: 1.5rem;
+  color: #FFD700;
 }
 
+/* Individual star styling */
 .star {
   margin: 0 2px;
   cursor: default;
 }
 
+/* Styling for filled and empty stars */
 .star.filled {
-  color: #FFD700; /* Color for filled stars */
+  color: #FFD700;
 }
 
 .star:not(.filled) {
-  color: #e0e0e0; /* Color for empty stars */
+  color: #e0e0e0;
 }
 
-
+/* Styling for rating input and labels */
 .rating {
   display: flex;
 }
 
 .rating input {
   position: absolute;
-  left: -100vw;
+  left: -100vw; /* Hide input off-screen */
 }
 
-.rating label {
-  width: 48px;
-  height: 48px;
-  overflow: hidden;
-  padding: 48px 0 0;
-  background: url('../assets/stars.svg') no-repeat top left;
-}
-
-.rating:not(:hover) input:indeterminate + label,
-.rating:not(:hover) input:checked ~ input + label,
-.rating input:hover ~ input + label {
-  background-position: -48px 0;
-}
-
-.rating:not(:hover) input:focus-visible + label {
-  background-position: -96px 0;
-}
-
+/* Styling for the review submit button */
 .submit-review {
-  background-color: #4CAF50; /* Green */
+  background-color: #4CAF50;
   text-align: center;
   display: inline-block;
   color: white;
@@ -129,51 +122,14 @@ ul {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-
-.comment-text {
-  font-size: 12px;
-}
-
+/* Styling for user comments section */
 .user-comments-container {
   padding: 40px 20px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.comments-flex {
-  flex-direction: column;
-}
-
-.user-comments {
-  padding: 40px 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-  line-height: 30px;
-  text-align: left;
-}
-
-.pagination-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px 0;
-}
-
-.pagination-controls button {
-  margin: 0 10px;
-  padding: 10px 20px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.pagination-controls button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
+/* Responsive adjustments for screens up to 768px */
 @media (max-width: 768px) {
   .review-page-container,
   .user-comments-container {
@@ -198,6 +154,7 @@ ul {
   }
 }
 
+/* Responsive adjustments for screens up to 480px */
 @media (max-width: 480px) {
   .review-title.review-page {
     font-size: 1.5rem;

@@ -1,36 +1,43 @@
-const express = require('express');
-const cors = require('cors');
-const bcrypt = require('bcryptjs');
-const bodyParser = require('body-parser');
-const db = require('./database');
-const nodemailer = require('nodemailer');
-const jwt = require('jsonwebtoken');
-const axios = require('axios');
-require('dotenv').config();
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const multer = require('multer');
+// Import necessary packages and modules
+const express = require('express'); // Express framework for building the API
+const cors = require('cors'); // Middleware for enabling Cross-Origin Resource Sharing
+const bcrypt = require('bcryptjs'); // Library for hashing passwords securely
+const bodyParser = require('body-parser'); // Middleware for parsing request bodies
+const db = require('./database'); // Custom database module for connecting to MySQL
+const nodemailer = require('nodemailer'); // Nodemailer for sending emails
+const jwt = require('jsonwebtoken'); // JSON Web Token library for secure authentication
+const axios = require('axios'); // Axios for making HTTP requests (used for reCAPTCHA)
+require('dotenv').config(); // Load environment variables from a .env file
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Stripe for payment processing
+const multer = require('multer'); // Multer for handling file uploads
 
+// Initialise the Express app
 const app = express();
-app.use(cors());
-app.use(bodyParser.json());
-app.use(express.json());
 
-const connection = db.getConnection(); // Get the active connection
+// Middleware configuration
+app.use(cors()); // Enable CORS for all routes
+app.use(bodyParser.json()); // Parse JSON bodies in incoming requests
+app.use(express.json()); // Ensure incoming requests are parsed as JSON
+
+// Get the database connection instance
+const connection = db.getConnection();
 
 // Configure Multer for file uploads
-const storage = multer.memoryStorage(); // Stores file in memory
+const storage = multer.memoryStorage();
 const uploadFile = multer({ storage: storage });
 
+// Root endpoint to check if the server is running
 app.get('/', (req, res) => {
   res.send('Server is running.');
 });
 
-// Fetch all products or multiple products by IDs {i dont think this is needed}
+// Endpoint to fetch products, with optional filtering by IDs
 app.get('/products', (req, res) => {
+  // Get product IDs from query parameters, if provided
   const ids = req.query.ids ? req.query.ids.split(',') : [];
 
-  // If product IDs are provided, filter products by those IDs
   if (ids.length > 0) {
+    // Query the database for specific products by their IDs
     const query = `
       SELECT * FROM products WHERE Product_ID IN (${ids.map(() => '?').join(',')});
     `;
@@ -56,22 +63,25 @@ app.get('/products', (req, res) => {
   }
 });
 
-// Fetch specific product details
+// Endpoint to fetch details of a specific product, including average rating and review count
 app.get('/products/:id', (req, res) => {
   const productId = req.params.id;
 
+  // Query the database for the product with the specified ID
   connection.query('SELECT * FROM products WHERE Product_ID = ?', [productId], (err, productResults) => {
     if (err) {
       console.error('Database error:', err);
       return res.status(500).send('Internal Server Error');
     }
 
+    // If the product is not found, return a 404 response
     if (productResults.length === 0) {
       return res.status(404).send('Product not found');
     }
 
     const product = productResults[0];
-
+    
+    // Query the database for average rating and review count for this product
     connection.query(`
       SELECT AVG(rating) AS average_rating, COUNT(*) AS review_count
       FROM Reviews
@@ -97,20 +107,20 @@ app.get('/products/:id', (req, res) => {
 });
 
 
-// Register a new user
+// Endpoint to register a new user, with reCAPTCHA verification
 app.post('/register', async (req, res) => {
   const { firstName, lastName, email, password, mobileNumber, dateOfBirth, role = 'customer', captchaToken } = req.body;
 
-  // Verify the reCAPTCHA token
+  // Check if the reCAPTCHA token is present
   if (!captchaToken) {
-    return res.status(400).json({ message: 'Captcha is required' });
+    return res.status(400).json({ message: 'reCAPTCHA is required' });
   }
 
   try {
     // Verify reCAPTCHA token with Google API
     const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
       params: {
-        secret: process.env.RECAPTCHA_SECRET_KEY, // Your reCAPTCHA secret key
+        secret: process.env.RECAPTCHA_SECRET_KEY,
         response: captchaToken
       }
     });
@@ -119,10 +129,12 @@ app.post('/register', async (req, res) => {
 
     const { success, 'error-codes': errorCodes } = response.data;
 
+    // If reCAPTCHA verification fails, return an error
     if (!success) {
       return res.status(400).json({ message: 'Captcha verification failed', errorCodes });
     }
 
+    // Check if the user already exists in the database
     const checkQuery = 'SELECT * FROM users WHERE email = ?';
     connection.query(checkQuery, [email], (err, results) => {
       if (err) {
@@ -130,16 +142,19 @@ app.post('/register', async (req, res) => {
         return res.status(500).json({ error: 'Error creating user. Please try again.' });
       }
 
+      // If a user with the email already exists, return an error
       if (results.length > 0) {
         return res.status(400).json({ error: 'User already exists.' });
       }
 
+      // Encrpyt the user's password before storing it in the database
       bcrypt.hash(password, 10, (err, hash) => {
         if (err) {
           console.error('Error hashing password:', err);
           return res.status(500).json({ error: 'Error creating user. Please try again.' });
         }
-
+        
+        // Insert the new user into the database
         const query = 'INSERT INTO users (first_name, last_name, email, password, mobile_number, date_of_birth, role) VALUES (?, ?, ?, ?, ?, ?, ?)';
         connection.query(query, [firstName, lastName, email, hash, mobileNumber, dateOfBirth, role], (err, result) => {
           if (err) {
@@ -1164,6 +1179,7 @@ app.post('/reviews', (req, res) => {
   });
 });
 
+// Starting the server on the specified port
 app.listen(3001, () => {
   console.log('Server is running on port 3001');
 });
