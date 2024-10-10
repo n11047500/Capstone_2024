@@ -723,7 +723,7 @@ app.post('/send-contact-email', async (req, res) => {
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: 'joyalvincentofficial@gmail.com',
+      to: process.env.CONTACT_EMAIL,
       subject: 'New Contact Us Inquiry',
       html: ` Hi Team, <br><br> You have received a new inquiry from the contact form on your website. Here are the details:<br><br>
       <p><strong>Name:</strong> ${first_name} ${last_name}</p>
