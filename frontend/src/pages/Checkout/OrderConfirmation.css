@@ -99,3 +99,21 @@
   height: 100%; /* Ensure it takes the available space vertically */
   width: 100%; /* Ensure the container takes full width */
 }
+
+
+@media (max-width: 768px) { 
+  .return-shopping-button {
+
+    width: 40%; /* Set the width to 20% */
+    margin: 20px 0; /* Add a 20px gap above and below */
+  }
+
+  .return-shopping-button:hover {
+   
+    width: 40%; /* Set the width to 20% */
+    margin: 20px 0; /* Add a 20px gap above and below */
+  }
+
+ 
+
+}

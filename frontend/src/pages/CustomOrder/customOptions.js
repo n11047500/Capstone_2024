@@ -48,7 +48,8 @@ const CustomOptions = ({ data, onNext, onChange }) => {
     <div className="customised-order-form">
       <h2>Custom Options</h2>
       <div className="form-custom-group">
-        <label className='label-custom'>Select Colour:</label><br />
+        <label className='label-custom'>Select Colour:</label>
+        <div className='custom-options'>
         {/* Standard Colours Option */}
         <div
           className={`custom-option ${data.colorType === 'standard' ? 'selected' : ''}`}
@@ -64,6 +65,7 @@ const CustomOptions = ({ data, onNext, onChange }) => {
         >
           <label>Custom Colours</label>
         </div>
+      </div>
       </div>
 
       <div className="form-custom-group">
@@ -115,22 +117,24 @@ const CustomOptions = ({ data, onNext, onChange }) => {
       </div>
 
       <div className="form-custom-group">
-        <label className='label-custom'>Wicking:</label><br />
+      <label className='label-custom'>Wicking:</label>
+        <div className='custom-options'> 
         {/* Wicking Yes Option */}
-        <div
-          className={`custom-option ${data.wicking === 'yes' ? 'selected' : ''}`}
-          onClick={() => handleInputChange({ target: { name: 'wicking', value: 'yes' } })}
-        >
-          <label>Yes</label>
-        </div>
+            <div
+              className={`custom-option ${data.wicking === 'yes' ? 'selected' : ''}`}
+              onClick={() => handleInputChange({ target: { name: 'wicking', value: 'yes' } })}
+            >
+              <label>Yes</label>
+            </div>
 
-        {/* Wicking No Option  */}
-        <div
-          className={`custom-option ${data.wicking === 'no' ? 'selected' : ''}`}
-          onClick={() => handleInputChange({ target: { name: 'wicking', value: 'no' } })}
-        >
-          <label>No</label>
-        </div>
+            {/* Wicking No Option  */}
+            <div
+              className={`custom-option ${data.wicking === 'no' ? 'selected' : ''}`}
+              onClick={() => handleInputChange({ target: { name: 'wicking', value: 'no' } })}
+            >
+              <label>No</label>
+            </div>
+          </div>
       </div>
       <button onClick={onNext} className='next-custom-button'>Next</button>
     </div>
