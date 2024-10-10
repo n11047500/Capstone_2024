@@ -66,7 +66,7 @@ const PaymentForm = ({ data, onBack, onChange }) => {
       console.log('Order details being sent:', orderDetails);
     
       // Send order details to the backend
-      const response = await fetch('/api/orders', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderDetails),
