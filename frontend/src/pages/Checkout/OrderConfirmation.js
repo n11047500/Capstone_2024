@@ -82,7 +82,7 @@ const OrderConfirmationPage = () => {
           setStatus('success');
 
           // Fetch order details from the backend
-          const orderResponse = await fetch(`/api/orders/details?client_secret=${clientSecret}`);
+          const orderResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/orders/details?client_secret=${clientSecret}`);
           const orderData = await orderResponse.json();
 
           if (orderResponse.ok) {
