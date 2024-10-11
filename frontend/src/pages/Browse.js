@@ -60,22 +60,24 @@ function Browse() {
     <div className="browse-page">
       <Header />
       <div className="browse-header-bar">
-        <div className="browse-search-container">
-          {/* Search component for handling user search input */}
-          <Search onSearch={handleSearch} />
-        </div>
-
-        <div className="browse-sort-container">
-          {/* Dropdown for sorting products */}
-          <select className="browse-sort-dropdown" value={sortType} onChange={e => setSortType(e.target.value)}>
-            <option value="">Featured</option>
-            <option value="priceAsc">Price: Low to High</option>
-            <option value="priceDesc">Price: High to Low</option>
-            <option value="nameAsc">Name: A-Z</option>
-            <option value="nameDesc">Name: Z-A</option>
-          </select>
+        <div className="browse-controls-container">
+          <div className="browse-search-container">
+            {/* Search component for handling user search input */}
+            <Search onSearch={handleSearch} />
+          </div>
+          <div className="browse-sort-container">
+            {/* Dropdown for sorting products */}
+            <select className="browse-sort-dropdown" value={sortType} onChange={e => setSortType(e.target.value)}>
+              <option value="">Featured</option>
+              <option value="priceAsc">Price: Low to High</option>
+              <option value="priceDesc">Price: High to Low</option>
+              <option value="nameAsc">Name: A-Z</option>
+              <option value="nameDesc">Name: Z-A</option>
+            </select>
+          </div>
         </div>
       </div>
+
       <div className="browse-product-container">
         {/* Mapping over sorted products to render components in the Product Card */}
         {sortedProducts.map(product => (

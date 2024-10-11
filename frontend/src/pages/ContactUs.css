@@ -181,24 +181,24 @@ textarea {
 
 /* Styling for the main heading */
 h1 {
-  font-size: 2.8vw;
+  font-size: 3.2vw;
   text-align: center;
 }
 
 /* Styling for the subheading */
 h2 {
-  font-size: 1.4vw;
+  font-size: 1.6vw;
   text-align: center;
 }
 
-/* Media query for mobile responsiveness */
-@media only screen and (max-width: 600px) {
+/* Media query for small screens up to 800px */
+@media only screen and (max-width: 800px) {
   h1 {
     font-size: 5.6vw; /* Adjusts font size for small screens */
   }
 
   h2 {
-    font-size: 3.8vw;
+    font-size: 3.4vw;
   }
 
   .contact-flexbox {
@@ -228,11 +228,17 @@ h2 {
   }
 
   .captcha-submit-container {
-    max-width: 100%; /* Full width on smaller screens */
+    width: 100%; /* Full width on smaller screens */
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
   }
 
   input[type=text],
+  input[type=email],
   select {
     font-size: 2vw;
   }
@@ -245,6 +251,12 @@ h2 {
   .submit-button {
     padding: 12px 20px;
     font-size: 2.5vw;
-    width: 100%; /* Full width for mobile */
+    border-radius: 4px;
+    cursor: pointer;
+    width: 80%; /* Set button width to 80% of the parent */
+    text-align: center;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }

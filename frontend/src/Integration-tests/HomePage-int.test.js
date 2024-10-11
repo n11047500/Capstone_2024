@@ -1,68 +1,54 @@
-import React from 'react';
+import React from 'react';  
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import HomePage from '../pages/HomePage'; // Adjust this to the correct path
 import ProductPage from '../pages/ProductPage'; // Mock the product page component for navigation test
 import { CartContext } from '../context/CartContext'; // Adjust path as needed
+import { BrowserRouter as Router } from 'react-router-dom';
 
-// Mock product data
-const mockProducts = [
-  {
-    Product_ID: 1,
-    Product_Name: 'Test Product 1',
-    Product_Price: 100,
-    Product_Image_URL: 'https://example.com/product1.jpg',
-  },
-  {
-    Product_ID: 2,
-    Product_Name: 'Test Product 2',
-    Product_Price: 200,
-    Product_Image_URL: 'https://example.com/product2.jpg',
-  },
-];
+beforeEach(() => {
+  global.fetch = jest.fn(() =>
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve([
+        {
+          Product_ID: 1,
+          Product_Name: 'Apple',
+          Product_Price: 100,
+          Product_Image_URL: 'https://example.com/apple.jpg',
+        },
+        {
+          Product_ID: 2,
+          Product_Name: 'Banana',
+          Product_Price: 50,
+          Product_Image_URL: 'https://example.com/banana.jpg',
+        },
+        {
+          Product_ID: 3,
+          Product_Name: 'Cherry',
+          Product_Price: 150,
+          Product_Image_URL: 'https://example.com/cherry.jpg',
+        },
+      ]),
+    })
+  );
+});
 
-// Mock ProductCard
-jest.mock('../components/ProductCard', () => ({ title, price, image }) => (
-  <div>
-    <h3>{title}</h3>
-    <p>{price}</p>
-    <img src={image} alt={title} />
-  </div>
-));
+afterEach(() => {
+  jest.clearAllMocks(); // Clear the mock after each test
+});
 
 describe('Home Page Integration Tests', () => {
-  
-  beforeEach(() => {
-    // Mock fetch to return product data
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        json: () => Promise.resolve(mockProducts),
-      })
-    );
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  const renderWithRouter = (ui, { route = '/' } = {}) => {
-    window.history.pushState({}, 'Test page', route);
-
-    return render(
-      <MemoryRouter initialEntries={[route]}>
-        {ui}
-      </MemoryRouter>
-    );
-  };
-
   const renderWithContext = () => {
-    return renderWithRouter(
-      <CartContext.Provider value={{ addToCart: jest.fn(), cart: [] }}>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/product/:id" element={<ProductPage />} />
-        </Routes>
-      </CartContext.Provider>
+    return render(
+      <Router>
+        <CartContext.Provider value={{ addToCart: jest.fn(), cart: [] }}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/product/:id" element={<ProductPage />} />
+          </Routes>
+        </CartContext.Provider>
+      </Router>
     );
   };
 
@@ -73,43 +59,48 @@ describe('Home Page Integration Tests', () => {
     expect(screen.getByText('The pain-free gardening solution suitable for everybody.')).toBeInTheDocument();
     expect(screen.getByText('←')).toBeInTheDocument(); // previous button
     expect(screen.getByText('→')).toBeInTheDocument(); // next button
-
+  
     // Simulate clicking the next button
     fireEvent.click(screen.getByText('→'));
-
+  
     // Wait for the second slide content to appear
     await waitFor(() => {
-      // Use getByRole to target the link specifically
-      const linkElement = screen.getByRole('link', { name: /Order Customised Ezee Planter Box/i });
-      expect(linkElement).toBeInTheDocument();
+      expect(screen.getByText('Order Customised Ezee Planter Box')).toBeInTheDocument();
     });
-
+  
     // Simulate clicking the previous button
     fireEvent.click(screen.getByText('←'));
-
+  
     // Wait for the first slide content to reappear
     await waitFor(() => {
       expect(screen.getByText('The pain-free gardening solution suitable for everybody.')).toBeInTheDocument();
     });
   });
 
-  test('renders featured products and navigates to product page on click', async () => {
+  test('renders featured products after fetch', async () => {
     renderWithContext();
 
-    // Wait for products to be fetched and displayed
+    // Check if the products rendered correctly
     await waitFor(() => {
-      expect(screen.getByText('Test Product 1')).toBeInTheDocument();
-      expect(screen.getByText('Test Product 2')).toBeInTheDocument();
-    });
-
-    // Simulate clicking on a product card (link)
-    const productLink = screen.getByText('Test Product 1');
-    fireEvent.click(productLink);
-
-    // Wait for the navigation to complete
-    await waitFor(() => {
-      // Ensure the navigation to the product page happens
-      expect(screen.getByText('Test Product 1')).toBeInTheDocument();
+      expect(screen.getByText(/Apple/i)).toBeInTheDocument();
+      expect(screen.getByText(/Banana/i)).toBeInTheDocument();
+      expect(screen.getByText(/Cherry/i)).toBeInTheDocument();
     });
   });
+
+  test('navigates to product page on product click', async () => {
+    renderWithContext();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Apple/i)).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText(/Apple/i)); // Click on the Apple product
+
+    await waitFor(() => {
+      expect(screen.getByText(/Dimensions/i)).toBeInTheDocument(); // Adjust this to match your ProductPage content
+    });
+  });
+  
+  // Additional tests can be added here as necessary
 });

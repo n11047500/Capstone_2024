@@ -18,8 +18,24 @@ import gallery13 from '../assets/gallery/gallery13.jpg';
 import gallery14 from '../assets/gallery/gallery14.jpg';
 import gallery15 from '../assets/gallery/gallery15.jpg';
 
-// Array of gallery images
-const images = [gallery1, gallery2, gallery3, gallery4, gallery5, gallery6, gallery7, gallery8, gallery9, gallery10, gallery11, gallery12, gallery13, gallery14, gallery15];
+// Combined array of gallery images, keeping all images from both versions
+const images = [
+  gallery10,
+  gallery5,
+  gallery14,
+  gallery9,
+  gallery3,
+  gallery6,
+  gallery4,
+  gallery2,
+  gallery12,
+  gallery8,
+  gallery7,
+  gallery11,
+  gallery1,
+  gallery13,
+  gallery15
+];
 
 function Gallery() {
   // State for tracking the currently selected image index and whether the modal is open
@@ -82,25 +98,25 @@ function Gallery() {
       <div className="gallery-row">
         {/* Four columns of gallery images */}
         <div className="gallery-column">
-          <img src={gallery10} alt="gallery10" onClick={() => handleImageClick(9)} />
-          <img src={gallery3} alt="gallery3" onClick={() => handleImageClick(2)} />
-          <img src={gallery12} alt="gallery12" onClick={() => handleImageClick(11)} />
+          <img src={gallery10} alt="gallery10" onClick={() => handleImageClick(0)} />
+          <img src={gallery3} alt="gallery3" onClick={() => handleImageClick(4)} />
+          <img src={gallery12} alt="gallery12" onClick={() => handleImageClick(8)} />
         </div>
         <div className="gallery-column">
-          <img src={gallery5} alt="gallery5" onClick={() => handleImageClick(4)} />
+          <img src={gallery5} alt="gallery5" onClick={() => handleImageClick(1)} />
           <img src={gallery6} alt="gallery6" onClick={() => handleImageClick(5)} />
-          <img src={gallery8} alt="gallery8" onClick={() => handleImageClick(7)} />
+          <img src={gallery8} alt="gallery8" onClick={() => handleImageClick(9)} />
         </div>
         <div className="gallery-column">
-          <img src={gallery14} alt="gallery14" onClick={() => handleImageClick(13)} />
-          <img src={gallery4} alt="gallery4" onClick={() => handleImageClick(3)} />
-          <img src={gallery7} alt="gallery7" onClick={() => handleImageClick(6)} />
+          <img src={gallery14} alt="gallery14" onClick={() => handleImageClick(2)} />
+          <img src={gallery4} alt="gallery4" onClick={() => handleImageClick(6)} />
+          <img src={gallery7} alt="gallery7" onClick={() => handleImageClick(10)} />
         </div>
         <div className="gallery-column">
-          <img src={gallery9} alt="gallery9" onClick={() => handleImageClick(8)} />
-          <img src={gallery2} alt="gallery2" onClick={() => handleImageClick(1)} />
-          <img src={gallery11} alt="gallery11" onClick={() => handleImageClick(10)} />
-          <img src={gallery1} alt="gallery1" onClick={() => handleImageClick(0)} />
+          <img src={gallery9} alt="gallery9" onClick={() => handleImageClick(3)} />
+          <img src={gallery2} alt="gallery2" onClick={() => handleImageClick(7)} />
+          <img src={gallery11} alt="gallery11" onClick={() => handleImageClick(11)} />
+          <img src={gallery1} alt="gallery1" onClick={() => handleImageClick(12)} />
         </div>
       </div>
 
@@ -124,4 +140,4 @@ function Gallery() {
   );
 }
 
-export default Gallery; 
+export default Gallery;

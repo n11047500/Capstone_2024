@@ -15,9 +15,10 @@ const ReviewPage = () => {
   const [ratings, setRatings] = useState([]);
   const [reviewCount, setReviewCount] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
-  const [error, setError] = useState(null);
+  const [productError, setProductError] = useState(null); // Separate error for product
+  const [reviewError, setReviewError] = useState(null); // Separate error for reviews
 
-  // State variables for pagination
+  // State for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 5;
 
@@ -26,11 +27,14 @@ const ReviewPage = () => {
     const fetchProduct = async () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/products/${productId}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         setProduct(data);
       } catch (error) {
         console.error('Error fetching product:', error);
-        setError('Failed to load product details');
+        setProductError('Failed to load product details');
       }
     };
 
@@ -39,7 +43,12 @@ const ReviewPage = () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/reviews/${productId}`);
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          // No error thrown here for HTTP 404 (not found), handle gracefully
+          setReviews([]); // Ensure reviews are reset if not found
+          setRatings([]);
+          setReviewCount(0);
+          setAverageRating(0);
+          return; // Skip further processing
         }
         const data = await response.json();
         setReviews(data.reviews || []);
@@ -48,7 +57,7 @@ const ReviewPage = () => {
         setAverageRating(data.averageRating || 0);
       } catch (error) {
         console.error('Error fetching reviews:', error);
-        setError('Failed to load reviews');
+        setReviewError('Failed to load reviews');
         setReviews([]);
         setRatings([]);
         setReviewCount(0);
@@ -60,12 +69,12 @@ const ReviewPage = () => {
     fetchReviews();
   }, [productId]);
 
-  // Show error message if there's an error
-  if (error) {
-    return <div>Error: {error}</div>;
+  // Handle error for product loading
+  if (productError) {
+    return <div>Error: {productError}</div>;
   }
 
-  // Show loading message while product data is being fetched
+  // Show loading state until product is loaded
   if (!product) {
     return <div>Loading...</div>;
   }
@@ -118,7 +127,9 @@ const ReviewPage = () => {
 
       <div className="user-comments-container">
         <h1>Reviews</h1>
-        {currentReviews.length > 0 ? (
+        {reviewError ? (
+          <div>Error: {reviewError}</div>
+        ) : currentReviews.length > 0 ? (
           <ul className="comments-flex">
             {currentReviews.map((review, index) => (
               <li key={index} className="user-comments">

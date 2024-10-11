@@ -130,6 +130,7 @@ const EditProduct = ({ productId }) => {
           value={formData.name}
           onChange={handleChange}
           required
+          data-testid="product-name-input" // Added data-testid
         />
 
         <label htmlFor="price">Product Price:</label>
@@ -140,6 +141,7 @@ const EditProduct = ({ productId }) => {
           value={formData.price}
           onChange={handleChange}
           required
+          data-testid="price-input" // Added data-testid
         />
 
         <label htmlFor="quantity">Quantity Available:</label>
@@ -150,6 +152,7 @@ const EditProduct = ({ productId }) => {
           value={formData.quantity}
           onChange={handleChange}
           required
+          data-testid="quantity-input" // Added data-testid
         />
 
         <label htmlFor="description">Description:</label>
@@ -159,6 +162,7 @@ const EditProduct = ({ productId }) => {
           value={formData.description}
           onChange={handleChange}
           required
+          data-testid="description-input" // Added data-testid
         ></textarea>
 
         <div className="dimensions-group">
@@ -169,6 +173,7 @@ const EditProduct = ({ productId }) => {
             name="width"
             value={formData.width}
             onChange={handleChange}
+            data-testid="width-input" // Added data-testid
           />
 
           <label htmlFor="depth">Depth (mm):</label>
@@ -178,6 +183,7 @@ const EditProduct = ({ productId }) => {
             name="depth"
             value={formData.depth}
             onChange={handleChange}
+            data-testid="depth-input" // Added data-testid
           />
 
           <label htmlFor="height">Height (mm):</label>
@@ -187,6 +193,7 @@ const EditProduct = ({ productId }) => {
             name="height"
             value={formData.height}
             onChange={handleChange}
+            data-testid="height-input" // Added data-testid
           />
         </div>
 
@@ -197,6 +204,7 @@ const EditProduct = ({ productId }) => {
           name="options"
           value={formData.options}
           onChange={handleChange}
+          data-testid="options-input" // Added data-testid
         />
 
         <label htmlFor="imageUrl">Image URL:</label>
@@ -206,12 +214,13 @@ const EditProduct = ({ productId }) => {
           name="imageUrl"
           value={formData.imageUrl}
           onChange={handleChange}
+          data-testid="image-url-input" // Added data-testid
         />
 
         {imagePreview && <img src={imagePreview} alt="Product Preview" className="image-preview" />}
 
-        <button type="submit" className="add-product-button">Update Product</button>
-        <button type="button" onClick={handleReset} className="reset-button">Reset</button>
+        <button type="submit" className="add-product-button" data-testid="update-product-button">Update Product</button>
+        <button type="button" onClick={handleReset} className="reset-button" data-testid="reset-button">Reset</button>
       </form>
       {message && <p className="message">{message}</p>}
     </div>

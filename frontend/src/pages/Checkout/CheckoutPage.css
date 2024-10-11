@@ -3,30 +3,31 @@
 .checkout-container {
   font-family: 'Arial', sans-serif;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: row; /* Stacks elements in a row */
+  justify-content: flex-start; /* Align items at the start */
+  align-items: flex-start; /* Align items at the start vertically */
   width: 90%;
   max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f0f0f0;
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
-  gap: 20px; /* Add consistent spacing between all flex children */
-  height: 100%;
+  margin: 0 auto; /* Center the container */
+  padding: 20px; /* Add padding inside the container */
+  background-color: #f0f0f0; /* Background color */
+  flex-wrap: wrap; /* Allow children to wrap onto the next line */
+  gap: 20px; /* Add spacing between flex children */
 }
 
 .checkout-steps {
-  flex: 0 0 180px;
+  width: 180px; /* Max width to prevent overflow */
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-start; /* Align steps items to the start */
   padding: 10px;
-  background-color: #f5f5f5;
+  background-color: #f5f5f5; /* Background for steps */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  margin-right: 20px;
-  margin-bottom: 20px; /* Add margin for better spacing on smaller screens */
+  margin-right: 20px; /* Space between steps and form */
+  margin-bottom: 20px; /* Space below steps */
+  position: relative;
+  z-index: 100;
 }
 
 .checkout-steps span {
@@ -75,7 +76,7 @@
   margin-bottom: 20px;
 }
 
-.summary-section {
+.summary-section { 
   flex: 0 0 300px;
   padding: 20px;
   background-color: #f5f5f5;
@@ -86,7 +87,8 @@
 }
 
 .summary-image {
-  max-width: 80px;
+  width: 80px;
+  height: auto; /* Maintain aspect ratio */
   margin-right: 20px;
 }
 
@@ -95,17 +97,33 @@
   margin-bottom: 10px;
 }
 
+/* Flexbox for horizontal alignment */
 .summary-section .summary-item {
   display: flex;
-  justify-content: space-between;
+  align-items: flex-start; /* Align the text to the top with the image */
   margin-bottom: 10px;
   font-size: 16px;
-  align-items: center;
+}
+
+.summary-details {
+  display: flex;
+  flex-direction: column; /* Stack product details vertically */
+  align-items: flex-start; /* Align all text to the left */
+}
+
+/* Ensure the product name and price are aligned */
+.summary-details span {
+  margin-bottom: 5px; /* Add some spacing between lines */
 }
 
 .summary-section .total {
+  display: flex;
+  justify-content: space-between; /* Space between "Total" and its value */
+  width: 100%; /* Ensure it takes up the full width */
   font-weight: bold;
-  margin-top: 10px;
+  margin-top: 20px; /* Add some space above the total */
+  padding-top: 10px;
+  border-top: 1px solid #ddd; /* Optional: Add a subtle top border for separation */
 }
 
 .product-option {
@@ -146,32 +164,77 @@ button:hover {
   margin-right: 10px;
 }
 
+
+
 /* Media Queries for Smaller Devices */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .checkout-container {
-    flex-direction: column; /* Stack items vertically */
-    align-items: center;
+    flex-direction: column; /* Stack elements vertically */
+    align-items: stretch; /* Stretch to full width */
+    padding: 10px; /* Reduce padding */
   }
 
   .checkout-steps {
-    width: 100%; /* Full width for small screens */
-    margin-right: 0;
+    width: 100%; /* Full width for steps */
+    margin-bottom: 10px; /* Space below the steps */
+    justify-content: center; /* Center steps items */
   }
 
   .form-section {
     width: 100%;
+    align-items: stretch; /* Stretch to full width */
+    padding: 10px; /* Reduce padding */
+      }
+
+ .summary-section {
+    width: 100%; /* Full width for the form section */
+    margin-top: 10px; /* Space above the form section */
+    font-size: 30px;
+    align-items: stretch; /* Stretch to full width */
+    padding: 10px; /* Reduce padding */
   }
 
-  .summary-section {
-    width: 100%;
-    margin-top: 20px;
+  .summary-item {
+    display: flex;
+    align-items: flex-start; /* Align items to the top-left */
+    padding: 10px 0;
+    flex-wrap: wrap; /* Allow wrapping if necessary */
   }
 
-  .checkout-container input[type="text"], 
-  .checkout-container input[type="email"] {
-    width: 100%; /* Full width for inputs on small screens */
+  .summary-image {
+    width: 17%; /* Adjust the image size as needed */
+    height: auto;
+    margin-right: 15px; /* Space between the image and details */
   }
+
+  .summary-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align all text to the left */
+  }
+
+  .summary-details {
+    font-size: 1.1rem; /* Adjust font size for smaller screens */
+    margin-bottom: 5px; /* Space between the lines */
+    text-align: left; /* Align text to the left */
+  }
+
+  .product-option {
+    font-size: 0.9rem;
+  }
+
+  .summary-item.total {
+    text-align: left; /* Align the total to the left on small screens */
+    font-size: 1.2rem; /* Slightly reduce the font size for the total */
+  }
+
 }
+
+
+
+
+
+
 
 @media (max-width: 480px) {
   .checkout-steps span {
@@ -322,8 +385,13 @@ button:hover {
     flex-direction: column;
   }
   .shipping-option {
-    width: 100%;
+    width: 80%;
     margin-bottom: 10px;
+  }
+  .summary-image {
+    width: 25%; /* Adjust the image size as needed */
+    height: auto;
+    margin-right: 15px; /* Space between the image and details */
   }
 }
 

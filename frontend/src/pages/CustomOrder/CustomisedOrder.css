@@ -1,33 +1,32 @@
 .customised-order-container {
     font-family: 'Arial', sans-serif;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
+    flex-direction: row; /* Stacks elements in a row */
+    justify-content: flex-start; /* Align items at the start */
+    align-items: flex-start; /* Align items at the start vertically */
     width: 90%;
     max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f0f0f0;
-    flex-wrap: wrap;
-    /* Allow wrapping on smaller screens */
-    gap: 20px;
-    /* Add consistent spacing between all flex children */
-    height: 100%;
+    margin: 0 auto; /* Center the container */
+    padding: 20px; /* Add padding inside the container */
+    background-color: #f0f0f0; /* Background color */
+    flex-wrap: wrap; /* Allow children to wrap onto the next line */
+    gap: 20px; /* Add spacing between flex children */
 }
 
+
 .customised-steps {
-    flex: 0 0 180px;
+    width: 180px; /* Max width to prevent overflow */
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: flex-start; /* Align steps items to the start */
     padding: 10px;
-    background-color: #f5f5f5;
+    background-color: #f5f5f5; /* Background for steps */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    margin-right: 20px;
-    margin-bottom: 20px;
-    /* Add margin for better spacing on smaller screens */
+    margin-right: 20px; /* Space between steps and form */
+    margin-bottom: 20px; /* Space below steps */
+    position: relative;
+    z-index: 100;
 }
 
 .customised-steps span {
@@ -48,23 +47,13 @@
     border-radius: 10px;
     margin-bottom: 20px;
     margin-right: 20px;
+    position: relative;
+    z-index: 100;
     /* Add this for spacing between form-section and summary-section */
     width: 100%;
     /* Ensure it uses full width on small screens */
 }
 
-.custom-form-section {
-    flex: 1;
-    padding: 20px;
-    background-color: #f5f5f5;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    margin-bottom: 20px;
-    margin-right: 20px;
-    /* Add this for spacing between form-section and summary-section */
-    width: 100%;
-    /* Ensure it uses full width on small screens */
-}
 
 .form-custom-group {
     display: flex;
@@ -145,7 +134,7 @@ button:hover {
 .next-custom-button,
 .back-custom-button,
 .submit-custom-button {
-    font-size: 0.8vw;
+    font-size: 1vw;
 }
 
 .next-custom-button {
@@ -266,85 +255,91 @@ button:hover {
 /* Media Queries for Smaller Devices */
 @media (max-width: 1024px) {
     .customised-order-container {
-        flex-direction: column;
-        align-items: center;
+        flex-direction: column; /* Stack elements vertically */
+        align-items: stretch; /* Stretch to full width */
+        padding: 10px; /* Reduce padding */
     }
 
     .customised-steps {
-        width: 100%;
-        margin-right: 0;
+        width: 100%; /* Full width for steps */
+        margin-bottom: 10px; /* Space below the steps */
+        justify-content: center; /* Center steps items */
     }
 
-    .form-section {
-        width: 100%;
+    .customised-form-section {
+        width: 100%; /* Full width for the form section */
+        margin-top: 10px; /* Space above the form section */
+        align-items: stretch; /* Stretch to full width */
+        padding: 10px; /* Reduce padding */
     }
 
-    .summary-section {
-        width: 100%;
-        margin-top: 20px;
+    .form-custom-group {
+        flex-direction: column; /* Stack form inputs vertically */
+        gap: 15px; /* Adjust gap between form elements */
     }
 
     .customised-order-form input[type="text"],
     .customised-order-form input[type="email"] {
-        width: 100%;
-    }
-}
-
-@media (max-width: 768px) {
-    .customised-order-container {
-        padding: 10px; /* Less padding on smaller screens */
-    }
-
-    .customised-steps {
-        flex-direction: column;
-        width: 100%;
-    }
-
-    .custom-form-section,
-    .customised-form-section {
-        padding: 15px;
-    }
-
-    .custom-options {
-        flex-direction: column; /* Stack options vertically on very small screens */
+        width: 100%; /* Full width for inputs */
+        padding: 10px; /* Maintain padding */
+        box-sizing: border-box; /* Include padding in total width */
     }
 
     .custom-option {
-        width: 100%; /* Full width for options on small screens */
-    }
-
-    .button-group {
-        justify-content: center;
-        width: 100%;
+        max-width: 30%; /* Allow full width for options */
+        margin-bottom: 10px; /* Space between options */
     }
 
     .form-custom-group .label-custom {
-        font-size: 0.9rem; /* Slightly smaller font size on smaller screens */
-        margin-bottom: 0.4rem; /* Reduce margin for better spacing */
+        margin-bottom: 10px; /* Adjust spacing for label */
     }
+
+    .form-custom-group .custom-options {
+        margin-top: 1px; /* Space above the options */
+    }
+
+
+    .next-custom-button,
+    .back-custom-button,
+    .submit-custom-button {
+        font-size: 1.6vw;
+    }
+
+    .customised-order-form input[type="text"],
+.customised-order-form input[type="email"] {
+ font-size: 20px;
+}
+   
+
 }
 
-@media (max-width: 480px) {
-    .checkout-steps span {
-        font-size: 14px; /* Adjust font size for very small screens */
+
+
+/* Media query for screens smaller than 500px */
+@media (max-width: 600px) {
+    
+    .form-custom-group input {
+        font-size: 0.75rem; /* Increase font size */
+    }
+    
+    .form-details input {
+        font-size: 0.75rem; /* Increase font size for single inputs as well */
     }
 
-    .summary-image {
-        max-width: 50px; /* Smaller image on very small screens */
+    .submit-custom-button, .next-custom-button, .back-custom-button {
+        font-size: 0.8rem; /* Make the text bigger */
+        padding: 11px 18px; /* Increase padding to make the button bigger */
+    
     }
 
-    .button-group {
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
+    .comment-text {
+        width: 100%; /* Make textarea full width */
+        height: 80px; /* Make the textarea longer vertically */
+        font-size: 11px; /* Adjust font size for readability */
     }
 
-    .customised-steps {
-        margin-bottom: 10px; /* Reduce margin for very small screens */
-    }
 
-    .form-custom-group .label-custom {
-        font-size: 0.8rem; /* Further reduce font size on very small screens */
-        margin-bottom: 0.3rem; /* Further reduce margin */
+    .file-upload-input, .file-upload-label {
+        margin-bottom: 15px; /* Add some space between the file upload and other fields */
     }
 }

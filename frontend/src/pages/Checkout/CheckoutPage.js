@@ -98,7 +98,7 @@ const CheckoutPage = () => {
             </div>
           ))}
           <div className="summary-item total">
-            <span>Total</span>
+            <span >Total</span>
             <span>{currencyFormatter.format(calculateTotal())}</span>
           </div>
         </div>

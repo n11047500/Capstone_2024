@@ -89,3 +89,11 @@
   height: 100%;
   width: 100%;
 }
+
+/* Media query for screens up to 768px */
+@media (max-width: 768px) {
+  .return-shopping-button {
+    width: 40%; /* Adjust the width for smaller screens */
+    margin: 20px 0; /* Maintain the vertical margin */
+  }
+}
