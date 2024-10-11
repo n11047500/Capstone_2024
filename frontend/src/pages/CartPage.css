@@ -164,7 +164,7 @@ h1 {
 @media (max-width: 768px) {
   .cart-table th, 
   .cart-table td {
-    padding: 10px;
+    padding: 5px;
     font-size: 14px;
   }
 
@@ -189,7 +189,7 @@ h1 {
 /* Adjustments for mobile screens (max width: 680px) */
 @media (max-width: 680px) {
   .cart-page-container {
-    padding: 18px 9px;
+    padding: 12px 6px;
   }
 
   h1 {
@@ -223,8 +223,29 @@ h1 {
 
 /* Adjustments for mobile screens (max width: 480px) */
 @media (max-width: 480px) {
+
+  .cart-table th,
+  .cart-table td {
+    padding: 2px;
+    text-align: left;
+  }
+  .cart-table th {
+    font-size: 12px;
+  }
+  .cart-table td {
+    font-size: 12px;
+  } 
+  .cart-item-option {
+    font-size: 12px;
+  }
+  
+  .cart-item {
+  max-width: 130px;
+  
+  }
+  
   .cart-page-container {
-    padding: 18px 9px;
+    padding: 5px;
   }
 
   h1 {
@@ -233,18 +254,18 @@ h1 {
   }
 
   .cart-item-image {
-    max-width: 60px;
+    max-width: 52px;
     margin-right: 10px;
   }
 
   .quantity-input {
-    width: 40px;
+    width: 30px;
     padding: 4px;
     font-size: 12px;
   }
 
   .remove-button {
-    padding: 8px 11px;
+    padding: 7px 9.625px;
     font-size: 12px;
   }
 

@@ -9,7 +9,7 @@ const PersonalInfoForm = ({ data, onNext, onBack, onChange }) => {
 
   return (
     <div className="form-details">
-      <h2>Personal Information</h2>
+      <h2 className='custom-heading'>Personal Information</h2>
       <div className="form-custom-group">
         <input
           type="text"

@@ -48,7 +48,7 @@ const AdditionalInformation = ({ data, onBack, onChange, onSubmit }) => {
       }
   
       // Send form data to the backend (do not set Content-Type explicitly, let FormData handle it)
-      const response = await fetch('http://localhost:3001/submit-form', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/submit-form`, {
         method: 'POST',
         body: formDataObj,
       });
@@ -69,7 +69,7 @@ const AdditionalInformation = ({ data, onBack, onChange, onSubmit }) => {
 
   return (
     <form onSubmit={handleSubmit} className="form-details"> 
-      <h2>Additional Information</h2>
+      <h2 className='custom-heading'>Additional Information</h2>
       <div className="form-custom-group" style={{ display: 'flex', alignItems: 'flex-start', position: 'relative' }}>
       <label htmlFor="comment-text">Comments:</label> {/* Added htmlFor here */}
       <label htmlFor="file-upload" className="file-upload-label" aria-label="Attach a file">

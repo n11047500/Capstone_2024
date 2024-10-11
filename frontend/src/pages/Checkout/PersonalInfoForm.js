@@ -46,7 +46,7 @@ const PersonalInfoForm = ({ data, onNext, onChange }) => {
 
   return (
     <div className="form-details">
-      <h2>Personal Information</h2>
+      <h2 className="checkout-heading">Personal Information</h2>
       <div className="form-group">
         <input
           type="text"

@@ -46,7 +46,7 @@ const CustomOptions = ({ data, onNext, onChange }) => {
 
   return (
     <div className="customised-order-form">
-      <h2>Custom Options</h2>
+      <h2 className='custom-heading'>Personal Information</h2>
       <div className="form-custom-group">
         <label className='label-custom'>Select Colour:</label>
         <div className='custom-options'>

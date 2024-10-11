@@ -164,10 +164,18 @@ button:hover {
   margin-right: 10px;
 }
 
+.checkout-heading {
+  font-size: 2.5vw;
+}
 
 
 /* Media Queries for Smaller Devices */
 @media (max-width: 1024px) {
+
+  .checkout-heading {
+    font-size: 30px;
+  }
+
   .checkout-container {
     flex-direction: column; /* Stack elements vertically */
     align-items: stretch; /* Stretch to full width */
@@ -237,6 +245,10 @@ button:hover {
 
 
 @media (max-width: 480px) {
+  .checkout-heading {
+    font-size: 25px;
+  }
+
   .checkout-steps span {
     font-size: 16px; /* Adjust font size for very small screens */
   }
@@ -253,6 +265,31 @@ button:hover {
   .button-group {
     justify-content: center; /* Center buttons on small screens */
     width: 100%;
+  }
+  .checkout-steps, .form-section, .summary-section {
+    width: 95%; /* Full width for steps */
+    margin-bottom: 10px; /* Space below the steps */
+    justify-content: center; /* Center steps items */
+  }
+  .product-option {
+    display: block;
+    font-size: 0.85rem;
+ 
+  }
+
+  .summary-details {
+    font-size: 1em; /* Adjust font size for smaller screens */
+    margin-bottom: 5px; /* Space between the lines */
+    text-align: left; /* Align text to the left */
+  }
+
+  .product-option {
+    font-size: 0.9rem;
+  }
+
+  .summary-item.total {
+    text-align: left; /* Align the total to the left on small screens */
+    font-size: 1.1rem; /* Slightly reduce the font size for the total */
   }
 }
 

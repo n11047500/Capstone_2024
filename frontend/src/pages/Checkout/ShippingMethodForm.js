@@ -19,7 +19,7 @@ const ShippingMethodForm = ({ data, onNext, onBack, onChange }) => {
 
   return (
     <div className="form-details">
-      <h2>Shipping Method</h2>
+      <h2 className="checkout-heading">Personal Information</h2>
       <div className="shipping-options">
         {/* Click and Collect Option */}
         <div

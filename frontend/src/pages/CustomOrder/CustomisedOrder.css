@@ -252,8 +252,17 @@ button:hover {
     flex-grow: 1;
 }
 
+.customised-order-form h2.custom-heading {
+    font-size: 2.5vw;  
+    margin-bottom: 20px; 
+}
+
 /* Media Queries for Smaller Devices */
 @media (max-width: 1024px) {
+    
+    .customised-order-form h2.custom-heading {
+        font-size: 30px;  
+    }
     .customised-order-container {
         flex-direction: column; /* Stack elements vertically */
         align-items: stretch; /* Stretch to full width */
@@ -341,5 +350,21 @@ button:hover {
 
     .file-upload-input, .file-upload-label {
         margin-bottom: 15px; /* Add some space between the file upload and other fields */
+    }
+}
+
+/* Media Queries for Smaller Devices */
+@media (max-width: 500px) {
+
+    .customised-order-form h2.custom-heading {
+        font-size: 28px;  /* Large size */
+    }
+    .customised-steps {
+        width: 95%; /* Full width for steps */
+    }
+
+    .customised-form-section {
+        width: 95%; /* Full width for the form section */
+        
     }
 }
