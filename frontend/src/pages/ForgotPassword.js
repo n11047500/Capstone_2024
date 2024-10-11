@@ -58,7 +58,7 @@ function ForgotPassword() {
             />
             {/* Google reCAPTCHA for verification */}
             <ReCAPTCHA
-              sitekey={process.env.RECAPTCHA_SITE_KEY}
+              sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
               onChange={handleCaptcha}
               className='captcha-forgot-container'
             />

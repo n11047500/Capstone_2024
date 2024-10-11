@@ -133,7 +133,7 @@ const SignUpPage = () => {
             />
             {/* Google reCAPTCHA component for verification */}
             <ReCAPTCHA
-              sitekey={process.env.RECAPTCHA_SITE_KEY}
+              sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
               onChange={handleCaptcha}
               className='captcha-signup-container'
             />

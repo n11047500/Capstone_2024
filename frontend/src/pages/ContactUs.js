@@ -145,7 +145,7 @@ function ContactUs() {
               <div className='captcha-submit-container'>
                 {/* Google reCAPTCHA for validation */}
                 <ReCAPTCHA
-                  sitekey={process.env.RECAPTCHA_SITE_KEY || '6LfpyS4qAAAAACV-9rKjHiyxg9LR0FOr6nVUUu2j'}
+                  sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
                   onChange={handleCaptcha}
                 />
                 <button type="submit" className="submit-button">Submit Form</button>

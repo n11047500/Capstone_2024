@@ -61,7 +61,7 @@ function ResetPassword() {
             />
             {/* Google reCAPTCHA for verification */}
             <ReCAPTCHA
-              sitekey={process.env.RECAPTCHA_SITE_KEY || '6LfpyS4qAAAAACV-9rKjHiyxg9LR0FOr6nVUUu2j'}
+              sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
               onChange={handleCaptcha}
               className='captcha-reset-container'
             />
