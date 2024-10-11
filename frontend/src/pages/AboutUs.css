@@ -1,3 +1,4 @@
+/* Reset default browser styling and set up font and background colour */
 body, html {
   margin: 0;
   padding: 0;
@@ -5,35 +6,32 @@ body, html {
   background-color: #EDF1EC;
 }
 
+/* Aligns header items to the right */
 .header-bar {
   display: flex;
   justify-content: flex-end;
   padding: 10px 20px;
 }
 
+/* Layout for the main section of the About Us page */
 .about_section {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 5% 5%; /* Equal margins on left and right */
-  padding: 0 5%; /* Equal padding on both sides */
-  gap: 5%; /* Space between text and image */
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  margin: 5% 5%;
+  padding: 0 5%;
+  gap: 5%;
+  flex-wrap: wrap; /* Enables responsive wrapping */
 }
 
+/* Text content styling */
 .text-content {
   display: flex;
-  flex-direction: column; /* Stack h1, h2, and p vertically */
-  width: 45%; /* Width for the text block */
+  flex-direction: column;
+  width: 45%;
 }
 
-.text-content h1, 
-.text-content h2, 
-.text-content p {
-  margin-bottom: 20px;
-  text-align: center;
-}
-
+/* Adjust font sizes for headings and paragraphs */
 .text-content h1 {
   font-size: 4vh;
 }
@@ -46,33 +44,34 @@ body, html {
   font-size: 2vh;
 }
 
+/* Image styling within the About Us section */
 .aboutus_image {
-  width: 40%; /* Reduced width by 10% */
-  height: auto; /* Maintain aspect ratio */
+  width: 40%;
+  height: auto;
   padding-bottom: 50px;
-  align-self: center; /* Center the image vertically */
+  align-self: center; /* Centers image vertically */
 }
 
-/* Media Queries for smaller screens */
+/* Responsive adjustments for tablets and smaller screens */
 @media (max-width: 768px) {
   .about_section {
-    flex-direction: column; /* Stack text and image vertically */
+    flex-direction: column;
     text-align: center;
-    padding: 0 5%; /* Maintain equal padding on small screens */
-    gap: 20px; /* Space between stacked items */
+    gap: 20px;
   }
 
   .text-content, 
   .aboutus_image {
-    width: 100%; /* Full width for both text and image on small screens */
+    width: 100%;
   }
 
   .aboutus_image {
-    width: 80%; /* Adjust image size */
-    margin: 0 auto; /* Center image */
+    width: 80%; /* Centers image */
+    margin: 0 auto;
   }
 }
 
+/* Responsive adjustments for mobile screens */
 @media (max-width: 480px) {
   .about_section {
     margin: 10% auto;
@@ -91,6 +90,6 @@ body, html {
   }
 
   .aboutus_image {
-    width: 100%; /* Full width on very small screens */
+    width: 100%;
   }
 }

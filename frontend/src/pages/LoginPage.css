@@ -1,3 +1,4 @@
+/* Resetting body and html default margins, paddings, and setting global styles */
 body, html {
   margin: 0;
   padding: 0;
@@ -8,15 +9,17 @@ body, html {
   min-height: 100vh;
 }
 
+/* Main container to center content vertically and horizontally */
 main {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px; /* Added padding for small screens */
+  padding: 20px;
 }
 
+/* Styling for the login form container */
 .login-container {
   background-color: #EDF1EC;
   padding: 40px;
@@ -28,12 +31,14 @@ main {
   margin: 20px;
 }
 
+/* Styling for the main heading inside the login container */
 .login-container h1 {
   font-size: 24px;
   margin-bottom: 20px;
   color: #333;
 }
 
+/* Styling for labels inside the login form */
 .login-container label {
   font-size: 16px;
   color: #666;
@@ -41,6 +46,7 @@ main {
   margin-bottom: 5px;
 }
 
+/* Styling for email and password input fields */
 .login-container input[type="email"],
 .login-container input[type="password"] {
   width: 100%;
@@ -49,9 +55,10 @@ main {
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-bottom: 20px;
-  box-sizing: border-box; /* Ensures padding is included within the width */
+  box-sizing: border-box;
 }
 
+/* Styling for the login button */
 .login-container .login-button {
   width: 100%;
   padding: 15px;
@@ -67,43 +74,51 @@ main {
   justify-content: center;
 }
 
+/* Hover effect for the login button */
 .login-container .login-button:hover {
   background-color: #45a049;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
 }
 
+/* Styling for the signup link below the login form */
 .login-container .signup-link {
   margin-top: 20px;
   font-size: 14px;
 }
 
+/* Styling for the anchor tag inside the signup link */
 .login-container .signup-link a {
   color: blue;
   text-decoration: none;
   font-weight: bold;
 }
 
+/* Hover effect for the signup link */
 .login-container .signup-link a:hover {
   text-decoration: underline;
 }
 
+/* Styling for the forgot password link */
 .login-container .forgot-link {
   font-size: 14px;
   margin-top: 0px;
   margin-bottom: 20px;
 }
 
+/* Styling for the anchor tag inside the forgot link */
 .login-container .forgot-link a {
   color: blue;
   text-decoration: none;
   font-weight: bold;
 }
 
+/* Hover effect for the forgot password link */
 .login-container .forgot-link a:hover {
   text-decoration: underline;
 }
 
+/* Styling for the captcha container */
 .captcha-login-container {
   display: flex;
   align-items: center;
@@ -111,7 +126,9 @@ main {
   margin-bottom: 20px;
 }
 
-/* Media Queries for Better Scaling */
+/* Media Queries for responsive scaling */
+
+/* Adjust styles for screens up to 768px (tablets and small screens) */
 @media (max-width: 768px) {
   .login-container {
     padding: 30px;
@@ -134,10 +151,11 @@ main {
   }
 }
 
+/* Adjust styles for screens up to 480px (mobile devices) */
 @media (max-width: 480px) {
   .login-container {
     padding: 20px;
-    max-width: 100%;
+    max-width: 100%; /* Full width for mobile */
   }
 
   .login-container h1 {
@@ -147,11 +165,11 @@ main {
   .login-container input[type="email"],
   .login-container input[type="password"] {
     padding: 8px;
-    font-size: 0.875rem;
+    font-size: 0.875rem; /* Smaller font size for mobile */
   }
 
   .login-container .login-button {
     padding: 10px;
-    font-size: 1rem;
+    font-size: 1rem; /* Smaller font size for button */
   }
 }

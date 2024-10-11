@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import './UserProfile.css';
 import AddProduct from './AddProduct';
 import EditProduct from './EditProduct';
-import OrderManagement from './OrderManagement'; // Import the new OrderManagement component
+import OrderManagement from './OrderManagement'; // Import the OrderManagement component
 
 const EmployeeDashboard = () => {
+  // State variables for managing email input, messages, active form, products, and selected product ID
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [activeForm, setActiveForm] = useState(null);
   const [products, setProducts] = useState([]);
   const [selectedProductId, setSelectedProductId] = useState('');
 
+  // Fetch products when the component mounts
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/products`)
       .then(response => response.json())
@@ -18,6 +20,7 @@ const EmployeeDashboard = () => {
       .catch(error => console.error('Error fetching products:', error));
   }, []);
 
+  // Handle role update for granting employee access
   const handleRoleUpdate = async (e) => {
     e.preventDefault();
     try {
@@ -38,14 +41,17 @@ const EmployeeDashboard = () => {
     }
   };
 
+  // Toggle between different forms based on user selection
   const toggleForm = (formName) => {
     setActiveForm(activeForm === formName ? null : formName);
   };
 
+  // Handle product selection for editing or removing products
   const handleProductSelect = (e) => {
     setSelectedProductId(e.target.value);
   };
 
+  // Handle deletion of a product
   const handleDeleteProduct = async () => {
     const confirmation = window.confirm('Are you sure you want to delete this product?');
     if (confirmation) {
@@ -55,6 +61,7 @@ const EmployeeDashboard = () => {
         });
 
         if (response.ok) {
+          // Update the products list and reset selected product ID
           setProducts(products.filter(product => product.Product_ID !== selectedProductId));
           setSelectedProductId('');
           setMessage('Product deleted successfully.');
@@ -71,6 +78,7 @@ const EmployeeDashboard = () => {
   return (
     <div className="employee-dashboard">
       <div className="dashboard-buttons">
+        {/* Buttons to toggle between different dashboard forms */}
         <button onClick={() => toggleForm('addProduct')}>Add Product</button>
         <button onClick={() => toggleForm('editProduct')}>Edit Product</button>
         <button onClick={() => toggleForm('removeProduct')}>Remove Product</button>
@@ -78,7 +86,9 @@ const EmployeeDashboard = () => {
         <button onClick={() => toggleForm('manageOrders')}>Manage Orders</button>
       </div>
 
+      {/* Conditional rendering of forms based on the active form state */}
       {activeForm === 'manageOrders' && <OrderManagement setActiveForm={setActiveForm} />}
+      
       {activeForm === 'grantAccess' && (
         <form onSubmit={handleRoleUpdate} className="add-product-form">
           <label htmlFor="email" style={{ textAlign: 'center', color: '#333', marginBottom: '20px', fontSize: '24px', fontWeight: '600' }}>Enter user's email</label>
@@ -145,6 +155,7 @@ const EmployeeDashboard = () => {
         </>
       )}
 
+      {/* Display success or error message */}
       {message && <p className="message">{message}</p>}
     </div>
   );

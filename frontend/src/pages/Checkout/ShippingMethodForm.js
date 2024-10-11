@@ -1,18 +1,20 @@
 import React from 'react';
-import deliveryTruck from '../../assets/delivery_truck.svg';
-import clickAndCollect from '../../assets/click_and_collect.svg';
+import deliveryTruck from '../../assets/delivery_truck.svg'; // Import image for delivery option
+import clickAndCollect from '../../assets/click_and_collect.svg'; // Import image for click and collect option
 
 const ShippingMethodForm = ({ data, onNext, onBack, onChange }) => {
+  // Handle selection of a shipping option
   const handleChange = (value) => {
     onChange({ ...data, shippingOption: value });
   };
 
+  // Handle click on the "Next" button, ensuring a shipping option is selected
   const handleNextClick = () => {
     if (!data.shippingOption) {
       alert('Please select a shipping option before proceeding.');
       return;
     }
-    onNext();
+    onNext(); // Proceed to the next step
   };
 
   return (
@@ -47,6 +49,7 @@ const ShippingMethodForm = ({ data, onNext, onBack, onChange }) => {
           <label>Delivery</label>
         </div>
       </div>
+      {/* Navigation Buttons */}
       <button onClick={onBack}>Back</button>
       <button onClick={handleNextClick} className='next-button' disabled={!data.shippingOption}>
         Next

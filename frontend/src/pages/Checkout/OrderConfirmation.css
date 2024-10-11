@@ -1,5 +1,4 @@
-/* OrderConfirmation.css */
-
+/* Container for the order confirmation details */
 .confirmation-container {
   padding: 20px;
   max-width: 800px;
@@ -9,10 +8,12 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Styling for order details */
 .order-details {
   margin-top: 20px;
 }
 
+/* Styling for headings within order details */
 .order-details h3,
 .order-details h4 {
   color: #333;
@@ -20,18 +21,21 @@
   font-weight: bold;
 }
 
+/* Styling for paragraph elements */
 .order-details p {
   font-size: 14px;
   color: #555;
   margin-bottom: 10px;
 }
 
+/* Styling for the table displaying order confirmation */
 .order_confirmation_table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
 }
 
+/* Table headers and cell styles */
 .order_confirmation_table th,
 .order_confirmation_table td {
   border: 1px solid #ddd;
@@ -41,26 +45,23 @@
   color: #555;
 }
 
+/* Styling for the table headers */
 .order_confirmation_table th {
   background-color: #f2f2f2;
   font-weight: 600;
 }
 
-.order_confirmation_table td img {
-  max-width: 50px;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-}
-
+/* Alternate row color for clarity */
 .order_confirmation_table tr:nth-child(even) {
   background-color: #fafafa;
 }
 
+/* Hover effect for table rows */
 .order_confirmation_table tr:hover {
   background-color: #f1f1f1;
 }
 
+/* Button styling for returning to shopping */
 .return-shopping-button {
   background-color: #4CAF50;
   color: white;
@@ -70,50 +71,29 @@
   cursor: pointer;
   border-radius: 4px;
   transition: background-color 0.3s, box-shadow 0.3s;
-  width: 20%; /* Set the width to 20% */
-  margin: 20px 0; /* Add a 20px gap above and below */
+  width: 20%;
+  margin: 20px 0;
 }
 
-.return-shopping-button:hover {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 15px 20px;
-  font-size: 18px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.3s, box-shadow 0.3s;
-  width: 20%; /* Set the width to 20% */
-  margin: 20px 0; /* Add a 20px gap above and below */
-}
-
+/* Hover effect for the return shopping button */
 .return-shopping-button:hover {
   background-color: #45a049;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Container for aligning the return shopping button */
 .return-shopping-container {
   display: flex;
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
-  height: 100%; /* Ensure it takes the available space vertically */
-  width: 100%; /* Ensure the container takes full width */
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
 }
 
-
-@media (max-width: 768px) { 
+/* Media query for screens up to 768px */
+@media (max-width: 768px) {
   .return-shopping-button {
-
-    width: 40%; /* Set the width to 20% */
-    margin: 20px 0; /* Add a 20px gap above and below */
+    width: 40%; /* Adjust the width for smaller screens */
+    margin: 20px 0; /* Maintain the vertical margin */
   }
-
-  .return-shopping-button:hover {
-   
-    width: 40%; /* Set the width to 20% */
-    margin: 20px 0; /* Add a 20px gap above and below */
-  }
-
- 
-
 }

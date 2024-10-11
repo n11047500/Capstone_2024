@@ -1,41 +1,46 @@
 import React from 'react';
 import { useLoadScript } from '@react-google-maps/api';
 
-// Load the Google Maps script
+// Define libraries needed for Google Maps API (autocomplete functionality)
 const libraries = ['places'];
 
 const PersonalInfoForm = ({ data, onNext, onChange }) => {
-  // Access the API key from environment variables
+  // Access the Google Maps API key from environment variables
   const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
-  // Load the Google Maps script
+  // Load the Google Maps script with the necessary libraries
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: apiKey,
     libraries,
     id: 'google-maps-script',
   });
 
+  // Handle changes in form inputs and update the data
   const handleChange = (e) => {
     const { name, value } = e.target;
     onChange({ ...data, [name]: value });
   };
 
+  // Handle when the user selects a place from the autocomplete suggestions
   const handlePlaceChanged = (autocomplete) => {
     const place = autocomplete.getPlace();
+    // Update the address field with the selected place's formatted address
     if (place && place.formatted_address) {
       onChange({ ...data, address: place.formatted_address });
     }
   };
 
-  // Initialise the autocomplete input once the Google Maps script is loaded
+  // Initialize the autocomplete feature for the address input field
   const initializeAutocomplete = (input) => {
     if (!input || !isLoaded) return;
 
+    // Configure the autocomplete to show only geocoded addresses within Australia
     const autocomplete = new window.google.maps.places.Autocomplete(input, {
       types: ['geocode'],
-      componentRestrictions: { country: 'AU' }, // Restrict to Australian addresses
+      componentRestrictions: { country: 'AU' },
     });
 
+    // Add a listener to handle when a place is selected
     autocomplete.addListener('place_changed', () => handlePlaceChanged(autocomplete));
   };
 
@@ -84,7 +89,7 @@ const PersonalInfoForm = ({ data, onNext, onChange }) => {
         placeholder="Address"
         value={data.address}
         onChange={handleChange}
-        ref={initializeAutocomplete}
+        ref={initializeAutocomplete} // Ref to initialize autocomplete on this input
         required
       />
       <button onClick={onNext}>Continue to Shipping</button>

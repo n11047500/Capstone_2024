@@ -9,33 +9,38 @@ import PaymentForm from './PaymentForm';
 import { CartContext } from '../../context/CartContext';
 import './CheckoutPage.css';
 
-// Initialize Stripe with publishable key
+// Initialize Stripe with the publishable key from environment variables
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 const CheckoutPage = () => {
+  // State to manage the checkout step
   const [step, setStep] = useState(1);
+  // State to manage form data across different steps
   const [formData, setFormData] = useState({
     personalInfo: {},
     shippingMethod: {},
     paymentDetails: {},
   });
 
-  // Access cart data from CartContext
+  // Access the cart data from the CartContext
   const { cart } = useContext(CartContext);
 
+  // Formatter for currency
   const currencyFormatter = new Intl.NumberFormat('en-AU', {
     style: 'currency',
     currency: 'AUD',
   });
 
-  // Function to calculate total (since subtotal is the same as the total)
+  // Calculate the total price of items in the cart
   const calculateTotal = () => {
     return cart.reduce((total, item) => total + item.Product_Price * item.quantity, 0);
   };
 
+  // Handlers for navigating between steps
   const handleNextStep = () => setStep((prev) => prev + 1);
   const handlePreviousStep = () => setStep((prev) => prev - 1);
 
+  // Update form data as users fill out each step
   const handleFormDataChange = (section, data) => {
     setFormData((prev) => ({ ...prev, [section]: data }));
   };
@@ -70,9 +75,9 @@ const CheckoutPage = () => {
             <Elements stripe={stripePromise}>
               <PaymentForm
                 data={{
-                  ...formData, // Include all form data (personal info, shipping, etc.)
+                  ...formData, // Merge all form data (personal info, shipping, etc.)
                   cart, // Include cart data for product IDs
-                  totalAmount: calculateTotal(), // Add calculated total amount
+                  totalAmount: calculateTotal(), // Pass the total amount to be charged
                 }}
                 onBack={handlePreviousStep}
                 onChange={(data) => handleFormDataChange('paymentDetails', data)}

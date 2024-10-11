@@ -6,7 +6,9 @@ import Footer from '../components/Footer';
 import './SignUpPage.css';
 
 const SignUpPage = () => {
+  // Navigation function for redirecting users
   const navigate = useNavigate();
+  // State to manage form data inputs
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -15,13 +17,17 @@ const SignUpPage = () => {
     mobileNumber: '',
     dateOfBirth: '',
   });
-  const [captchaToken, setCaptchaToken] = useState(null); // Store reCAPTCHA token
+  // State to store reCAPTCHA token
+  const [captchaToken, setCaptchaToken] = useState(null);
+  // State for managing error messages
   const [error, setError] = useState('');
 
+  // Handler for reCAPTCHA token update
   const handleCaptcha = (token) => {
-    setCaptchaToken(token); // Set the reCAPTCHA token
+    setCaptchaToken(token);
   };
 
+  // Handle form input changes and update form data state
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -29,11 +35,14 @@ const SignUpPage = () => {
     });
   };
 
+  // Handle form submission for user registration
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Combine form data with the CAPTCHA token
       const totalForm = { ...formData, captchaToken };
 
+      // Send registration data to the backend API
       const response = await fetch(`${process.env.REACT_APP_API_URL}/register`, {
         method: 'POST',
         headers: {
@@ -42,6 +51,7 @@ const SignUpPage = () => {
         body: JSON.stringify(totalForm),
       });
 
+      // Handle response and possible errors
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.error || 'Error creating user. Please try again.');
@@ -50,21 +60,23 @@ const SignUpPage = () => {
       const data = await response.json();
       console.log('User created successfully:', data);
       
-      // Redirect to the login page
+      // Redirect to the login page upon successful registration
       navigate('/login');
 
     } catch (error) {
       console.error('Error creating user:', error);
-      setError(error.message);
+      setError(error.message); // Update error state with the error message
     }
   };
 
   return (
     <>
+      {/* Header component for consistent site navigation */}
       <Header />
       <main>
         <div className="signup-container">
           <h1>Sign Up</h1>
+          {/* Display error message if present */}
           {error && <p className="error-message">{error}</p>}
           <form onSubmit={handleSubmit}>
             <label htmlFor="firstName">First Name:</label>
@@ -119,8 +131,9 @@ const SignUpPage = () => {
               value={formData.dateOfBirth}
               onChange={handleChange}
             />
+            {/* Google reCAPTCHA component for verification */}
             <ReCAPTCHA
-              sitekey={process.env.RECAPTCHA_SITE_KEY || '6LfpyS4qAAAAACV-9rKjHiyxg9LR0FOr6nVUUu2j'}
+              sitekey={process.env.RECAPTCHA_SITE_KEY}
               onChange={handleCaptcha}
               className='captcha-signup-container'
             />
@@ -128,6 +141,7 @@ const SignUpPage = () => {
           </form>
         </div>
       </main>
+      {/* Footer component for consistent site information */}
       <Footer />
     </>
   );

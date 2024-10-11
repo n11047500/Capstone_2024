@@ -3,6 +3,7 @@ import './UserProfile.css';
 import './AddProduct.css';
 
 const AddProduct = () => {
+  // State to manage form data, success/error message, and image preview
   const [formData, setFormData] = useState({
     name: '',
     price: '',
@@ -17,21 +18,26 @@ const AddProduct = () => {
   const [message, setMessage] = useState('');
   const [imagePreview, setImagePreview] = useState('');
 
+  // Handles changes to input fields and updates the form data state
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
 
+    // Updates image preview if the image URL is changed
     if (name === 'imageUrl') {
       setImagePreview(value);
     }
   };
 
+  // Submits the form data to the backend API
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Format dimensions into a single string
     const dimensions = `${formData.width}mm (width) x ${formData.depth}mm (depth) x ${formData.height}mm (height)`;
 
     try {
+      // Sending a POST request to add the product
       const response = await fetch(`${process.env.REACT_APP_API_URL}/add-product`, {
         method: 'POST',
         headers: {
@@ -48,6 +54,7 @@ const AddProduct = () => {
 
       if (response.ok) {
         setMessage('Product added successfully');
+        // Reset form after successful submission
         setFormData({ 
           name: '', 
           price: '', 
@@ -61,11 +68,13 @@ const AddProduct = () => {
         });
         setImagePreview('');
 
+        // Refresh the page after 2 seconds
         setTimeout(() => {
           window.location.reload();
         }, 2000);
         
       } else {
+        // Display server error message if request fails
         setMessage(data.message || 'Failed to add product.');
       }
     } catch (error) {
@@ -164,10 +173,12 @@ const AddProduct = () => {
           placeholder="Enter the full image URL"
         />
         
+        {/* Display image preview if an image URL is entered */}
         {imagePreview && <img src={imagePreview} alt="Product Preview" className="image-preview" />}
 
         <button type="submit" className="add-product-button">Add Product</button>
       </form>
+      {/* Display success or error message */}
       {message && <p className="message">{message}</p>}
     </div>
   );

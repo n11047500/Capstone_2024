@@ -3,6 +3,7 @@ import './UserProfile.css';
 import './AddProduct.css';
 
 const EditProduct = ({ productId }) => {
+  // State for storing the original product data fetched from the server
   const [originalFormData, setOriginalFormData] = useState({
     name: '',
     price: '',
@@ -15,15 +16,18 @@ const EditProduct = ({ productId }) => {
     imageUrl: ''
   });
   
+  // State for managing the form data, success/error messages, and image preview
   const [formData, setFormData] = useState(originalFormData);
   const [message, setMessage] = useState('');
   const [imagePreview, setImagePreview] = useState('');
 
+  // Fetch product data when the component mounts or when productId changes
   useEffect(() => {
     if (productId) {
       fetch(`${process.env.REACT_APP_API_URL}/products/${productId}`)
         .then(response => response.json())
         .then(data => {
+          // Parse product options and dimensions if available
           const options = data.Product_Options || '';
 
           const dimensions = data.Product_Dimensions ? data.Product_Dimensions.split(' x ') : ['', '', ''];
@@ -31,6 +35,7 @@ const EditProduct = ({ productId }) => {
           const depth = dimensions[1] ? dimensions[1].split('mm')[0] : '';
           const height = dimensions[2] ? dimensions[2].split('mm')[0] : '';
 
+          // Set the initial form data based on fetched product details
           const initialData = {
             name: data.Product_Name,
             price: data.Product_Price,
@@ -51,21 +56,26 @@ const EditProduct = ({ productId }) => {
     }
   }, [productId]);
 
+  // Handle changes to the input fields and update form data
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
 
+    // Update image preview if the image URL is modified
     if (name === 'imageUrl') {
       setImagePreview(value);
     }
   };
 
+  // Handle form submission for updating the product
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Confirm update action with the user
     const confirmation = window.confirm('Are you sure you want to save these changes?');
     if (!confirmation) return;
 
+    // Construct dimensions string from the form inputs
     const dimensions = `${formData.width}mm (width) x ${formData.depth}mm (depth) x ${formData.height}mm (height)`;
 
     try {
@@ -76,17 +86,19 @@ const EditProduct = ({ productId }) => {
         },
         body: JSON.stringify({
           name: formData.name,
-          price: formData.price, // Send as a string if necessary
-          quantity: formData.quantity, // Send as a string if necessary
+          price: formData.price,
+          quantity: formData.quantity,
           description: formData.description,
-          dimensions, // Ensure this is included
-          options: formData.options, // Make sure options is sent
+          dimensions,
+          options: formData.options,
           imageUrl: formData.imageUrl,
         }),
       });
 
+      // Handle response based on the success of the request
       if (response.ok) {
         setMessage('Product updated successfully');
+        // Refresh the page after 2 seconds to show updated product details
         setTimeout(() => {
           window.location.reload();
         }, 2000);
@@ -100,6 +112,7 @@ const EditProduct = ({ productId }) => {
     }
   };
 
+  // Reset form data to its original state
   const handleReset = () => {
     setFormData(originalFormData);
     setImagePreview(originalFormData.imageUrl);
@@ -113,7 +126,7 @@ const EditProduct = ({ productId }) => {
         <input
           type="text"
           id="product-name"
-          name="product-name"
+          name="name"
           value={formData.name}
           onChange={handleChange}
           required

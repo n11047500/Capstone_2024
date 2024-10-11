@@ -4,15 +4,16 @@ import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import Search from '../components/Search';
 import './Browse.css';
+import defaultImage from '../assets/default_image.gif';
 
 function Browse() {
+  // State variables for managing products, sorting, search results, and search query
   const [products, setProducts] = useState([]);
   const [sortType, setSortType] = useState('');
-  const defaultImage = 'https://res.cloudinary.com/dakwlrcqr/image/upload/v1725604960/HicksProductDefault_op2oce.gif';
-  const [searchResults, setSearchResults] = useState([]);  // The search results
-  const [query, setQuery] = useState('');  // The search query
+  const [searchResults, setSearchResults] = useState([]);
+  const [query, setQuery] = useState('');
 
-
+  // Fetch products from the API
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/products`)
       .then(response => response.json())
@@ -22,6 +23,7 @@ function Browse() {
       .catch(error => console.error('Error fetching products:', error));
   }, []);
 
+  // Handle search functionality
   const handleSearch = async (searchQuery) => {
     setQuery(searchQuery);
 
@@ -38,7 +40,7 @@ function Browse() {
     }
   };
 
-  // Apply sorting to whichever products are being displayed
+  // Sort products based on the selected sort type
   const sortedProducts = (query && searchResults.length > 0 ? searchResults : products).sort((a, b) => {
     switch (sortType) {
       case 'priceDesc':
@@ -50,7 +52,7 @@ function Browse() {
       case 'nameDesc':
         return b.Product_Name.localeCompare(a.Product_Name);
       default:
-        return 0;
+        return 0;  // Default to no sorting
     }
   });
 
@@ -60,9 +62,11 @@ function Browse() {
       <div className="browse-header-bar">
         <div className="browse-controls-container">
           <div className="browse-search-container">
+            {/* Search component for handling user search input */}
             <Search onSearch={handleSearch} />
           </div>
           <div className="browse-sort-container">
+            {/* Dropdown for sorting products */}
             <select className="browse-sort-dropdown" value={sortType} onChange={e => setSortType(e.target.value)}>
               <option value="">Featured</option>
               <option value="priceAsc">Price: Low to High</option>
@@ -74,8 +78,8 @@ function Browse() {
         </div>
       </div>
 
-      
       <div className="browse-product-container">
+        {/* Mapping over sorted products to render components in the Product Card */}
         {sortedProducts.map(product => (
           <ProductCard
             key={product.Product_ID}

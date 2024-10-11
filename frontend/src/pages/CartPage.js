@@ -6,26 +6,28 @@ import Footer from '../components/Footer';
 import './CartPage.css';
 
 const CartPage = () => {
+  // Retrieve cart functions and data from CartContext
   const { cart, removeFromCart, updateQuantity, clearCart } = useContext(CartContext);
   const navigate = useNavigate();
 
-
+  // Currency formatter for displaying prices
   const currencyFormatter = new Intl.NumberFormat('en-AU', {
     style: 'currency',
     currency: 'AUD',
     minimumFractionDigits: 2,
   });
 
+  // Calculate the total price of all items in the cart
   const calculateTotal = () => {
-    return cart.reduce((total, item) => total + item.Product_Price * item.quantity, 0)
+    return cart.reduce((total, item) => total + item.Product_Price * item.quantity, 0);
   };
 
-  // Handle checkout navigation
+  // Navigate to the checkout page
   const handleCheckout = () => {
     navigate('/checkout');
   };
 
-  // Handle continue shopping navigation
+  // Navigate back to the browse page
   const handleContinueShopping = () => {
     navigate('/browse');
   };
@@ -36,6 +38,7 @@ const CartPage = () => {
       <div className="cart-page-container">
         <h1>Shopping Cart</h1>
         {cart.length === 0 ? (
+          // Display message if the cart is empty
           <p>Your cart is empty.</p>
         ) : (
           <table className="cart-table">
@@ -59,6 +62,7 @@ const CartPage = () => {
                       <Link to={`/product/${item.Product_ID}`} className="cart-item-link">
                         <span>{item.Product_Name}</span>
                       </Link>
+                      {/* Display selected option if available */}
                       {item.selectedOption && <p className="cart-item-option">{item.selectedOption}</p>}
                     </div>
                   </td>
@@ -76,9 +80,9 @@ const CartPage = () => {
                   <td>{currencyFormatter.format(item.Product_Price * item.quantity)}</td>
                   <td>
                     <button 
-                    onClick={() => removeFromCart(item.Product_ID, item.selectedOption)} 
-                    className="remove-button"
-                    aria-label="Remove"
+                      onClick={() => removeFromCart(item.Product_ID, item.selectedOption)} 
+                      className="remove-button"
+                      aria-label="Remove"
                     >
                       ✖
                     </button>
@@ -89,14 +93,18 @@ const CartPage = () => {
           </table>
         )}
         <div className="cart-summary">
-        <p>Subtotal: {currencyFormatter.format(calculateTotal())}</p>
+          <p>Subtotal: {currencyFormatter.format(calculateTotal())}</p>
           <button className="clear-cart-button" onClick={clearCart}>Clear Cart</button>
         </div>
         <div className="cart-actions">
           <button className="continue-shopping-button" onClick={handleContinueShopping}>Continue Shopping</button>
-          <button className="checkout-button" 
-          onClick={handleCheckout}
-          disabled={cart.length === 0}>Checkout</button>
+          <button 
+            className="checkout-button" 
+            onClick={handleCheckout}
+            disabled={cart.length === 0} // Disable button if cart is empty
+          >
+            Checkout
+          </button>
         </div>
       </div>
       <Footer />

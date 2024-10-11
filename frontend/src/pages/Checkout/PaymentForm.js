@@ -1,28 +1,33 @@
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../../context/CartContext'; // Import CartContext
 
 const PaymentForm = ({ data, onBack, onChange }) => {
+  // Access Stripe and Elements context
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
   const { clearCart } = useContext(CartContext); // Access clearCart from context
 
+  // Handle form submission for payment
   const handleSubmit = async (event) => {
     event.preventDefault();
     
+    // Ensure Stripe.js is fully loaded
     if (!stripe || !elements) {
       console.error('Stripe has not yet loaded.');
       return;
     }
     
+    // Get the card element from the form
     const cardElement = elements.getElement(CardElement);
     if (!cardElement) {
       console.error('CardElement not found.');
       return;
     }
     
+    // Create a payment method using the card details
     const { error, paymentMethod } = await stripe.createPaymentMethod({
       type: 'card',
       card: cardElement,
@@ -34,15 +39,18 @@ const PaymentForm = ({ data, onBack, onChange }) => {
     }
     
     try {
+      // Validate the total amount before proceeding
       const totalAmount = parseFloat(data.totalAmount);
       if (!totalAmount || isNaN(totalAmount) || totalAmount <= 0) {
         throw new Error('Invalid total amount');
       }
       
+      // Create an array of product IDs and options for the order
       const productIds = data.cart.flatMap(item =>
         Array(item.quantity).fill(`${item.Product_ID}:${item.selectedOption || ''}`).filter(Boolean)
       );
     
+      // Prepare order details to send to the backend
       const orderDetails = {
         firstName: data.personalInfo.firstName,
         lastName: data.personalInfo.lastName,
@@ -57,7 +65,8 @@ const PaymentForm = ({ data, onBack, onChange }) => {
     
       console.log('Order details being sent:', orderDetails);
     
-      const response = await fetch('/api/orders', {
+      // Send order details to the backend
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderDetails),
@@ -65,34 +74,37 @@ const PaymentForm = ({ data, onBack, onChange }) => {
     
       const responseData = await response.json(); // Read the response body once
     
+      // Handle the response based on its status
       if (response.ok) {
         console.log('Order saved successfully.');
         // Clear the cart after successful payment
         clearCart();
 
-         // Send confirmation email
+        // Send a confirmation email
         fetch('/send-confirmation-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-              email: orderDetails.email,
-              firstName: orderDetails.firstName,
-              lastName: orderDetails.lastName,
-              orderId: responseData.id,
-              totalAmount: orderDetails.totalAmount
-          })
-      }).then(response => response.json())
-        .then(data => {
+            email: orderDetails.email,
+            firstName: orderDetails.firstName,
+            lastName: orderDetails.lastName,
+            orderId: responseData.id,
+            totalAmount: orderDetails.totalAmount,
+          }),
+        }).then(response => response.json())
+          .then(data => {
             if (data.success) {
-                console.log('Confirmation email sent successfully.');
+              console.log('Confirmation email sent successfully.');
             } else {
-                console.error('Failed to send confirmation email:', data.error);
+              console.error('Failed to send confirmation email:', data.error);
             }
-        })
-        .catch(error => console.error('Error sending confirmation email:', error));
+          })
+          .catch(error => console.error('Error sending confirmation email:', error));
 
+        // Redirect to the order confirmation page
         navigate('/order-confirmation?client_secret=' + responseData.client_secret);
       } else if (responseData.client_secret) {
+        // Confirm the payment using Stripe
         const { error: confirmError } = await stripe.confirmCardPayment(responseData.client_secret);
         if (confirmError) {
           console.error('Failed to confirm payment:', confirmError.message);
@@ -111,6 +123,7 @@ const PaymentForm = ({ data, onBack, onChange }) => {
     }
   };
 
+  // Card element styling options
   const cardElementOptions = {
     hidePostalCode: true,
     style: {
@@ -151,6 +164,5 @@ const PaymentForm = ({ data, onBack, onChange }) => {
     </div>
   );
 };
-
 
 export default PaymentForm;

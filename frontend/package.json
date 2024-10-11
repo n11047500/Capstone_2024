@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:3001",
+  "proxy": "https://capstone-2024-55aq.onrender.com",
   "dependencies": {
     "@react-google-maps/api": "^2.19.3",
     "@stripe/react-stripe-js": "^2.8.0",
