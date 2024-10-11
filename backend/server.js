@@ -10,6 +10,8 @@ const axios = require('axios');                                   // Axios for m
 require('dotenv').config();                                       // Load environment variables from a .env file
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);  // Stripe for payment processing
 const multer = require('multer');                                 // Multer for handling file uploads
+const path = require('path');
+const fs = require('fs');
 
 // Initialise the Express app
 const app = express();
@@ -23,9 +25,34 @@ app.use(express.json());      // Ensure incoming requests are parsed as JSON
 const connection = db.getConnection();
 
 // Configure Multer for file uploads
-const storage = multer.memoryStorage();
-const uploadFile = multer({ storage: storage });
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads'); // Set the destination folder for uploads
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9); // To make file names unique
+    cb(null, uniqueSuffix + '-' + file.originalname); // Preserve the original name with a unique suffix
+  }
+});
 
+const uploadFile = multer({ 
+  storage: storage,
+  limits: { fileSize: 20 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type, only images are allowed!'), false);
+    }
+  }
+});
+
+// Create the uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, 'uploads');
+
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 // Root endpoint to check if the server is running
 app.get('/', (req, res) => {
   res.send('Server is running.');
@@ -966,9 +993,33 @@ app.get('/api/orders/details', async (req, res) => {
 // Nodemailer sendEmail function
 const sendEmail = async (formDataObj) => {
   try {
+
+    console.log('Recipient email:', formDataObj.email);
+    console.log('Form Data Object:', formDataObj);
+
+    // Check if the file is defined
+    let filePath = '';
+    if (formDataObj.file) {
+      filePath = path.join(__dirname, 'uploads', formDataObj.file.filename);
+      console.log('File path:', filePath); // Log the file path for debugging
+    
+      // Ensure the file exists before sending the email
+      if (!fs.existsSync(filePath)) {
+        console.error('File does not exist at path:', filePath);
+        throw new Error('File does not exist');
+      }
+    } else {
+      console.log('No file provided');
+    }
+    
+    // Ensure email is defined
+    if (!formDataObj.email) {
+      throw new Error('No recipient email provided');
+    }
+
     // Nodemailer transporter configuration
     const transporter = nodemailer.createTransport({
-      service: 'Outlook365',
+      service: 'Gmail',
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
@@ -1056,13 +1107,13 @@ const sendEmail = async (formDataObj) => {
     // Email options, including the file attachment
     let mailOptions = {
       from: process.env.EMAIL_USER,
-      to: email,
+      to: process.env.TESTING_TO,
       subject: 'Your Custom Planter Box Order',
       html: emailHTML,
       attachments: formDataObj.file ? [{
-        filename: formDataObj.file.originalname,
-        content: formDataObj.file.buffer,
-        cid: formDataObj.file.filename
+        filename: formDataObj.file.originalname, // Use the original file name
+        content: formDataObj.file.buffer, // Use the file buffer if using memory storage
+        path: filePath
       }] : []
     };
 
@@ -1084,6 +1135,14 @@ app.post('/submit-form', uploadFile.single('file'), async (req, res) => {
     const formData = req.body;
     const file = req.file; // Get the file from multer
 
+    // Log incoming form data and file
+    console.log('Received form data:', formData);
+    console.log('Received file:', file);
+
+    if (!file) {
+      console.error('No file uploaded');
+    }
+
     // Prepare the form data object
     const formDataObj = {
       colorType: formData.colorType,
@@ -1095,7 +1154,7 @@ app.post('/submit-form', uploadFile.single('file'), async (req, res) => {
       lastName: formData.lastName,
       email: formData.email,
       comment: formData.comment,
-      file: file // Include file data
+      file: file || null // Include file data
     };
 
     // After saving data, send the email
