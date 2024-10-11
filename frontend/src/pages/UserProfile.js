@@ -52,9 +52,25 @@ const UserProfile = () => {
   }, [email]);
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add form submission logic here
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/user/${email}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update user information.');
+      }
+
+      const data = await response.json();
+      setMessage(data.message);
+    } catch (error) {
+      console.error('Error updating user information:', error);
+      setMessage('Failed to update user information.');
+    }
   };
 
   return (
@@ -65,6 +81,7 @@ const UserProfile = () => {
         <div className="profile-container">
           <h1>{role === 'employee' ? 'Employee Dashboard' : 'User Profile'}</h1>
           {user && <h2>Welcome, {user.first_name}!</h2>}
+          {message && <p className="message">{message}</p>}
           {role === 'employee' ? (
             <>
               {/* Display the employee dashboard if the user is an employee */}

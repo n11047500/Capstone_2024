@@ -283,41 +283,78 @@ app.put('/user/:email', (req, res) => {
 
   const updateUserQuery = 'UPDATE users SET first_name = ?, last_name = ?, mobile_number = ?, date_of_birth = ? WHERE email = ?';
   const getUserIDQuery = 'SELECT user_id FROM users WHERE email = ?';
-  const updateAddressQuery = 'INSERT INTO addresses (user_id, type, address) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE address = VALUES(address)';
+  const checkAddressQuery = 'SELECT address_id FROM addresses WHERE user_id = ? AND type = ?';
+  const insertAddressQuery = 'INSERT INTO addresses (user_id, type, address) VALUES (?, ?, ?)';
+  const updateAddressQuery = 'UPDATE addresses SET address = ? WHERE user_id = ? AND type = ?';
 
   connection.query(updateUserQuery, [firstName, lastName, mobileNumber, dateOfBirth, email], (err, result) => {
     if (err) {
       console.error('Error updating user:', err);
-      return res.status(500).json({ error: 'Failed to update user information.' });
+      return res.status(500).json({ error: 'Failed to update user information - User Update.' });
     }
 
     if (result.affectedRows === 0) {
+      console.error('User not found during update attempt.');
       return res.status(404).json({ error: 'User not found.' });
     }
 
     connection.query(getUserIDQuery, [email], (err, userIDResults) => {
       if (err) {
         console.error('Error fetching user ID:', err);
-        return res.status(500).json({ error: 'Failed to update user information.' });
+        return res.status(500).json({ error: 'Failed to update user information - User ID Fetch.' });
+      }
+
+      if (userIDResults.length === 0) {
+        console.error('User ID not found for the email provided.');
+        return res.status(404).json({ error: 'User ID not found.' });
       }
 
       const userId = userIDResults[0].user_id;
 
-      connection.query(updateAddressQuery, [userId, 'shipping', shippingAddress], (err) => {
-        if (err) {
-          console.error('Error updating shipping address:', err);
-          return res.status(500).json({ error: 'Failed to update user information.' });
-        }
+      // Helper function to update or insert address
+      const updateOrInsertAddress = (type, address) => {
+        return new Promise((resolve, reject) => {
+          connection.query(checkAddressQuery, [userId, type], (err, results) => {
+            if (err) {
+              console.error(`Error checking ${type} address:`, err);
+              return reject(new Error(`Failed to update user information - ${type} Address Check.`));
+            }
 
-        connection.query(updateAddressQuery, [userId, 'billing', billingAddress], (err) => {
-          if (err) {
-            console.error('Error updating billing address:', err);
-            return res.status(500).json({ error: 'Failed to update user information.' });
-          }
-
-          res.status(200).json({ message: 'User information updated successfully.' });
+            if (results.length > 0) {
+              // Update existing address
+              connection.query(updateAddressQuery, [address, userId, type], (err) => {
+                if (err) {
+                  console.error(`Error updating ${type} address:`, err);
+                  return reject(new Error(`Failed to update user information - ${type} Address Update.`));
+                }
+                resolve();
+              });
+            } else {
+              // Insert new address
+              connection.query(insertAddressQuery, [userId, type, address], (err) => {
+                if (err) {
+                  console.error(`Error inserting ${type} address:`, err);
+                  return reject(new Error(`Failed to update user information - ${type} Address Insert.`));
+                }
+                resolve();
+              });
+            }
+          });
         });
-      });
+      };
+
+      // Execute the update/insert for both addresses
+      Promise.all([
+        updateOrInsertAddress('shipping', shippingAddress),
+        updateOrInsertAddress('billing', billingAddress)
+      ])
+        .then(() => {
+          res.status(200).json({ message: 'User information updated successfully.' });
+        })
+        .catch((error) => {
+          console.error('Error during address update/insert:', error.message);
+          res.status(500).json({ error: error.message });
+        });
     });
   });
 });
