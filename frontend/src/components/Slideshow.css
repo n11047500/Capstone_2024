@@ -66,10 +66,6 @@ button.prev:hover, button.next:hover {
 }
 
 .customised_slide_text {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   text-align: center;
   width: 80%;
   font-size: 5vw;
@@ -85,23 +81,26 @@ button.prev:hover, button.next:hover {
     0.02em 0.02em black;
 }
 
-.order_customised {
-  text-align: center;
-  margin-bottom: 20px;
+.order_customised {  
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  justify-content: center;
+  align-items: center;
+  height: 75vh; /* Full screen height to center title and button */
+  position: relative;
 }
 
 .order-button {
   display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 15px 20px;
   background-color: #eec4ff;
   color: white;
   cursor: pointer;
   border-radius: 4px;
   transition: background-color 0.3s, box-shadow 0.3s;
-  font-size: 1.5vw; /* Scale button text */
-  position: absolute;
-  bottom: 20%;
-  left: 39%;
+  font-size: 2.4rem; /* Use rem for better scalability */
 }
 
 .order-button a {
@@ -121,8 +120,17 @@ button.prev:hover, button.next:hover {
     height: 50vh; /* Reduced height for smaller screens */
   }
 
-  .motto_text {
+  .motto_text
+  .customised_slide_text {
     font-size: 6vw; /* Adjusted for smaller screens */
+  }
+
+  .order-button {
+    font-size: 1.4rem;
+  }
+
+  .order_customised {
+    height: 50vh; /* Adjusted height for smaller screens */
   }
 }
 
@@ -131,7 +139,21 @@ button.prev:hover, button.next:hover {
     height: 40vh; /* Further reduced height for very small screens */
   }
 
-  .motto_text {
+  .motto_text{
     font-size: 7vw; /* Adjusted for very small screens */
+  }
+
+  .customised_slide_text {
+    font-size: 7vw; /* Scale up for smaller screens */
+    width: 90%; /* Allow more space on small screens */
+  }
+
+  .order-button {
+    font-size: 1.0rem;
+    padding: 10px 16px; /* Slightly smaller padding for small screens */
+  }
+
+  .order_customised {
+    height: 40vh; /* Adjusted height for very small screens */
   }
 }

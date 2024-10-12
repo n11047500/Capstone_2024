@@ -71,19 +71,6 @@ body, html {
   .product-card {
     flex-basis: 45%;
   }
-
-  .order-text {
-    font-size: 5vw; /* Adjust font size for larger screens */
-  }
-
-  .order-text-small {
-    font-size: 3vw;
-  }
-
-  .order-button {
-    font-size: 3vw;
-    padding: 9px 18px; /* Adjust button padding */
-  }
 }
 
 /* Responsive styles for tablets and small screens */
@@ -93,19 +80,6 @@ body, html {
   .product-card {
     flex-basis: 100%; /* Switches to single column */
   }
-
-  .order-text {
-    font-size: 2vw;
-  }
-
-  .order-text-small {
-    font-size: 2vw;
-  }
-
-  .order-button {
-    font-size: 2vw;
-    padding: 8px 16px; /* Adjust padding for smaller screens */
-  }
 }
 
 /* Responsive styles for mobile devices */
@@ -114,18 +88,5 @@ body, html {
 @media (max-width: 480px) {
   .product-card {
     padding: 10px; /* Reduces padding for small screens */
-  }
-
-  .order-text {
-    font-size: 3vw;
-  }
-
-  .order-text-small {
-    font-size: 1.5vw;
-  }
-
-  .order-button {
-    font-size: 1.5vw;
-    padding: 6px 12px; /* Adjust padding for mobile */
   }
 }

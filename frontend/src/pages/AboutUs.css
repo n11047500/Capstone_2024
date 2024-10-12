@@ -42,6 +42,7 @@ body, html {
 
 .text-content p {
   font-size: 2vh;
+  text-align: center;
 }
 
 /* Image styling within the About Us section */

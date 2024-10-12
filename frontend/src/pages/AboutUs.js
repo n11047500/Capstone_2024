@@ -24,7 +24,7 @@ function AboutUs() {
             yet light weight, fully welded and strong planter box that limited back strain and made 
             gardening fun again!<br />-<br />
             EZee Planter boxes are designed, made and manufactured right here in the Moreton Bay 
-            region and we look forward to providing you with a garden to enjoy - that is pain free!
+            region and we look forward to providing you with a garden to enjoy that is pain free!
           </p>
         </div>
         {/* Image showcasing the planter box */}

@@ -46,7 +46,7 @@ function Slideshow({ children }) {
               {/* Conditionally render the motto on the first slide */}
               {index === 0 && <h2 className="motto_text">The pain-free gardening solution suitable for everybody.</h2>}
               {index === 1 && (
-                <div className="home_customised_section">
+                <div className="order_customised">
                   <h2 className="customised_slide_text">Order Customised Ezee Planter Box</h2>
                     <button className="order-button">
                       <Link to={`/customise`}>Order Customised Planter Box</Link>
