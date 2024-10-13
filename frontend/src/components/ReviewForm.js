@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import './ReviewForm.css'
+import { Filter } from 'bad-words';   // Importing Filter for profanity checks
 
 const ReviewForm = ({ productId }) => {
+  // State variables for star rating, comments and error handling
   const [rating, setRating] = useState('');
   const [comment, setComment] = useState('');
   const [error, setError] = useState('');
@@ -10,10 +12,20 @@ const ReviewForm = ({ productId }) => {
     e.preventDefault();
   
     if (!rating || !comment) {
-      setError('Both rating and comment are required.');
+      setError('Both rating and comment are required.');    //Checks if rating and comments are inputted 
       return;
     }
   
+    // Initialize Filter class
+    const filter = new Filter();
+    const cleanComment = filter.clean(comment); // Censor the comment here
+  
+    // Check if the comment is clean or has bad words
+    if (comment !== cleanComment) {
+      setError('Your comment contains inappropriate language. Please revise it.');
+      return;
+    }    
+
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/reviews`, {
         method: 'POST',
