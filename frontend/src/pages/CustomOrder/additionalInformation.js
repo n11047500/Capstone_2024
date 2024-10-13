@@ -1,6 +1,6 @@
 import React from 'react';
 
-const AdditionalInformation = ({ data, onBack, onChange, onSubmit }) => {
+const AdditionalInformation = ({ data, onBack, onChange, onSubmit, isSubmitting, setIsSubmitting }) => {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -41,7 +41,9 @@ const AdditionalInformation = ({ data, onBack, onChange, onSubmit }) => {
       </div>
 
       <button onClick={onBack} className='back-custom-button'>Back</button>
-      <button type="submit" className="submit-custom-button">Submit Form</button>
+      <button type="submit" className="submit-custom-button" disabled={isSubmitting}>
+        {isSubmitting ? 'Submitting...' : 'Submit Form'}
+      </button>
     </form>
   );
 };

@@ -17,6 +17,9 @@ const CustomisedOrder = () => {
         additionalInformation: {},
     });
 
+    const [isSubmitting, setIsSubmitting] = useState(false); // Define isSubmitting state
+
+
     const handleNextStep = () => setStep((prev) => prev + 1);
 
     const handlePreviousStep = () => setStep((prev) => prev - 1);
@@ -27,64 +30,70 @@ const CustomisedOrder = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Prevent default form submission
-    
-    
-          // Combine all form data from different sections (customOptions, personalInfo, additionalInformation)
-        const combinedFormData = {
+      e.preventDefault(); // Prevent default form submission
+
+      // Check if already submitting
+      if (isSubmitting) {
+          return; // Exit if form is already being submitted
+      }
+
+      setIsSubmitting(true); // Set submitting state to true
+
+      // Combine all form data from different sections (customOptions, personalInfo, additionalInformation)
+      const combinedFormData = {
           ...formData.customOptions,     // Data from step 1
           ...formData.personalInfo,      // Data from step 2 (this includes the email)
           ...formData.additionalInformation // Data from step 3 (current step)
-        };
-    
-        console.log('Combined Form Data:', combinedFormData); // You can see the full form data here
-        console.log('Email value:', combinedFormData.email);   // Check if the email is present
-    
-        try {
-            // Create a new FormData object
-            const formDataObj = new FormData();
-        
-        
-            // Append each field to the FormData object from combinedFormData
-            Object.keys(combinedFormData).forEach((key) => {
-                formDataObj.append(key, combinedFormData[key] || '');
-            });
-    
-    
-            // If file is available in formData
-            if (formData.file) { // Check your state where the file is stored
-                console.log('Attaching file:', formData.file);
-                formDataObj.append('file', formData.file);
-            }
-    
-            // Handle color and customColor logic
-            if (combinedFormData.color && !combinedFormData.customColor) {
-                formDataObj.set('customColor', 'None');
-            } else if (!combinedFormData.color && combinedFormData.customColor) {
-                formDataObj.set('color', 'None');
-            } else if (combinedFormData.color === combinedFormData.customColor) {
-                formDataObj.set('customColor', 'None');
-            }
-      
+      };
+
+      console.log('Combined Form Data:', combinedFormData); // You can see the full form data here
+      console.log('Email value:', combinedFormData.email);   // Check if the email is present
+
+      try {
+          // Create a new FormData object
+          const formDataObj = new FormData();
+
+          // Append each field to the FormData object from combinedFormData
+          Object.keys(combinedFormData).forEach((key) => {
+              formDataObj.append(key, combinedFormData[key] || '');
+          });
+
+          // If file is available in formData
+          if (formData.file) { // Check your state where the file is stored
+              console.log('Attaching file:', formData.file);
+              formDataObj.append('file', formData.file);
+          }
+
+          // Handle color and customColor logic
+          if (combinedFormData.color && !combinedFormData.customColor) {
+              formDataObj.set('customColor', 'None');
+          } else if (!combinedFormData.color && combinedFormData.customColor) {
+              formDataObj.set('color', 'None');
+          } else if (combinedFormData.color === combinedFormData.customColor) {
+              formDataObj.set('customColor', 'None');
+          }
+
           // Send form data to the backend (do not set Content-Type explicitly, let FormData handle it)
           const response = await fetch(`${process.env.REACT_APP_API_URL}/submit-form`, {
-            method: 'POST',
-            body: formDataObj,
+              method: 'POST',
+              body: formDataObj,
           });
-      
+
           if (response.ok) {
-            console.log('Form submitted successfully');
-            alert('Email sent successfully!');
-            // Redirect after successful submission
-            navigate('/confirmation');
+              console.log('Form submitted successfully');
+              alert('Email sent successfully!');
+              // Redirect after successful submission
+              navigate('/confirmation');
           } else {
-            alert('Failed to send form.');
-            console.error('Error submitting form');
+              alert('Failed to send form.');
+              console.error('Error submitting form');
           }
-        } catch (error) {
+      } catch (error) {
           console.error('Error:', error);
-        }
-      };
+      } finally {
+          setIsSubmitting(false); // Reset submitting state regardless of success or failure
+      }
+  };
 
 
     return (
