@@ -4,9 +4,10 @@
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
+  width: 85%;
   margin: 20px auto;
 }
+
 
 /* Heading styling */
 .add-product-form h2 {
@@ -106,4 +107,35 @@
   text-align: center;
   color: #4CAF50;
   font-weight: bold;
+}
+
+@media screen and (max-width: 768px) {
+  .add-product-form {
+    width: 85%;
+  }
+  /* Adjust input padding and font size for smaller screens */
+  .add-product-form input,
+  .add-product-form textarea {
+    padding: 10px;
+    font-size: 12px !important; /* Slightly smaller font size */
+  }
+  .add-product-form textarea { 
+    height: 80px;
+  }
+
+  .dimensions-group {
+    flex-direction: column; /* Stack items vertically */
+    align-items: stretch; /* Ensure full width */
+  }
+
+  .dimensions-group label {
+    text-align: left; /* Left align label for better readability */
+    margin-bottom: 3px; /* Adjust spacing for small screens */
+  }
+
+  .dimensions-group input {
+    width: 100%; /* Full width for inputs */
+    margin-left: 0; /* Reset left margin */
+  }
+  
 }

@@ -183,11 +183,17 @@
   background-color: #d32f2f;
 }
 
+
+.product-select-dropdown {
+  font-size: 16px;
+}
+
 /* Responsive styles for tablets (up to 768px) */
 @media (max-width: 768px) {
   .profile-container {
     padding: 20px;
     margin: 20px;
+    width: 95%;
   }
 
   .profile-container h1 {
@@ -196,6 +202,10 @@
 
   .employee-dashboard .dashboard-buttons {
     flex-direction: column;
+  }
+
+  .product-select-dropdown {
+    font-size: 12px;
   }
 }
 

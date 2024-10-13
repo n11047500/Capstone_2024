@@ -19,6 +19,7 @@ const PersonalInfoForm = ({ data, onNext, onChange }) => {
         alert('Last Name is required');
         return false;
       }
+      
   
       // Check if email is provided and valid
       if (!data.email) {
@@ -38,7 +39,10 @@ const PersonalInfoForm = ({ data, onNext, onChange }) => {
         alert('Phone number is invalid');
         return false;
       }
-  
+      if (!data.address) {
+        alert('Address is required');
+        return false;
+      }
       // If all validations pass
       return true;
     };
