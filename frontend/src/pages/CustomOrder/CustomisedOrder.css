@@ -26,7 +26,6 @@
     margin-right: 20px; /* Space between steps and form */
     margin-bottom: 20px; /* Space below steps */
     position: relative;
-    z-index: 100;
 }
 
 .customised-steps span {
@@ -48,7 +47,6 @@
     margin-bottom: 20px;
     margin-right: 20px;
     position: relative;
-    z-index: 100;
     /* Add this for spacing between form-section and summary-section */
     width: 100%;
     /* Ensure it uses full width on small screens */
@@ -221,7 +219,6 @@ button:hover {
     background-color: white;
     max-height: 150px;
     overflow-y: auto;
-    z-index: 10;
     border-radius: 4px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     /* Matches standard dropdown shadow */

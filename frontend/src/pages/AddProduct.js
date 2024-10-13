@@ -29,6 +29,40 @@ const AddProduct = () => {
     }
   };
 
+  const handlePriceChange = (e) => {
+    const value = parseFloat(e.target.value);
+  
+    // Allow the field to be blank without triggering an alert
+    if (isNaN(value)) {
+      setFormData({ ...formData, price: '' });
+      return;
+    }
+  
+    // Ensure the price is greater than or equal to 1
+    if (value >= 1) {
+      setFormData({ ...formData, price: value });
+    } else {
+      alert('Price must be at least 1');
+    }
+  };
+  
+  const handleQuantityChange = (e) => {
+    const value = parseInt(e.target.value, 10);
+  
+    // Allow the field to be blank without triggering an alert
+    if (isNaN(value)) {
+      setFormData({ ...formData, quantity: '' });
+      return;
+    }
+  
+    // Ensure the quantity is greater than or equal to 0
+    if (value >= 0) {
+      setFormData({ ...formData, quantity: value });
+    } else {
+      alert('Quantity cannot be negative');
+    }
+  };
+
   // Submits the form data to the backend API
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -103,8 +137,11 @@ const AddProduct = () => {
           id="price"
           name="price"
           value={formData.price}
-          onChange={handleChange}
+          onChange={(e) => handlePriceChange(e)}
           required
+          data-testid="price-input" // Added data-testid
+          min="1" // Ensure minimum price is 1
+
         />
 
         <label htmlFor="quantity">Quantity Available:</label>
@@ -113,8 +150,12 @@ const AddProduct = () => {
           id="quantity"
           name="quantity"
           value={formData.quantity}
-          onChange={handleChange}
+          onChange={(e) => handleQuantityChange(e)}
+          required
+          data-testid="quantity-input" // Added data-testid
+          min="0" // Ensure minimum quantity is 0
         />
+
 
         <label htmlFor="description">Description:</label>
         <textarea

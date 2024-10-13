@@ -39,7 +39,13 @@ const ProductPage = () => {
       alert('Please select an option');
       return;
     }
-    addToCart({ ...product, selectedOption }, quantity);
+      // Check if quantity is less than 1
+  if (quantity < 1) {
+    alert('Quantity must be at least 1');
+    return;
+  }
+
+  addToCart({ ...product, selectedOption }, quantity);
   };
 
   var options = product.Product_Options;

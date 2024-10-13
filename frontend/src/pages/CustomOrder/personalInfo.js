@@ -1,7 +1,50 @@
 // PersonalInfoForm.js
-import React from 'react';
+import {useState, React} from 'react';
 
 const PersonalInfoForm = ({ data, onNext, onBack, onChange }) => {
+  const [errors, setErrors] = useState({});
+
+
+  const validatePhoneNumber = (phone) => {
+    // Allow numbers, spaces, and certain symbols (+, -, (, ))
+    const phoneRegex = /^\+?[0-9\s\-\(\)]+$/; 
+    return phoneRegex.test(phone);
+  };
+
+  // Basic validation function
+  const validate = () => {
+    if (!data.firstName) {
+      alert('First Name is required');
+      return false;
+    }
+    if (!data.lastName) {
+      alert('Last Name is required');
+      return false;
+    }
+    if (!data.email) {
+      alert('Email is required');
+      return false;
+    } else if (!/\S+@\S+\.\S+/.test(data.email)) {
+      alert('Email is invalid');
+      return false;
+    }
+    if (!data.phone) {
+    alert('Phone number is required');
+    return false;
+    }
+    if (!validatePhoneNumber(data.phone)) {
+    alert('Phone number is invalid');
+    return false;
+    }
+    return true;
+  };
+
+  const handleNextClick = () => {
+    if (validate()) {
+      onNext();
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     onChange({ ...data, [name]: value });
@@ -42,15 +85,8 @@ const PersonalInfoForm = ({ data, onNext, onBack, onChange }) => {
           onChange={handleChange}
         />
       </div>
-      <input
-        type="text"
-        name="address"
-        placeholder="Address"
-        value={data.address || ''}
-        onChange={handleChange}
-      />
       <button onClick={onBack} className='back-custom-button'>Back</button>
-      <button onClick={onNext} className='next-custom-button'>Next</button>
+      <button onClick={handleNextClick} className='next-custom-button'>Next</button>
     </div>
   );
 };

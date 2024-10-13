@@ -72,8 +72,13 @@ const CartPage = () => {
                       type="number" 
                       min="1" 
                       value={item.quantity} 
-                      onChange={(e) => updateQuantity(item.Product_ID, item.selectedOption, parseInt(e.target.value))} 
-                      className="quantity-input"
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        // Ensure quantity is at least 1
+                        if (value >= 1) {
+                          updateQuantity(item.Product_ID, item.selectedOption, value);
+                        }
+                      }}                       className="quantity-input"
                       aria-label="Quantity"
                     />
                   </td>

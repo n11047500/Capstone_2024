@@ -67,6 +67,40 @@ const EditProduct = ({ productId }) => {
     }
   };
 
+  const handlePriceChange = (e) => {
+    const value = parseFloat(e.target.value);
+  
+    // Allow the field to be blank without triggering an alert
+    if (isNaN(value)) {
+      setFormData({ ...formData, price: '' });
+      return;
+    }
+  
+    // Ensure the price is greater than or equal to 1
+    if (value >= 1) {
+      setFormData({ ...formData, price: value });
+    } else {
+      alert('Price must be at least 1');
+    }
+  };
+  
+  const handleQuantityChange = (e) => {
+    const value = parseInt(e.target.value, 10);
+  
+    // Allow the field to be blank without triggering an alert
+    if (isNaN(value)) {
+      setFormData({ ...formData, quantity: '' });
+      return;
+    }
+  
+    // Ensure the quantity is greater than or equal to 0
+    if (value >= 0) {
+      setFormData({ ...formData, quantity: value });
+    } else {
+      alert('Quantity cannot be negative');
+    }
+  };
+
   // Handle form submission for updating the product
   const handleSubmit = async (e) => {
     e.preventDefault();

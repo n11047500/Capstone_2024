@@ -5,27 +5,33 @@ import { CartContext } from '../context/CartContext'; // Ensure this path is cor
 import { BrowserRouter as Router } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 
+// Manually mock the default image directly in the test
+jest.mock('../assets/default_image.jpg', () => 'default-image-mock');
+
 beforeEach(() => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
         json: () => Promise.resolve([
           {
             Product_ID: 1,
-            Product_Name: 'Apple',
-            Product_Price: 100,
-            Product_Image_URL: 'https://example.com/apple.jpg',
+            Product_Name: 'Mini Standard Planter Box',
+            Product_Descritpion: 'A compact, fully welded, powdercoated aluminium planter box that is suitable for a full kitchen garden or a spectacular annual colour display.',
+            Product_Price: 250,
+            Product_Image_URL: 'https://res.cloudinary.com/dakwlrcqr/image/upload/v1723624907/mini_standard_planter_box_neqwwl.jpg',
           },
           {
             Product_ID: 2,
-            Product_Name: 'Banana',
-            Product_Price: 50,
-            Product_Image_URL: 'https://example.com/banana.jpg',
+            Product_Name: 'Small Standard Planter Box',
+            Product_Descritpion: 'A small, fully welded, powdercoated aluminium planter box that is suitable for a small kitchen garden or a spectacular annual colour display.',
+            Product_Price: 265.00,
+            Product_Image_URL: 'https://res.cloudinary.com/dakwlrcqr/image/upload/v1723624910/small_standard_planter_box_j0ogy8.jpg',
           },
           {
             Product_ID: 3,
-            Product_Name: 'Cherry',
-            Product_Price: 150,
-            Product_Image_URL: 'https://example.com/cherry.jpg',
+            Product_Name: 'Medium Standard Planter Box',
+            Product_Descritpion: 'A mid size, fully welded, powdercoated aluminium planter box that is suitable for a full kitchen garden or a spectacular annual colour display.',
+            Product_Price: 315,
+            Product_Image_URL: 'https://res.cloudinary.com/dakwlrcqr/image/upload/v1723624906/medium_standard_planter_box_t790ia.jpg',
           },
         ]),
       })
@@ -54,15 +60,15 @@ beforeEach(() => {
   
       // Wait for the products to be fetched and displayed
       await waitFor(() => {
-        expect(screen.getByText(/Apple/i)).toBeInTheDocument();
-        expect(screen.getByText(/Banana/i)).toBeInTheDocument();
-        expect(screen.getByText(/Cherry/i)).toBeInTheDocument();
+        expect(screen.getByText(/Mini Standard Planter Box/i)).toBeInTheDocument();
+        expect(screen.getByText(/Small Standard Planter Box/i)).toBeInTheDocument();
+        expect(screen.getByText(/Medium Standard Planter Box/i)).toBeInTheDocument();
 
       });
   
-      expect(screen.getByText('$100')).toBeInTheDocument();
-      expect(screen.getByText('$50')).toBeInTheDocument();
-      expect(screen.getByText('$150')).toBeInTheDocument();
+      expect(screen.getByText('$250')).toBeInTheDocument();
+      expect(screen.getByText('$265')).toBeInTheDocument();
+      expect(screen.getByText('$315')).toBeInTheDocument();
 
     });
 
@@ -71,7 +77,7 @@ beforeEach(() => {
       
         // Wait for the initial products to be fetched and displayed
         await waitFor(() => {
-          expect(screen.getByText(/Apple/i)).toBeInTheDocument();
+          expect(screen.getByText(/Mini Standard Planter Box/i)).toBeInTheDocument();
         });
       
         const searchInput = screen.getByPlaceholderText(/Search.../i);
@@ -83,49 +89,57 @@ beforeEach(() => {
             json: () => Promise.resolve([
               {
                 Product_ID: 1,
-                Product_Name: 'Apple',
-                Product_Price: 100,
-                Product_Image_URL: 'https://example.com/apple.jpg',
+                Product_Name: 'Mini Standard Planter Box',
+                Product_Price: 250,
+                Product_Image_URL: 'https://res.cloudinary.com/dakwlrcqr/image/upload/v1723624907/mini_standard_planter_box_neqwwl.jpg',
               },
             ]),
           })
         );
       
         // Simulate entering a search term
-        fireEvent.change(searchInput, { target: { value: 'Apple' } });
+        fireEvent.change(searchInput, { target: { value: 'Mini Standard Planter Box' } });
         fireEvent.click(searchButton);
       
         // Wait for the search results to be displayed
         await waitFor(() => {
-          expect(screen.getByText(/Apple/i)).toBeInTheDocument();
-          expect(screen.queryByText(/Banana/i)).not.toBeInTheDocument(); // Ensure other products are not displayed
+          expect(screen.getByText(/Mini Standard Planter Box/i)).toBeInTheDocument();
+          expect(screen.queryByText(/Small Standard Planter Box/i)).not.toBeInTheDocument(); // Ensure other products are not displayed
         });
       });
 
 
-      test('Displays a default image if Product_Image_URL is not provided', async () => {
-        fetch.mockImplementationOnce(() =>
-          Promise.resolve({
-            json: () => Promise.resolve([
-              {
-                Product_ID: 1,
-                Product_Name: 'Test Product 1',
-                Product_Price: 100,
-              }, // No image URL provided
-            ]),
-          })
-        );
-      
-        renderWithContext(); // Use the renderWithContext function here
-      
-        // Wait for the product to be fetched and displayed
-        await waitFor(() => {
-          expect(screen.getByText(/Test Product 1/i)).toBeInTheDocument();
-        });
-      
-        const defaultImage = 'https://res.cloudinary.com/dakwlrcqr/image/upload/v1725604960/HicksProductDefault_op2oce.gif';
-        expect(screen.getByRole('img', { name: /Test Product 1/i })).toHaveAttribute('src', defaultImage);
-      });
+
+test('Displays a default image if Product_Image_URL is not provided', async () => {
+  // Mocking the fetch response only for this test to return a product without an image URL
+  fetch.mockImplementationOnce(() =>
+    Promise.resolve({
+      json: () => Promise.resolve([
+        {
+          Product_ID: 1,
+          Product_Name: 'Test Product 1',
+          Product_Descritpion: 'A test product',
+          Product_Price: 100,
+          // No Product_Image_URL provided here
+        },
+      ]),
+    })
+  );
+
+  renderWithContext();
+
+  // Wait for the product to be fetched and displayed
+  await waitFor(() => {
+    expect(screen.getByText(/Test Product 1/i)).toBeInTheDocument();
+  });
+
+  // Check if the image element is in the document with the correct alt text
+  const imgElement = screen.getByRole('img', { name: /Test Product 1/i });
+  expect(imgElement).toBeInTheDocument();
+
+  // Ensure that the img src is manually mocked to 'default-image-mock'
+  expect(imgElement).toHaveAttribute('src', 'default-image-mock');
+});
 
 
     test('sorts products by price: low to high', async () => {
@@ -133,9 +147,9 @@ beforeEach(() => {
     
     // Wait for the products to be fetched and displayed
     await waitFor(() => {
-        expect(screen.getByText(/Apple/i)).toBeInTheDocument();
-        expect(screen.getByText(/Banana/i)).toBeInTheDocument();
-        expect(screen.getByText(/Cherry/i)).toBeInTheDocument();
+        expect(screen.getByText(/Mini Standard Planter Box/i)).toBeInTheDocument();
+        expect(screen.getByText(/Small Standard Planter Box/i)).toBeInTheDocument();
+        expect(screen.getByText(/Medium Standard Planter Box/i)).toBeInTheDocument();
     });
     
     // Change the sort type to 'Price: Low to High'
@@ -144,10 +158,10 @@ beforeEach(() => {
     
     // Wait for the sorting to be applied
     await waitFor(() => {
-        const sortedProducts = screen.getAllByText(/Apple|Banana|Cherry/i); // Match products by their text
-        expect(sortedProducts[0]).toHaveTextContent('Banana');
-        expect(sortedProducts[1]).toHaveTextContent('Apple');
-        expect(sortedProducts[2]).toHaveTextContent('Cherry');
+        const sortedProducts = screen.getAllByText(/Mini Standard Planter Box|Small Standard Planter Box|Medium Standard Planter Box/i); // Match products by their text
+        expect(sortedProducts[0]).toHaveTextContent('Mini Standard Planter Box');
+        expect(sortedProducts[1]).toHaveTextContent('Small Standard Planter Box');
+        expect(sortedProducts[2]).toHaveTextContent('Medium Standard Planter Box');
     });
     });
 
@@ -156,9 +170,9 @@ beforeEach(() => {
 
     // Wait for the products to be fetched and displayed
     await waitFor(() => {
-      expect(screen.getByText(/Apple/i)).toBeInTheDocument();
-      expect(screen.getByText(/Banana/i)).toBeInTheDocument();
-      expect(screen.getByText(/Cherry/i)).toBeInTheDocument();
+      expect(screen.getByText(/Medium Standard Planter Box/i)).toBeInTheDocument();
+      expect(screen.getByText(/Small Standard Planter Box/i)).toBeInTheDocument();
+      expect(screen.getByText(/Mini Standard Planter Box/i)).toBeInTheDocument();
     });
 
     // Change the sort type to 'Price: High to Low'
@@ -167,10 +181,10 @@ beforeEach(() => {
 
     // Wait for the sorting to be applied
     await waitFor(() => {
-      const sortedProducts = screen.getAllByText(/Apple|Banana|Cherry/i); // Match products by their text
-      expect(sortedProducts[0]).toHaveTextContent('Cherry');
-      expect(sortedProducts[1]).toHaveTextContent('Apple');
-      expect(sortedProducts[2]).toHaveTextContent('Banana');
+      const sortedProducts = screen.getAllByText(/Mini|Small|Medium/i); // Match products by their text
+      expect(sortedProducts[0]).toHaveTextContent('Medium Standard Planter Box');
+      expect(sortedProducts[1]).toHaveTextContent('Small Standard Planter Box');
+      expect(sortedProducts[2]).toHaveTextContent('Mini Standard Planter Box');
     });
   });
 
@@ -179,9 +193,9 @@ beforeEach(() => {
 
     // Wait for the products to be fetched and displayed
     await waitFor(() => {
-      expect(screen.getByText(/Apple/i)).toBeInTheDocument();
-      expect(screen.getByText(/Banana/i)).toBeInTheDocument();
-      expect(screen.getByText(/Cherry/i)).toBeInTheDocument();
+      expect(screen.getByText(/Medium Standard Planter Box/i)).toBeInTheDocument();
+      expect(screen.getByText(/Mini Standard Planter Box/i)).toBeInTheDocument();
+      expect(screen.getByText(/Small Standard Planter Box/i)).toBeInTheDocument();
     });
 
     // Change the sort type to 'Name: A-Z'
@@ -190,10 +204,10 @@ beforeEach(() => {
 
     // Wait for the sorting to be applied
     await waitFor(() => {
-        const sortedProducts = screen.getAllByText(/Apple|Banana|Cherry/i); // Match products by their text
-        expect(sortedProducts[0]).toHaveTextContent('Apple');
-        expect(sortedProducts[1]).toHaveTextContent('Banana');
-        expect(sortedProducts[2]).toHaveTextContent('Cherry');
+        const sortedProducts = screen.getAllByText(/Mini Standard Planter Box|Medium Standard Planter Box|Small Standard Planter Box/i); // Match products by their text
+        expect(sortedProducts[0]).toHaveTextContent('Medium Standard Planter Box');
+        expect(sortedProducts[1]).toHaveTextContent('Mini Standard Planter Bo');
+        expect(sortedProducts[2]).toHaveTextContent('Small Standard Planter Box');
     });
   });
 
@@ -202,9 +216,9 @@ beforeEach(() => {
     
     // Wait for the products to be fetched and displayed
     await waitFor(() => {
-      expect(screen.getByText(/Apple/i)).toBeInTheDocument();
-      expect(screen.getByText(/Banana/i)).toBeInTheDocument();
-      expect(screen.getByText(/Cherry/i)).toBeInTheDocument();
+      expect(screen.getByText(/Small Standard Planter Box/i)).toBeInTheDocument();
+      expect(screen.getByText(/Mini Standard Planter Box/i)).toBeInTheDocument();
+      expect(screen.getByText(/Medium Standard Planter Box/i)).toBeInTheDocument();
     });
   
     // Change the sort type to 'Name: Z-A'
@@ -213,10 +227,10 @@ beforeEach(() => {
   
     // Wait for the sorting to be applied and check the order of products
     await waitFor(() => {
-      const sortedProducts = screen.getAllByText(/Apple|Banana|Cherry/i); // Match products by their text
-      expect(sortedProducts[0]).toHaveTextContent('Cherry');
-      expect(sortedProducts[1]).toHaveTextContent('Banana');
-      expect(sortedProducts[2]).toHaveTextContent('Apple');
+      const sortedProducts = screen.getAllByText(/Mini Standard Planter Box|Medium Standard Planter Box|Small Standard Planter Box/i); // Match products by their text
+      expect(sortedProducts[0]).toHaveTextContent('Small Standard Planter Box');
+      expect(sortedProducts[1]).toHaveTextContent('Mini Standard Planter Box');
+      expect(sortedProducts[2]).toHaveTextContent('Medium Standard Planter Box');
     });
   });
   

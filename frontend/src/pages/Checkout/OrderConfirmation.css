@@ -1,7 +1,7 @@
 /* Container for the order confirmation details */
 .confirmation-container {
   padding: 20px;
-  max-width: 800px;
+  width: 800px;
   margin: 0 auto;
   background-color: #f9f9f9;
   border-radius: 8px;
@@ -91,9 +91,76 @@
 }
 
 /* Media query for screens up to 768px */
-@media (max-width: 768px) {
-  .return-shopping-button {
-    width: 40%; /* Adjust the width for smaller screens */
-    margin: 20px 0; /* Maintain the vertical margin */
+@media (max-width: 1024px) {
+
+  /* Container for the order confirmation details */
+  .confirmation-container {
+    width: 70%;
   }
-}
+  
+  }
+  
+  /* Media query for screens up to 768px */
+  @media (max-width: 768px) {
+    .return-shopping-button {
+      width: 40%; /* Adjust the width for smaller screens */
+      margin: 20px 0; /* Maintain the vertical margin */
+    }
+  
+  /* Container for the order confirmation details */
+  .confirmation-container {
+    width: 85%;
+  }
+  
+  }
+  
+  
+  @media (max-width: 500px) {
+    .return-shopping-button {
+      width: 40%; /* Adjust the width for smaller screens */
+      margin: 20px 0; /* Maintain the vertical margin */
+      font-size: 3.3vw;
+    }
+    /* Reduce font size in the table for smaller screens */
+    .order_confirmation_table th,
+    .order_confirmation_table td {
+      font-size: 10px !important; /* Adjust the font size for smaller viewports */
+      padding: 7px !important;
+  
+    }
+  
+  
+  }
+  
+  /* Styling for the table displaying order confirmation */
+  .order_confirmation_table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  /* Table headers and cell styles */
+  .order_confirmation_table th,
+  .order_confirmation_table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  /* Styling for the table headers */
+  .order_confirmation_table th {
+    background-color: #f2f2f2;
+    font-weight: 600;
+  }
+  
+  /* Alternate row color for clarity */
+  .order_confirmation_table tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+  
+  /* Hover effect for table rows */
+  .order_confirmation_table tr:hover {
+    background-color: #f1f1f1;
+  }

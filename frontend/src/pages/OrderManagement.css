@@ -20,6 +20,22 @@
   font-weight: bold;
 }
 
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.view-details-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
 /* Styling for the order details container */
 .order-details {
   margin-top: 20px;
@@ -91,5 +107,38 @@
   .order-details th,
   .order-details td {
       padding: 8px;
+  }
+  .orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 12px;
+  }
+  .view-details-button {
+    font-size: 12px !important;
+  }
+}
+
+/* Responsive adjustments for screens up to 768px */
+@media (max-width: 468px) {
+  .order-details table {
+      font-size: 12px;
+  }
+
+  .order-details th,
+  .order-details td {
+      padding: 8px;
+  }
+
+  .orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 2.5vw;
+  }
+
+  .view-details-button {
+    padding: 5px 10px !important;
+    font-size: 11px !important;
   }
 }

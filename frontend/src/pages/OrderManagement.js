@@ -257,9 +257,9 @@ const OrderManagement = ({ setActiveForm }) => {
                     <td>{order.Email}</td>
                     <td>{order.status}</td>
                     <td>
-                      <button
+                    <button
                         onClick={() => handleOrderClick(order.Order_ID)}
-                        className="order-item-button"
+                        className="view-details-button"
                       >
                         View Details
                       </button>

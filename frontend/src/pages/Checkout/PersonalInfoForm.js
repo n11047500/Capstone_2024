@@ -5,6 +5,57 @@ import { useLoadScript } from '@react-google-maps/api';
 const libraries = ['places'];
 
 const PersonalInfoForm = ({ data, onNext, onChange }) => {
+  
+    // Basic validation function
+    const validate = () => {
+      // Check if first name is provided
+      if (!data.firstName) {
+        alert('First Name is required');
+        return false;
+      }
+  
+      // Check if last name is provided
+      if (!data.lastName) {
+        alert('Last Name is required');
+        return false;
+      }
+  
+      // Check if email is provided and valid
+      if (!data.email) {
+        alert('Email is required');
+        return false;
+      } else if (!/\S+@\S+\.\S+/.test(data.email)) {
+        alert('Email is invalid');
+        return false;
+      }
+  
+      // Check if phone number is provided and valid
+      if (!data.phone) {
+        alert('Phone number is required');
+        return false;
+      }
+      if (!validatePhoneNumber(data.phone)) {
+        alert('Phone number is invalid');
+        return false;
+      }
+  
+      // If all validations pass
+      return true;
+    };
+  
+    // Phone number validation function
+    const validatePhoneNumber = (phone) => {
+      // Example regex for phone validation: change as necessary
+      const phoneRegex = /^\d{10}$/; // Assuming a 10-digit phone number
+      return phoneRegex.test(phone);
+    };
+  
+    const handleNextClick = () => {
+      if (validate()) {
+        onNext();
+      }
+    };
+  
   // Access the Google Maps API key from environment variables
   const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
@@ -92,8 +143,8 @@ const PersonalInfoForm = ({ data, onNext, onChange }) => {
         ref={initializeAutocomplete} // Ref to initialize autocomplete on this input
         required
       />
-      <button onClick={onNext}>Continue to Shipping</button>
-    </div>
+      <button type="button" onClick={handleNextClick}>Continue to Shipping</button>
+      </div>
   );
 };
 

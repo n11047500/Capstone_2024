@@ -44,11 +44,12 @@ export const CartProvider = ({ children }) => {
       const productIndex = updatedCart.findIndex(
         (item) => item.Product_ID === productId && item.selectedOption === selectedOption
       );
-
+  
       if (productIndex !== -1) {
-        updatedCart[productIndex].quantity = quantity;
+        // Ensure the quantity is always 1 or more
+        updatedCart[productIndex].quantity = Math.max(1, quantity);
       }
-
+  
       return updatedCart;
     });
   };

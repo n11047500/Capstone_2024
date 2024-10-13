@@ -44,6 +44,47 @@ const CustomOptions = ({ data, onNext, onChange }) => {
   };
 
 
+  const validateForm = () => {
+    // Check if color type is selected
+    if (!data.colorType) {
+      alert('Please select a color type (Standard or Custom).');
+      return false;
+    }
+  
+    // Check if color is selected
+    if (!selectedColor && data.colorType === 'standard') {
+      alert('Please select a color.');
+      return false;
+    }
+  
+    // Check if custom color is provided when colorType is custom
+    if (data.colorType === 'custom' && !data.customColor) {
+      alert('Please enter a custom color.');
+      return false;
+    }
+  
+    // Check if width is provided and is > 0
+    if (!data.width || data.width <= 0) {
+      alert('Width must be greater than 0.');
+      return false;
+    }
+  
+    // Check if wicking option is selected (assuming wicking is a boolean)
+    if (data.wicking === undefined || data.wicking === null) {
+      alert('Please select whether you want wicking.');
+      return false;
+    }
+  
+    return true;
+  };
+  
+  const handleNext = () => {
+    if (validateForm()) {
+      onNext();
+    }
+  };
+
+
   return (
     <div className="customised-order-form">
       <h2 className='custom-heading'>Personal Information</h2>
@@ -109,12 +150,13 @@ const CustomOptions = ({ data, onNext, onChange }) => {
         <input
           type="number"
           name="width"
-          value={data.width}
+          value={data.width || ''} // Ensure it's controlled properly
           onChange={handleInputChange}
           placeholder="Enter width in cm"
           min="0"
+          required // HTML5 validation
         />
-      </div>
+    </div>
 
       <div className="form-custom-group">
       <label className='label-custom'>Wicking:</label>
@@ -136,7 +178,7 @@ const CustomOptions = ({ data, onNext, onChange }) => {
             </div>
           </div>
       </div>
-      <button onClick={onNext} className='next-custom-button'>Next</button>
+      <button onClick={handleNext} className='next-custom-button'>Next</button>
     </div>
   );
 }
