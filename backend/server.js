@@ -24,20 +24,12 @@ app.use(express.json());      // Ensure incoming requests are parsed as JSON
 // Get the database connection instance
 const connection = db.getConnection();
 
-// Configure Multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads'); // Set the destination folder for uploads
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9); // To make file names unique
-    cb(null, uniqueSuffix + '-' + file.originalname); // Preserve the original name with a unique suffix
-  }
-});
+// Configure Multer for file uploads with memory storage
+const storage = multer.memoryStorage();
 
 const uploadFile = multer({ 
   storage: storage,
-  limits: { fileSize: 20 * 1024 * 1024 },
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20 MB limit
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
@@ -993,25 +985,9 @@ app.get('/api/orders/details', async (req, res) => {
 // Nodemailer sendEmail function
 const sendEmail = async (formDataObj) => {
   try {
-
     console.log('Recipient email:', formDataObj.email);
     console.log('Form Data Object:', formDataObj);
 
-    // Check if the file is defined
-    let filePath = '';
-    if (formDataObj.file) {
-      filePath = path.join(__dirname, 'uploads', formDataObj.file.filename);
-      console.log('File path:', filePath); // Log the file path for debugging
-    
-      // Ensure the file exists before sending the email
-      if (!fs.existsSync(filePath)) {
-        console.error('File does not exist at path:', filePath);
-        throw new Error('File does not exist');
-      }
-    } else {
-      console.log('No file provided');
-    }
-    
     // Ensure email is defined
     if (!formDataObj.email) {
       throw new Error('No recipient email provided');
@@ -1113,7 +1089,6 @@ const sendEmail = async (formDataObj) => {
       attachments: formDataObj.file ? [{
         filename: formDataObj.file.originalname, // Use the original file name
         content: formDataObj.file.buffer, // Use the file buffer if using memory storage
-        path: filePath
       }] : []
     };
 
@@ -1124,7 +1099,6 @@ const sendEmail = async (formDataObj) => {
     console.error('Error sending email:', error);
   }
 };
-
 
 app.use(express.urlencoded({ extended: true }));
 

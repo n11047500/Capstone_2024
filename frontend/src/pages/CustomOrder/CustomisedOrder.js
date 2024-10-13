@@ -67,7 +67,7 @@ const CustomisedOrder = () => {
             }
       
           // Send form data to the backend (do not set Content-Type explicitly, let FormData handle it)
-          const response = await fetch('http://localhost:3001/submit-form', {
+          const response = await fetch(`${process.env.REACT_APP_API_URL}/submit-form`, {
             method: 'POST',
             body: formDataObj,
           });
