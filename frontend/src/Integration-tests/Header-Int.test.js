@@ -175,6 +175,7 @@ describe('Header Integration Tests', () => {
     expect(screen.getByText('5')).toBeInTheDocument();
   });
 
+  // ensures sidebar opens and closes correctly displaying the '×' icon when open and the '☰' icon when closed
   test('Opens and closes the sidebar when the menu icon is clicked', async () => {
     render(
       <MemoryRouter>

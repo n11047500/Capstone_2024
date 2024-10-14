@@ -83,7 +83,8 @@ describe('CartPage Integration Tests', () => {
     jest.clearAllMocks(); // Clear previous mocks before each test
   });
 
-  it('should display cart items and calculate total correctly', () => {
+  // ensures all cart items and the cart total display as expected on the CartPage
+  test('should display cart items and calculate total correctly', () => {
     renderCartPageWithProvider(mockCart);
   
     // Check for the product names
@@ -110,6 +111,7 @@ describe('CartPage Integration Tests', () => {
     expect(screen.getByText(/Subtotal:\s*\$765\.00/)).toBeInTheDocument(); // Use a regex to match the subtotal
   });
   
+  //esnures users can update the quantity input of items in the cart
   test('Updates item quantity correctly', () => {
     renderCartPageWithProvider(mockCart);
   
@@ -176,7 +178,7 @@ describe('CartPage Integration Tests', () => {
     expect(screen.getByText(/Subtotal: \$265.00/i)).toBeInTheDocument(); // Ensure the subtotal reflects the remaining product
   });
 
-  
+  // test ensures when user hits 'clear cart' button that the cart total is reset to 0 and the cart is enmpty
   test('handles clear cart functionality', async () => {
     const { getByText, queryByText } = renderCartPageWithProvider(mockCart);
 
@@ -195,7 +197,7 @@ describe('CartPage Integration Tests', () => {
     });
   });
   
-
+  // From the cart page users can navigate back to the browse page by hitting the 'Continue Shopping' button
   test('navigates to continue shopping page', () => {
     const navigate = jest.fn();
     useNavigate.mockImplementation(() => navigate);
@@ -208,7 +210,7 @@ describe('CartPage Integration Tests', () => {
     expect(navigate).toHaveBeenCalledWith('/browse');
   });
   
-
+  
   test('Disables checkout button when cart is empty', () => {
     renderCartPageWithProvider([]);
 
@@ -217,23 +219,3 @@ describe('CartPage Integration Tests', () => {
   });
 });
 
-// describe('CartPage', () => {
-//   test('displays cart items and calculates total', () => {
-//     renderWithProvider(<CartPage />, { cart: mockCart });
-
-//     // Debug the rendered DOM
-//     screen.debug();
-
-//     // Check if elements are rendered correctly
-//     const productNameElement = screen.queryByText(/Mini Standard Planter Box/i);
-//     expect(productNameElement).toBeInTheDocument();
-
-//     const productPriceElement = screen.queryByText(/\$250\.00/);
-//     expect(productPriceElement).toBeInTheDocument();
-
-//     const quantityInputElement = screen.queryByDisplayValue('2');
-//     expect(quantityInputElement).toBeInTheDocument();
-
-//     const totalPriceElement = screen.queryByText(/\$500\.00/);
-//     expect(totalPriceElement).toBeInTheDocument();
-//   });

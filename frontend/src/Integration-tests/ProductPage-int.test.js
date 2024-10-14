@@ -51,6 +51,7 @@ jest.mock('react-router-dom', () => ({
       );
     };
 
+    //test ensures all the required product details render correctly including description, price, dimensions, rating, and review count 
     test('displays product details after fetch', async () => {
         renderWithContext();
     
@@ -77,6 +78,7 @@ jest.mock('react-router-dom', () => ({
         expect(screen.getByText(/10 reviews/i)).toBeInTheDocument();
     });
 
+    // test ensures users can addd products to the cart by selecting product option and then clicking the "Add to Cart" button 
     test('adds product to cart', async () => { 
         // Mock the addToCart function
         const mockAddToCart = jest.fn();
@@ -123,6 +125,7 @@ jest.mock('react-router-dom', () => ({
         );
     });
 
+    // test ensures users must select a product option before adding it to the cart displaying alert error message 'Please select an option'
     test('alerts user when no option is selected', async () => {
         // Mock the fetch API to return a product
         global.fetch = jest.fn(() =>
@@ -148,6 +151,7 @@ jest.mock('react-router-dom', () => ({
         expect(window.alert).toHaveBeenCalledWith('Please select an option');
     });
 
+    // test ensures that when users click the reviews link they will navigate to the reviews page
     test('navigates to reviews page when reviews link is clicked', async () => {
         renderWithContext();
     

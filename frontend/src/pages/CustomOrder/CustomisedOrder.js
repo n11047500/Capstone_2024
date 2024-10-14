@@ -17,6 +17,7 @@ const CustomisedOrder = () => {
         additionalInformation: {},
     });
 
+    // isSubmitting and setIsSubmitting used to prevent multiple form submissions
     const [isSubmitting, setIsSubmitting] = useState(false); // Define isSubmitting state
 
 

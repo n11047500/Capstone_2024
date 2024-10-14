@@ -11,7 +11,7 @@ const PersonalInfoForm = ({ data, onNext, onBack, onChange }) => {
     return phoneRegex.test(phone);
   };
 
-  // Basic validation function
+  // Validation function to ensure inputs are all filled out correctly
   const validate = () => {
     if (!data.firstName) {
       alert('First Name is required');
@@ -39,6 +39,7 @@ const PersonalInfoForm = ({ data, onNext, onBack, onChange }) => {
     return true;
   };
 
+  // if all form fields are valid, proceed to the next step
   const handleNextClick = () => {
     if (validate()) {
       onNext();

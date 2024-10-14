@@ -10,6 +10,7 @@ jest.mock('../assets/default_image.jpg', () => 'default-image-mock');
 
 beforeEach(() => {
     global.fetch = jest.fn(() =>
+      // mock the product data
       Promise.resolve({
         json: () => Promise.resolve([
           {
@@ -54,7 +55,7 @@ beforeEach(() => {
         </Router>
       );
     };
-  
+    
     test('Renders product cards after fetch', async () => {
       renderWithContext();
   
@@ -65,7 +66,7 @@ beforeEach(() => {
         expect(screen.getByText(/Medium Standard Planter Box/i)).toBeInTheDocument();
 
       });
-  
+      //check if the prices of each product are displayed
       expect(screen.getByText('$250')).toBeInTheDocument();
       expect(screen.getByText('$265')).toBeInTheDocument();
       expect(screen.getByText('$315')).toBeInTheDocument();

@@ -33,7 +33,8 @@ describe('CustomOptions Component', () => {
     { name: 'Pearl White', color: '#F3F4F6' },
   ];
 
-  it('should display standard colors dropdown and allow selecting a color', () => {
+
+  test('should display standard colors dropdown and allow selecting a color', () => {
     render(<CustomOptions data={data} options={options} onChange={mockOnChange} onNext={mockOnNext} />);
 
     // Check that 'Select a color' is visible initially
@@ -54,7 +55,7 @@ describe('CustomOptions Component', () => {
 
 
 
-  it('should allow entering a custom color when custom color type is selected', () => {
+  test('should allow entering a custom color when custom color type is selected', () => {
     render(
       <CustomOptions
         data={{ ...data, colorType: 'custom' }}
@@ -75,7 +76,7 @@ describe('CustomOptions Component', () => {
     expect(mockOnChange).toHaveBeenCalledWith(expect.objectContaining({ customColor: 'Sky Blue' }));
   });
 
-  it('should select "Yes" for wicking and trigger onChange', () => {
+  test('should select "Yes" for wicking and trigger onChange', () => {
     const mockOnChange = jest.fn();
     const mockOnNext = jest.fn();
     const data = {
@@ -102,7 +103,7 @@ describe('CustomOptions Component', () => {
   });
 
   // Test: should load the next step (PersonalInfo) when "Next" is clicked from CustomOptions
-  it('should load the next step (Personal Info) when "Next" is clicked from CustomOptions', () => {
+  test('should load the next step (Personal Info) when "Next" is clicked from CustomOptions', () => {
     const { getByText } = render(
         <CustomOptions
             data={data}
@@ -149,7 +150,7 @@ describe('PersonalInfo Component', () => {
     address: '',
   };
 
-  it('should render the form inputs and allow typing first name, last name, email, phone, and address', () => {
+  test('should render the form inputs and allow typing first name, last name, email, phone, and address', () => {
     render(
       <PersonalInfoForm
         data={data}
@@ -192,8 +193,7 @@ describe('PersonalInfo Component', () => {
   });
   
   
-
-  it('should load the next step (Additional Information) when "Next" is clicked', () => {
+  test('should load the next step (Additional Information) when "Next" is clicked', () => {
     const { getByText } = render(
         <PersonalInfoForm
             data={data}
@@ -224,7 +224,7 @@ describe('PersonalInfo Component', () => {
 });
 
 
-it('should load the previous step (Custom Options) when "Back" is clicked', () => {
+test('should load the previous step (Custom Options) when "Back" is clicked', () => {
   const { getByText } = render(
       <AdditionalInformation
           data={data}
@@ -263,8 +263,8 @@ it('should load the previous step (Custom Options) when "Back" is clicked', () =
       comment: '',
       file: null,
     };
-  
-    it('should render the form elements correctly', () => {
+    
+    test('should render the form elements correctly', () => {
       render(
         <AdditionalInformation
           data={data}
@@ -282,7 +282,7 @@ it('should load the previous step (Custom Options) when "Back" is clicked', () =
       expect(screen.getByRole('button', { name: /submit form/i })).toBeInTheDocument();
     });
   
-    it('should allow typing in the comments textarea', () => {
+    test('should allow typing in the comments textarea', () => {
       render(
         <AdditionalInformation
           data={data}
@@ -301,7 +301,7 @@ it('should load the previous step (Custom Options) when "Back" is clicked', () =
       expect(mockOnChange).toHaveBeenCalledWith(expect.objectContaining({ comment: 'This is a test comment' }));
     });
   
-    it('should handle file upload correctly', () => {
+    test('should handle file upload correctly', () => {
       render(
         <AdditionalInformation
           data={data}
@@ -321,7 +321,7 @@ it('should load the previous step (Custom Options) when "Back" is clicked', () =
       expect(mockOnChange).toHaveBeenCalledWith(expect.objectContaining({ file: file }));
     });
 
-    it('should load the previous step (Personal Info) when "Back" is clicked', async () => {
+    test('should load the previous step (Personal Info) when "Back" is clicked', async () => {
       // Render the AdditionalInformation component
       const { getByText } = render(
         <AdditionalInformation
@@ -354,8 +354,8 @@ it('should load the previous step (Custom Options) when "Back" is clicked', () =
       });
     });
   
-  
-    it('should show an alert on form submission', async () => {
+    
+    test('should show an alert on form submission', async () => {
       // Mock the fetch API response to simulate a successful form submission
       global.fetch = jest.fn(() =>
         Promise.resolve({

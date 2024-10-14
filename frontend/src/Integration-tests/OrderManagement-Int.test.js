@@ -10,7 +10,7 @@ describe('OrderManagement', () => {
     // Clear all instances and calls to the mock function
     fetch.mockClear();
   });
-
+  // test ensures that customer orders are displayed on the Order Management page based on status filter option with it being set to 'Pending' by deault 
   test('should fetch and display orders based on the status filter', async () => {
     // Mock the fetch response with a single order
     const mockOrders = [

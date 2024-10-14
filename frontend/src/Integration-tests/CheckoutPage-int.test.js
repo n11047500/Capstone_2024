@@ -31,7 +31,7 @@ const mockCart = [
   },
 ];
 
-
+// Mock the Stripe elements
 jest.mock('@stripe/react-stripe-js', () => {
     const stripeMock = {
       elements: jest.fn(),
@@ -61,7 +61,7 @@ jest.mock('@stripe/react-stripe-js', () => {
       );
     });
   
-
+  // ensures the checkout loads the personal information step first in the checkout process
   it('should render the Personal Information form as the first step', () => {
     // Instead of using getByText, we can use getByRole if applicable
     const personalInfoHeading = screen.getByRole('heading', { name: /Personal Information/i });
@@ -72,7 +72,7 @@ jest.mock('@stripe/react-stripe-js', () => {
     const activeStep = screen.getByText(/1. Personal Information/i);
     expect(activeStep).toHaveClass('active');
   });
-
+  //ensures checkkout page moves from the personal information page to the shipping method page upon clicking "Continue to Shipping" button
   it('should proceed to the Shipping Method step after filling out Personal Info', async () => {
     // Fill out the personal info form
     fireEvent.change(screen.getByPlaceholderText(/First Name/i), { target: { value: 'John' } });
@@ -91,7 +91,7 @@ jest.mock('@stripe/react-stripe-js', () => {
     });
 });
 
-
+  // after selecting a shipping method, and selecting "Next" the checkout page should move to the payment method step
   it('should proceed to the Payment Method step after selecting a shipping method', async () => {
     // Step 1: Fill out the personal info form and click "Continue to Shipping"
     fireEvent.change(screen.getByPlaceholderText(/First Name/i), { target: { value: 'John' } });

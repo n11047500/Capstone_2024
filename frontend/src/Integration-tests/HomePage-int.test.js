@@ -6,6 +6,7 @@ import ProductPage from '../pages/ProductPage'; // Mock the product page compone
 import { CartContext } from '../context/CartContext'; // Adjust path as needed
 import { BrowserRouter as Router } from 'react-router-dom';
 
+//mock the products stored in the database
 beforeEach(() => {
   global.fetch = jest.fn(() =>
     Promise.resolve({
@@ -42,6 +43,7 @@ afterEach(() => {
 });
 
 describe('Home Page Integration Tests', () => {
+  // Utility function to render the HomePage with CartContext
   const renderWithContext = () => {
     return render(
       <Router>

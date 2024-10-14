@@ -43,7 +43,7 @@ const CustomOptions = ({ data, onNext, onChange }) => {
     onChange({ ...data, colorType, color: '', customColor: '' });
   };
 
-
+  // validate form ensures a colour type is provided/selected, a width is provided and is greater than 0, and a wicking option is selected
   const validateForm = () => {
     // Check if color type is selected
     if (!data.colorType) {

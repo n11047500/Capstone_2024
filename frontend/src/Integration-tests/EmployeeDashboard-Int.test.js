@@ -8,6 +8,7 @@ beforeEach(() => {
     // Mock the global fetch function
     global.fetch = jest.fn(() =>
         Promise.resolve({
+            //mock the products stored in the database
             json: () => Promise.resolve([
                 {
                     Product_ID: '1',
@@ -45,6 +46,7 @@ afterEach(() => {
 
 
 describe('Employee Dashboard Integration Tests', () => {
+    // Utility function to render the EmployeeDashboard with CartContext
     const renderWithContext = () => {
         return render(
             <Router>

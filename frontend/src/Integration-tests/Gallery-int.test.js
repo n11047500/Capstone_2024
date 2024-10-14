@@ -38,6 +38,7 @@ describe('Gallery Component Integration Test', () => {
     jest.clearAllMocks(); // Clear mocks before each test
   });
 
+  // test ensures that the gallery images appear within the gallery page
   test('displays gallery images correctly', () => {
     renderWithCartProvider(<Gallery />);
     
@@ -50,7 +51,7 @@ describe('Gallery Component Integration Test', () => {
     expect(img2).toBeInTheDocument();
     expect(img3).toBeInTheDocument();
   });
-
+  // ensures users can click the '<' and '>' buttons to navigate through the gallery images
   test('displays and handles click event for images and navigates through modal', () => {
     renderWithCartProvider(<Gallery />);
   

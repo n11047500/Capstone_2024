@@ -42,7 +42,8 @@ const AdditionalInformation = ({ data, onBack, onChange, onSubmit, isSubmitting,
 
       <button onClick={onBack} className='back-custom-button'>Back</button>
       <button type="submit" className="submit-custom-button" disabled={isSubmitting}>
-        {isSubmitting ? 'Submitting...' : 'Submit Form'}
+        {isSubmitting ? 'Submitting...' : 'Submit Form'} 
+        {/* disable submit button after one button click to ensure no duplicate submissions are made */}
       </button>
     </form>
   );

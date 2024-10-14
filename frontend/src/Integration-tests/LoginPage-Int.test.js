@@ -35,7 +35,7 @@ describe('LoginPage Integration Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks(); // Clear mocks before each test
   });
-
+  //test ensures Captcha error message appears after failing to complete the Captcha verification
   test('should display error message when CAPTCHA is not completed', async () => {
     renderWithCartProvider(<LoginPage />);
 
@@ -71,7 +71,7 @@ describe('LoginPage Integration Tests', () => {
     const errorMessage = await screen.findByText(/Invalid credentials/i);
     expect(errorMessage).toBeInTheDocument();
   });
-
+  // test ensures after successful login they are redirected to the correct page being the user page
   test('Should navigate to user page when successful login completed', async () => {
     global.fetch = jest.fn((url) => {
       if (url.endsWith('/login')) {

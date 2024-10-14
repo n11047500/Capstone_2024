@@ -43,6 +43,7 @@ describe('ContactUs Integration Tests', () => {
     expect(errorMessage).toBeInTheDocument();
   });
 
+  //test ensures when user provides correct form information and hits 'Submit Form' button, the form is submitted successfully and success message appears 
   test('Should display success message on successful form submission', async () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({

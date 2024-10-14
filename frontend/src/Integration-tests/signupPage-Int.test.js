@@ -38,6 +38,7 @@ describe('SignUpPage Integration Tests', () => {
     jest.clearAllMocks(); // Clear mocks before each test
   });
 
+  // test ensures that the page displays message "Error creating user." when fetch fails
   test('Displays error when fetch fails', async () => {
     // Mock the fetch call to simulate a failed request
     global.fetch = jest.fn(() =>
@@ -68,6 +69,7 @@ describe('SignUpPage Integration Tests', () => {
     expect(errorMessage).toBeInTheDocument();
   });
 
+  // test ensures that the page navigates to the login page on successful submission
   test('should navigate to the correct page on successful submission', async () => {
     global.fetch = jest.fn((url) => {
       if (url.endsWith('/register')) {
@@ -104,6 +106,7 @@ describe('SignUpPage Integration Tests', () => {
     });
   });
 
+  // test ensures that the page displays message "Error creating user." when reCAPTCHA was unable to be verified 
   test('Prevents form submission when reCAPTCHA is not verified', async () => {
     // Mock the fetch function to simulate an error response
     global.fetch = jest.fn(() =>

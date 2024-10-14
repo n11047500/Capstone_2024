@@ -84,6 +84,7 @@ describe('ReviewPage Integration Tests', () => {
     });
   });
 
+  //test ensures the reeviews for a given product all render in correctly as well as the average review rating and number of reviews
   test('Renders Reviews Page content', async () => {
     render(
         <MemoryRouter>
@@ -107,7 +108,7 @@ describe('ReviewPage Integration Tests', () => {
     //only first five should appear
 });
 
-
+// test ensures pagination 'next' and 'back' page buttons are rendered and work correctly
 test('renders pagination controls and navigates pages', async () => {
     render(
         <MemoryRouter>
@@ -135,6 +136,7 @@ test('renders pagination controls and navigates pages', async () => {
     });
 });
 
+// test ensures that review submissions go through correctly with the comment and rating for each review recorded  
 test('submits review successfully with star rating', async () => {  
     // Mock console.log
     console.log = jest.fn();
