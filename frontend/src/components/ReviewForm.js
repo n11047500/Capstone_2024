@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './ReviewForm.css'
 import { Filter } from 'bad-words';   // Importing Filter for profanity checks
 
-const ReviewForm = ({ productId, addReview }) => {
+const ReviewForm = ({ productId, onReviewSubmit }) => {
   // State variables for star rating, comments and error handling
   const [rating, setRating] = useState('');
   const [comment, setComment] = useState('');
@@ -41,10 +41,13 @@ const ReviewForm = ({ productId, addReview }) => {
   
       const data = await response.json();
       console.log('Review submitted:', data);
-      addReview(data.review, parseInt(rating));   // Add the new review to the list
       setRating('');
       setComment('');
       setError('');
+      
+      // Call the parent function to update reviews on the page
+      onReviewSubmit({ rating, comment, first_name: 'Guest User' });
+      
     } catch (error) {
       console.error('Error submitting review:', error);
       console.log('Product ID:', productId);
