@@ -69,16 +69,18 @@ const ReviewPage = () => {
     fetchReviews();
   }, [productId]);
 
-  
-  const addReview = (newReview, newRating) => {
-    // Add the new review and rating to the existing state
-    setReviews((prevReviews) => [newReview, ...prevReviews]);
-    setRatings((prevRatings) => [newRating, ...prevRatings]);
-    setReviewCount((prevCount) => prevCount + 1);
-
-    // Update average rating
-    const totalRatings = (averageRating * reviewCount) + newRating;
-    setAverageRating(totalRatings / (reviewCount + 1));
+  // Function to handle adding a new review after submission
+  const handleReviewSubmit = (newReview) => {
+    const updatedReviews = [
+      ...reviews,
+      {
+        ...newReview,
+        first_name: newReview.first_name || 'Guest User',  // Fallback to "Guest User"
+      },
+    ];
+    setReviews(updatedReviews);  // Update reviews with the new review
+    setRatings([...ratings, newReview.rating]);  // Add the new rating to the array
+    setReviewCount(reviewCount + 1);  // Increment review count
   };
   
   // Handle error for product loading
@@ -132,7 +134,7 @@ const ReviewPage = () => {
             <div className="review-small">
               <span className="star product-page">⭐</span> {ratingFormatter.format(averageRating)} · {reviewCount} reviews
             </div>
-            <ReviewForm productId={productId} addReview={addReview} />
+            <ReviewForm productId={productId} onReviewSubmit={handleReviewSubmit} />
           </div>
         </div>
       </div>
