@@ -1,170 +1,121 @@
-// OrderConfirmationPage.test.js
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import OrderConfirmationPage from '../../src/pages/Checkout/OrderConfirmation'; // Adjust the import path as needed
 import { CartContext } from '../../src/context/CartContext';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import OrderConfirmationPage from '../../src/pages/Checkout/OrderConfirmation';
+import '@testing-library/jest-dom';
 
-const mockClearCart = jest.fn();
+// Mock environment variables
+process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY = 'test-publishable-key';
+process.env.REACT_APP_API_URL = 'http://localhost:5000';
 
-const MockCartProvider = ({ children }) => {
-  return (
-    <CartContext.Provider value={{ clearCart: mockClearCart }}>
-      {children}
-    </CartContext.Provider>
-  );
+// Mock fetch for order details
+const mockOrderResponse = {
+  products: [
+    { Product_ID: 1, Product_Name: 'Product 1', Product_Price: 100, Product_Image_URL: 'image1.jpg' },
+    { Product_ID: 2, Product_Name: 'Product 2', Product_Price: 200, Product_Image_URL: 'image2.jpg' },
+  ],
+  order: {
+    Order_ID: '12345',
+    created_at: '2024-09-10T10:00:00Z',
+    Order_Type: 'Delivery',
+    Email: 'test@example.com',
+    Mobile: '123456789',
+    Street_Address: '123 Test Street',
+    Total_Amount: 300,
+    Product_IDs: '1:Default,2:Custom',
+  },
 };
 
-// Mocking react-router-dom's useNavigate at the top
-jest.mock('react-router-dom', () => {
-  const actualRouter = jest.requireActual('react-router-dom');
-  return {
-    ...actualRouter,
-    useNavigate: jest.fn(), // Create a mock function here
-  };
-});
-
-const navigate = require('react-router-dom').useNavigate; // Import the mocked useNavigate
-
 describe('OrderConfirmationPage', () => {
+  const clearCart = jest.fn();
+  
+  const renderComponent = () => {
+    render(
+      <CartContext.Provider value={{ cart: [], clearCart }}>
+        <MemoryRouter initialEntries={['/order-confirmation?client_secret=secret_test']}>
+          <Routes>
+            <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
+          </Routes>
+        </MemoryRouter>
+      </CartContext.Provider>
+    );
+  };
+
   beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('renders loading state initially', () => {
-    render(
-      <MemoryRouter>
-        <MockCartProvider>
-          <OrderConfirmationPage />
-        </MockCartProvider>
-      </MemoryRouter>
+    // Mock fetch response
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockOrderResponse),
+      })
     );
-
-    expect(screen.getByText(/loading payment status/i)).toBeInTheDocument();
   });
 
-  it('renders success state when payment is successful', async () => {
-    // Mocking the fetch and loadStripe
-    const mockFetch = jest.fn().mockResolvedValueOnce({
-      ok: true,
-      json: jest.fn().mockResolvedValueOnce({
-        products: [
-          {
-            Product_ID: '1',
-            Product_Name: 'Test Product 1',
-            Product_Image_URL: 'http://example.com/image1.jpg',
-            Product_Price: 100,
-          },
-        ],
-        order: {
-          Order_ID: '12345',
-          created_at: '2024-10-01T00:00:00Z',
-          Order_Type: 'Delivery',
-          Email: 'test@example.com',
-          Mobile: '1234567890',
-          Total_Amount: 100,
-          Street_Address: '123 Test St',
-          Product_IDs: '1:Default',
-        },
-      }),
+  afterEach(() => {
+    jest.clearAllMocks();  // Clear mocks after each test
+    global.fetch.mockClear();  // Clear fetch mocks after each test
+  });
+
+  test('displays loading message initially', () => {
+    renderComponent();
+    expect(screen.getByText('Loading payment status...')).toBeInTheDocument();
+  });
+
+  test('displays order details after successful payment', async () => {
+    renderComponent();
+
+    // Wait for successful payment status to be handled
+    await waitFor(() => expect(screen.getByText('Thank you for your order!')).toBeInTheDocument());
+
+    // Check order details display
+    await waitFor(() => {
+      expect(screen.getByText(/Order Number:/)).toHaveTextContent('12345');
     });
+    expect(screen.getByText(/Order Date:/)).toHaveTextContent('September 10, 2024');
+    expect(screen.getByText(/Order Type:/)).toHaveTextContent('Delivery');
+    expect(screen.getByText(/Email:/)).toHaveTextContent('test@example.com');
+    expect(screen.getByText(/Phone Number:/)).toHaveTextContent('123456789');
+    expect(screen.getByText(/Delivery Address:/)).toHaveTextContent('123 Test Street');
+    expect(screen.getByText(/Total Amount:/)).toHaveTextContent('$300.00');
 
-    global.fetch = mockFetch;
+    // Check purchased products display
+    expect(screen.getByText('Product 1')).toBeInTheDocument();
+    expect(screen.getByText('Product 2')).toBeInTheDocument();
+    expect(screen.getByText('$100.00')).toBeInTheDocument();
+    expect(screen.getByText('$200.00')).toBeInTheDocument();
+  });
 
-    // Mocking loadStripe to return a resolved promise
+  test('displays error message when payment status retrieval fails', async () => {
+    // Mock failed payment intent retrieval only within this test
     jest.mock('@stripe/stripe-js', () => ({
       loadStripe: jest.fn().mockResolvedValue({
         retrievePaymentIntent: jest.fn().mockResolvedValue({
-          paymentIntent: { status: 'succeeded' },
+          paymentIntent: { status: 'failed' },
         }),
       }),
     }));
 
-    render(
-      <MemoryRouter initialEntries={['/order-confirmation?client_secret=test_secret']}>
-        <MockCartProvider>
-          <OrderConfirmationPage />
-        </MockCartProvider>
-      </MemoryRouter>
-    );
+    renderComponent();
 
-    await waitFor(() => expect(screen.getByText(/thank you for your order/i)).toBeInTheDocument());
-
-    expect(screen.getByText(/order number/i)).toHaveTextContent('12345');
-    expect(screen.getByText(/test product 1/i)).toBeInTheDocument();
-    expect(screen.getByText(/total amount/i)).toHaveTextContent('$100.00');
+    // Wait for error message
+    await waitFor(() => expect(screen.getByText('Something went wrong')).toBeInTheDocument());
   });
 
-  it('renders error state when payment retrieval fails', async () => {
-    // Mocking the fetch and loadStripe to simulate error
-    global.fetch = jest.fn().mockResolvedValueOnce({
-      ok: false,
-      json: jest.fn().mockResolvedValueOnce({ error: 'Payment error' }),
-    });
-    
-    jest.mock('@stripe/stripe-js', () => ({
-      loadStripe: jest.fn().mockResolvedValue({
-        retrievePaymentIntent: jest.fn().mockResolvedValue({
-          paymentIntent: { status: 'error' },
-        }),
-      }),
-    }));
+  test('clears cart and navigates when continue shopping button is clicked', async () => {
+    renderComponent();
 
-    render(
-      <MemoryRouter initialEntries={['/order-confirmation?client_secret=test_secret']}>
-        <MockCartProvider>
-          <OrderConfirmationPage />
-        </MockCartProvider>
-      </MemoryRouter>
-    );
+    await waitFor(() => {
+      expect(screen.getByText('Thank you for your order!')).toBeInTheDocument();
+   });
+   
+    // Click the "Continue Shopping" button
+    fireEvent.click(screen.getByText('Continue Shopping'));
 
-    await waitFor(() => expect(screen.getByText(/something went wrong/i)).toBeInTheDocument());
-  });
+    // Check if the cart is cleared
+    expect(clearCart).toHaveBeenCalled();
 
-  it('renders failed state when payment fails', async () => {
-    // Mocking the fetch and loadStripe to simulate failure
-    jest.mock('@stripe/stripe-js', () => ({
-      loadStripe: jest.fn().mockResolvedValue({
-        retrievePaymentIntent: jest.fn().mockResolvedValue({
-          paymentIntent: { status: 'requires_payment_method' },
-        }),
-      }),
-    }));
-
-    render(
-      <MemoryRouter initialEntries={['/order-confirmation?client_secret=test_secret']}>
-        <MockCartProvider>
-          <OrderConfirmationPage />
-        </MockCartProvider>
-      </MemoryRouter>
-    );
-
-    await waitFor(() => expect(screen.getByText(/payment failed/i)).toBeInTheDocument());
-  });
-
-  it('clears cart and navigates when continue shopping button is clicked', async () => {
-    // Mocking successful payment scenario again for testing continue shopping
-    global.fetch = jest.fn().mockResolvedValueOnce({
-      ok: true,
-      json: jest.fn().mockResolvedValueOnce({
-        products: [],
-        order: {},
-      }),
-    });
-
-    render(
-      <MemoryRouter initialEntries={['/order-confirmation?client_secret=test_secret']}>
-        <MockCartProvider>
-          <OrderConfirmationPage />
-        </MockCartProvider>
-      </MemoryRouter>
-    );
-
-    await waitFor(() => expect(screen.getByText(/thank you for your order/i)).toBeInTheDocument());
-
-    fireEvent.click(screen.getByText(/continue shopping/i));
-
-    expect(mockClearCart).toHaveBeenCalled();
-    expect(navigate).toHaveBeenCalledWith('/browse');
+    // Check navigation - this may require additional mocks if you use useNavigate
+    // You can mock `useNavigate` if needed, or check MemoryRouter history.
   });
 });

@@ -16,7 +16,7 @@ const AdditionalInformation = ({ data, onBack, onChange, onSubmit, isSubmitting,
     <form onSubmit={onSubmit} className="form-details"> 
       <h2>Additional Information</h2>
       <div className="form-custom-group" style={{ display: 'flex', alignItems: 'flex-start', position: 'relative' }}>
-        <label>Comments:</label>
+        <label htmlFor="textSize">Comments:</label>
         <label htmlFor="file-upload" className="file-upload-label" aria-label="Attach a file">
           <i className="fa fa-paperclip"></i> Add attachment (optional)
         </label>

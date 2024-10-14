@@ -26,13 +26,13 @@ jest.mock('@stripe/react-stripe-js', () => ({
 }));
 
 // Test component wrapped in necessary providers
-const renderPaymentForm = (data) => {
+const renderPaymentForm = (data, handleBack = jest.fn()) => {
   return render(
     <CartContext.Provider value={mockCartContextValue}>
       <MemoryRouter>
         <StripeProvider apiKey="test">
           <Elements>
-            <PaymentForm data={data} onBack={jest.fn()} onChange={jest.fn()} />
+            <PaymentForm data={data} onBack={handleBack} onChange={jest.fn()} />
           </Elements>
         </StripeProvider>
       </MemoryRouter>
@@ -102,7 +102,7 @@ describe('PaymentForm', () => {
 
   test('handles back button click', () => {
     const handleBack = jest.fn();
-    renderPaymentForm(mockData);
+    renderPaymentForm(mockData, handleBack);
 
     fireEvent.click(screen.getByRole('button', { name: /Back/i }));
 
@@ -120,7 +120,7 @@ describe('PaymentForm', () => {
     });
   });
 
-  afterAll(() => {
-    jest.restoreAllMocks(); // Clean up mocks after tests
+  afterEach(() => {
+    jest.clearAllMocks(); // Clear mocks after each test for better isolation
   });
 });

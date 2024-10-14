@@ -1,93 +1,93 @@
 const mysql = require('mysql2');
+const db = require('../database');
 
 // Mock the mysql2 module
-jest.mock('mysql2', () => ({
-  createConnection: jest.fn().mockImplementation(() => ({
-    connect: jest.fn(),
-    on: jest.fn(),
-  })),
-}));
+jest.mock('mysql2', () => {
+  return {
+    createConnection: jest.fn(() => ({
+      connect: jest.fn((callback) => callback(null)), // Simulate successful connection by default
+      on: jest.fn(),
+    })),
+  };
+});
 
-const { connect, getConnection } = require('../database'); // Adjust the path as needed
-
-describe('Database Connection', () => {
-  let mockConnection;
+describe('Database Connection Module', () => {
+  let connection;
 
   beforeEach(() => {
-    jest.resetModules();
-    mockConnection = mysql.createConnection();
-  });
+    jest.clearAllMocks(); // Clear all mocks before each test
+    connection = mysql.createConnection(); // Create a new connection mock for each test
 
-  afterEach(() => {
-    jest.clearAllMocks();  // Clear mocks after each test
-  });
-
-  it('should connect to the database without errors', () => {
-    mockConnection.connect.mockImplementationOnce((cb) => cb(null)); // Simulate successful connection
-
-    connect(); // Call the connect function
-
-    expect(mockConnection.connect).toHaveBeenCalledTimes(1);
-    expect(getConnection()).toBe(mockConnection);
-  });
-
-  it('should retry connection on initial connection error', () => {
-    mockConnection.connect.mockImplementationOnce((cb) => cb(new Error('Connection Error'))); // Simulate connection error
-    jest.useFakeTimers(); // Use fake timers
-
-    connect(); // Call the connect function
-
-    // Verify that the connect method was called once
-    expect(mockConnection.connect).toHaveBeenCalledTimes(1);
-
-    // Advance timers to simulate the retry logic
-    jest.advanceTimersByTime(2000);
-    expect(mockConnection.connect).toHaveBeenCalledTimes(2); // Verify it retried
-  });
-
-  it('should reconnect on "PROTOCOL_CONNECTION_LOST" error', () => {
-    const lostConnectionError = { code: 'PROTOCOL_CONNECTION_LOST' };
-
-    mockConnection.connect.mockImplementationOnce((cb) => cb(null)); // Simulate successful initial connection
-    connect(); // Call the connect function
-
-    // Store the callback for the error event
-    let errorCallback;
-    mockConnection.on.mockImplementation((event, callback) => {
+     // Mock the 'on' method implementation
+     connection.on.mockImplementation((event, callback) => {
       if (event === 'error') {
-        errorCallback = callback; // Save the error callback
+        connection.errorCallback = callback; // Capture the error callback
       }
     });
-
-    // Simulate the 'error' event with 'PROTOCOL_CONNECTION_LOST'
-    if (errorCallback) {
-      errorCallback(lostConnectionError); // Invoke the stored callback
-    }
-
-    // Verify that the `connect` method is called again for reconnection
-    expect(mockConnection.connect).toHaveBeenCalledTimes(2);
   });
-  
-  it('should throw other types of errors', () => {
-    const otherError = { code: 'SOME_OTHER_ERROR' };
 
-    // Simulate successful initial connection
-    mockConnection.connect.mockImplementationOnce((cb) => cb(null));
-
-    // Import the module
-    const db = require('../database'); // Ensure this imports and uses the mock correctly
-
-    // Call the connect function explicitly
+  test('should create a new MySQL connection with correct configuration', () => {
     db.connect();
 
-    // Simulate the 'error' event with another error code
-    mockConnection.on.mockImplementation((event, callback) => {
-      if (event === 'error') callback(otherError);
-    });
+    expect(mysql.createConnection).toHaveBeenCalledTimes(2);
+    expect(mysql.createConnection).toHaveBeenCalledWith(expect.objectContaining({
+      host: expect.any(String),
+      port: expect.any(String),
+      user: expect.any(String),
+      password: expect.any(String),
+      database: expect.any(String),
+      ssl: { rejectUnauthorized: false },
+    }));
+  });
 
-    // Ensure that non-connection-lost errors are thrown
-    expect(() => {
-      mockConnection.on.mock.calls[0][1](otherError);
-    }).toThrow();
+  test('should handle connection errors and retry after 2 seconds', (done) => {
+    // Mock connection failure
+    mysql.createConnection.mockImplementationOnce(() => ({
+      connect: jest.fn((callback) => callback(new Error('Connection error'))),
+      on: jest.fn(),
+    }));
+
+    jest.useFakeTimers(); // Use fake timers to control setTimeout
+    db.connect();
+
+    expect(mysql.createConnection).toHaveBeenCalledTimes(2);
+    
+    // Fast-forward time to simulate retry
+    jest.advanceTimersByTime(2000);
+
+    expect(mysql.createConnection).toHaveBeenCalledTimes(3); // Should attempt to reconnect
+    done();
+  });
+
+  test('should handle database errors and reconnect on PROTOCOL_CONNECTION_LOST', () => {
+    db.connect(); // Call the connection method
+
+    // Ensure the 'on' method is called with the 'error' event
+    expect(connection.on).toHaveBeenCalledWith('error', expect.any(Function));
+
+    // Simulate connection loss
+    connection.errorCallback({ code: 'PROTOCOL_CONNECTION_LOST' });
+
+    // Verify that the correct error message is logged
+    expect(console.error).toHaveBeenCalledWith('Database connection lost. Reconnecting...');
+
+    // Verify that reconnection is attempted
+    expect(mysql.createConnection).toHaveBeenCalledTimes(2); // Should call connect again
+  });
+
+  test('should handle unhandled errors without reconnecting', () => {
+    db.connect(); // Call the connection method
+
+    // Ensure the 'on' method is called with the 'error' event
+    expect(connection.on).toHaveBeenCalledWith('error', expect.any(Function));
+
+    // Simulate an unhandled error
+    connection.errorCallback({ code: 'SOME_OTHER_ERROR' });
+
+    // Verify that the correct error message is logged
+    expect(console.error).toHaveBeenCalledWith('Database error:', { code: 'SOME_OTHER_ERROR' });
+
+    // Ensure that reconnection is not attempted
+    expect(mysql.createConnection).toHaveBeenCalledTimes(1); // Should not attempt to reconnect
   });
 });

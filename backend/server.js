@@ -1,4 +1,3 @@
-// Import necessary packages and modules
 const express = require('express');                               // Express framework for building the API
 const cors = require('cors');                                     // Middleware for enabling Cross-Origin Resource Sharing
 const bcrypt = require('bcryptjs');                               // Library for hashing passwords securely
@@ -27,7 +26,7 @@ const connection = db.getConnection();
 // Configure Multer for file uploads with memory storage
 const storage = multer.memoryStorage();
 
-const uploadFile = multer({ 
+const uploadFile = multer({
   storage: storage,
   limits: { fileSize: 20 * 1024 * 1024 }, // 20 MB limit
   fileFilter: (req, file, cb) => {
@@ -99,7 +98,7 @@ app.get('/products/:id', (req, res) => {
     }
 
     const product = productResults[0];
-    
+
     // Query the database for average rating and review count for this product
     connection.query(`
       SELECT AVG(rating) AS average_rating, COUNT(*) AS review_count
@@ -119,12 +118,11 @@ app.get('/products/:id', (req, res) => {
         averageRating,
         reviewCount
       };
-      
+
       res.json(productWithReviewInfo);
     });
   });
 });
-
 
 // Endpoint to register a new user, with reCAPTCHA verification
 app.post('/register', async (req, res) => {
@@ -143,8 +141,6 @@ app.post('/register', async (req, res) => {
         response: captchaToken
       }
     });
-
-    console.log(response.data); // Log Google's reCAPTCHA response
 
     const { success, 'error-codes': errorCodes } = response.data;
 
@@ -172,7 +168,7 @@ app.post('/register', async (req, res) => {
           console.error('Error hashing password:', err);
           return res.status(500).json({ error: 'Error creating user. Please try again.' });
         }
-        
+
         // Insert the new user into the database
         const query = 'INSERT INTO users (first_name, last_name, email, password, mobile_number, date_of_birth, role) VALUES (?, ?, ?, ?, ?, ?, ?)';
         connection.query(query, [firstName, lastName, email, hash, mobileNumber, dateOfBirth, role], (err, result) => {
@@ -208,8 +204,6 @@ app.post('/login', async (req, res) => {
         response: captchaToken
       }
     });
-
-    console.log(response.data); // Log Google's reCAPTCHA response
 
     const { success, 'error-codes': errorCodes } = response.data;
 
@@ -401,6 +395,9 @@ app.post('/forgot-password', async (req, res) => {
   const { email, captchaToken } = req.body;
 
   // Verify the reCAPTCHA token
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
   if (!captchaToken) {
     return res.status(400).json({ message: 'Captcha is required' });
   }
@@ -414,10 +411,7 @@ app.post('/forgot-password', async (req, res) => {
       }
     });
 
-    console.log(response.data); // Log Google's reCAPTCHA response
-
     const { success, 'error-codes': errorCodes } = response.data;
-
     if (!success) {
       return res.status(400).json({ message: 'Captcha verification failed', errorCodes });
     }
@@ -484,8 +478,6 @@ app.post('/reset-password/:token', async (req, res) => {
         response: captchaToken
       }
     });
-
-    console.log(response.data); // Log Google's reCAPTCHA response
 
     const { success, 'error-codes': errorCodes } = response.data;
 
@@ -661,7 +653,6 @@ app.get('/orders/:id', (req, res) => {
   });
 });
 
-
 // Fetch all orders or filter by status
 app.get('/orders', (req, res) => {
   const status = req.query.status;
@@ -761,8 +752,6 @@ app.post('/send-contact-email', async (req, res) => {
       }
     });
 
-    console.log(response.data); // Log Google's reCAPTCHA response
-
     const { success, 'error-codes': errorCodes } = response.data;
 
     if (!success) {
@@ -839,7 +828,7 @@ app.post('/api/orders', async (req, res) => {
 
         const orderId = result.insertId;
         const fetchProductsQuery = `SELECT * FROM products WHERE Product_ID IN (${productIds.map(() => '?').join(',')})`;
-        
+
         connection.query(fetchProductsQuery, productIds.map(pid => pid.split(':')[0]), (err, products) => {
           if (err) {
             console.error('Error fetching product details:', err);
@@ -1183,11 +1172,8 @@ app.get('/reviews/:id', (req, res) => {
     }
 
     if (reviews.length === 0) {
-      console.log('No reviews found for productId:', productId); // Log when no reviews are found
       return res.status(404).json({ error: 'No reviews found for this product' });
     }
-
-    console.log('Reviews found:', reviews); // Log the reviews found
 
     // Query to get ratings
     connection.query('SELECT rating FROM Reviews WHERE product_id = ?', [productId], (err, results) => {
@@ -1207,7 +1193,6 @@ app.get('/reviews/:id', (req, res) => {
         }
 
         const reviewCount = countResults[0].review_count; // Get the review count from the result
-        console.log('Total review count for product:', reviewCount); // Log the review count
 
         // Query to calculate the average rating
         connection.query('SELECT AVG(rating) AS average_rating FROM Reviews WHERE product_id = ?', [productId], (err, avgResults) => {
@@ -1217,7 +1202,6 @@ app.get('/reviews/:id', (req, res) => {
           }
 
           const averageRating = avgResults[0].average_rating || 0; // Get the average rating from the result
-          console.log('Average rating for product:', averageRating); // Log the average rating
 
           // Send the reviews, ratings, review count, and average rating to the frontend
           return res.json({ reviews, ratings, reviewCount, averageRating });

@@ -51,7 +51,7 @@ const ShippingMethodForm = ({ data, onNext, onBack, onChange }) => {
       </div>
       {/* Navigation Buttons */}
       <button onClick={onBack}>Back</button>
-      <button onClick={handleNextClick} className='next-button' disabled={!data.shippingOption}>
+      <button onClick={handleNextClick} className='next-button'>
         Next
       </button>
     </div>

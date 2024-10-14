@@ -2,179 +2,95 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import HomePage from '../src/pages/HomePage';
-import { CartProvider } from '../src/context/CartContext';
-import { MemoryRouter } from 'react-router-dom';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
 
-// Create an instance of MockAdapter
-const mock = new MockAdapter(axios);
+// Mock the Header, ProductCard, Footer, and Slideshow components
+jest.mock('../src/components/Header', () => () => <div>Header</div>);
+jest.mock('../src/components/ProductCard', () => (props) => <div data-testid="product-card">{props.title}</div>);
+jest.mock('../src/components/Footer', () => () => <div>Footer</div>);
+jest.mock('../src/components/Slideshow', () => () => <div>Slideshow</div>);
 
-beforeEach(() => {
-    mock.reset(); // Reset any existing mocks before each test
-});
+// Mock the global fetch function
+const mockFetch = jest.fn();
+global.fetch = mockFetch;
 
-test('renders HomePage with header, slideshow, and footer', async () => {
-    // Mock the API response for the products endpoint
-    const apiUrl = process.env.REACT_APP_API_URL;
-    if (!apiUrl) {
-        throw new Error('REACT_APP_API_URL is not set');
-    }
+describe('HomePage Component', () => {
+  beforeEach(() => {
+    jest.clearAllMocks(); // Clear previous mocks
+  });
 
-    mock.onGet(`${apiUrl}/products`).reply(200, [
-        {
-            Product_ID: 1,
-            Product_Name: 'Product 1',
-            Product_Price: 10.0,
-            Product_Image_URL: 'http://example.com/product1.jpg',
-        },
-        {
-            Product_ID: 2,
-            Product_Name: 'Product 2',
-            Product_Price: 20.0,
-            Product_Image_URL: 'http://example.com/product2.jpg',
-        },
-    ]);
+  test('renders the HomePage with Header, Slideshow, and Footer', () => {
+    render(<HomePage />);
+    
+    expect(screen.getByText('Header')).toBeInTheDocument();
+    expect(screen.getByText('Slideshow')).toBeInTheDocument();
+    expect(screen.getByText('Footer')).toBeInTheDocument();
+  });
 
-    render(
-        <MemoryRouter>
-            <CartProvider>
-                <HomePage />
-            </CartProvider>
-        </MemoryRouter>
-    );
+  test('displays error message when fetch fails', async () => {
+    // Mock fetch to simulate a failed response
+    mockFetch.mockRejectedValueOnce(new Error('Failed to fetch'));
 
-    // Check if the header and other components are rendered
-    expect(screen.getByText(/Featured Products/i)).toBeInTheDocument();
+    render(<HomePage />);
 
-    // Wait for the products to be fetched and displayed
-    expect(await screen.findByText(/Product 1/i)).toBeInTheDocument();
-    expect(await screen.findByText(/\$10.00/i)).toBeInTheDocument();
-    expect(await screen.findByText(/Product 2/i)).toBeInTheDocument();
-    expect(await screen.findByText(/\$20.00/i)).toBeInTheDocument();
-});
+    expect(await screen.findByText(/failed to load products/i)).toBeInTheDocument();
+  });
 
-test('renders correct number of products based on window size', async () => {
-    // Mock the API response for the products endpoint
-    mock.onGet(`${process.env.REACT_APP_API_URL}/products`).reply(200, [
-        {
-            Product_ID: 1,
-            Product_Name: 'Product 1',
-            Product_Price: 10.0,
-            Product_Image_URL: 'http://example.com/product1.jpg',
-        },
-        {
-            Product_ID: 2,
-            Product_Name: 'Product 2',
-            Product_Price: 20.0,
-            Product_Image_URL: 'http://example.com/product2.jpg',
-        },
-        {
-            Product_ID: 3,
-            Product_Name: 'Product 3',
-            Product_Price: 15.0,
-            Product_Image_URL: 'http://example.com/product3.jpg',
-        },
-        {
-            Product_ID: 4,
-            Product_Name: 'Product 4',
-            Product_Price: 25.0,
-            Product_Image_URL: 'http://example.com/product4.jpg',
-        },
-        {
-            Product_ID: 5,
-            Product_Name: 'Product 5',
-            Product_Price: 30.0,
-            Product_Image_URL: 'http://example.com/product5.jpg',
-        },
-        {
-            Product_ID: 6,
-            Product_Name: 'Product 6',
-            Product_Price: 35.0,
-            Product_Image_URL: 'http://example.com/product6.jpg',
-        },
-    ]);
-
-    // Set window size for the test
-    global.innerWidth = 800; // Example width
-    global.dispatchEvent(new Event('resize')); // Trigger resize event
-
-    render(
-        <MemoryRouter>
-            <CartProvider>
-                <HomePage />
-            </CartProvider>
-        </MemoryRouter>
-    );
-
-    // Wait for the products to be fetched and displayed
-    await waitFor(() => {
-        const productCards = screen.getAllByRole('article'); // Assuming ProductCard renders an <article>
-        expect(productCards.length).toBe(6); // Adjust based on your logic
-    });
-});
-
-test('updates product count on window resize', async () => {
-    // Mock the API response for the products endpoint
-    mock.onGet(`${process.env.REACT_APP_API_URL}/products`).reply(200, [
-        {
-            Product_ID: 1,
-            Product_Name: 'Product 1',
-            Product_Price: 10.0,
-            Product_Image_URL: 'http://example.com/product1.jpg',
-        },
-        {
-            Product_ID: 2,
-            Product_Name: 'Product 2',
-            Product_Price: 20.0,
-            Product_Image_URL: 'http://example.com/product2.jpg',
-        },
-        {
-            Product_ID: 3,
-            Product_Name: 'Product 3',
-            Product_Price: 15.0,
-            Product_Image_URL: 'http://example.com/product3.jpg',
-        },
-        {
-            Product_ID: 4,
-            Product_Name: 'Product 4',
-            Product_Price: 25.0,
-            Product_Image_URL: 'http://example.com/product4.jpg',
-        },
-        {
-            Product_ID: 5,
-            Product_Name: 'Product 5',
-            Product_Price: 30.0,
-            Product_Image_URL: 'http://example.com/product5.jpg',
-        },
-        {
-            Product_ID: 6,
-            Product_Name: 'Product 6',
-            Product_Price: 35.0,
-            Product_Image_URL: 'http://example.com/product6.jpg',
-        },
-    ]);
-
-    render(
-        <MemoryRouter>
-            <CartProvider>
-                <HomePage />
-            </CartProvider>
-        </MemoryRouter>
-    );
-
-
-    // Initial check
-    await waitFor(() => {
-        expect(screen.getAllByRole('article').length).toBe(10); // For example, on larger screens
+  test('fetches and displays products successfully', async () => {
+    // Mock fetch to return a successful response with product data
+    const mockProducts = [
+      { Product_ID: '1', Product_Name: 'Product 1', Product_Price: '10.00', Product_Image_URL: 'url1' },
+      { Product_ID: '2', Product_Name: 'Product 2', Product_Price: '20.00', Product_Image_URL: 'url2' },
+    ];
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockProducts,
     });
 
-    // Set smaller window size
-    global.innerWidth = 500; // Simulate smaller screen
-    global.dispatchEvent(new Event('resize')); // Trigger resize event
+    render(<HomePage />);
 
-    // Check updated product count
-    await waitFor(() => {
-        expect(screen.getAllByRole('article').length).toBe(3); // Adjust based on your logic
+    await waitFor(() => expect(screen.getAllByTestId('product-card')).toHaveLength(mockProducts.length));
+
+    // Check if product names are displayed
+    mockProducts.forEach(product => {
+      expect(screen.getByText(product.Product_Name)).toBeInTheDocument();
     });
+  });
+
+test('updates displayed products on window resize', async () => {
+    // Mock fetch to return a successful response with product data
+    const mockProducts = [
+        { Product_ID: '1', Product_Name: 'Product 1', Product_Price: '10.00', Product_Image_URL: 'url1' },
+        { Product_ID: '2', Product_Name: 'Product 2', Product_Price: '20.00', Product_Image_URL: 'url2' },
+        { Product_ID: '3', Product_Name: 'Product 3', Product_Price: '30.00', Product_Image_URL: 'url3' },
+        { Product_ID: '4', Product_Name: 'Product 4', Product_Price: '40.00', Product_Image_URL: 'url4' },
+        { Product_ID: '5', Product_Name: 'Product 5', Product_Price: '50.00', Product_Image_URL: 'url5' },
+        { Product_ID: '6', Product_Name: 'Product 6', Product_Price: '60.00', Product_Image_URL: 'url6' },
+        { Product_ID: '7', Product_Name: 'Product 7', Product_Price: '70.00', Product_Image_URL: 'url7' },
+        { Product_ID: '8', Product_Name: 'Product 8', Product_Price: '80.00', Product_Image_URL: 'url8' },
+    ];
+
+    // Mock the fetch call to return product data
+    global.fetch = jest.fn(() =>
+        Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve(mockProducts),
+        })
+    );
+
+    render(<HomePage />);
+
+    // Simulate window resize to a width that should show 6 products
+    global.innerWidth = 800;
+    window.dispatchEvent(new Event('resize'));
+
+    await waitFor(() => expect(screen.getAllByTestId('product-card')).toHaveLength(6));
+
+    // Simulate window resize to a width that should show 3 products
+    global.innerWidth = 500;
+    window.dispatchEvent(new Event('resize'));
+
+    // Wait for the products to be updated after resize
+    await waitFor(() => expect(screen.getAllByTestId('product-card')).toHaveLength(3));
+});
+
 });
