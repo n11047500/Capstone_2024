@@ -1,10 +1,12 @@
+const db = require('../database');
 const request = require('supertest');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const app = require('../server');
+const { app, sendEmail } = require('../server');
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const multer = require('multer');
@@ -16,14 +18,29 @@ const transporter = {
   }),
 };
 
+// Mock the sendEmail function
+jest.mock('../server', () => {
+  const actualModule = jest.requireActual('../server'); // Import the actual module
+  return {
+    ...actualModule, // Spread the actual exports
+    sendEmail: jest.fn(), // Mock sendEmail
+  };
+});
+
 jest.mock('axios'); // Mock axios for reCAPTCHA verification
 jest.mock('jsonwebtoken'); // Mock jwt for token verification
 jest.mock('bcryptjs'); // Mock bcrypt for password hashing
-jest.mock('nodemailer');
+jest.mock('nodemailer'); // Mock nodemailer for sending emails
+jest.mock('stripe'); // Mock stripe for payment processing
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const db = require('../database');
-const upload = multer();
+// Mock multer's upload middleware
+const uploadFile = {
+  single: jest.fn(() => (req, res, next) => {
+    req.file = { /* Mock file object */ }; // Simulate a file upload
+    next();
+  }),
+};
+
 
 // Mock the database module
 jest.mock('../database.js', () => {
@@ -37,10 +54,25 @@ jest.mock('../database.js', () => {
   };
 });
 
+// Mock the Stripe module
+jest.mock('stripe', () => {
+  const mockPaymentIntent = {
+    id: 'secret_test', // Mocked payment intent ID
+    status: 'succeeded',
+  };
+
+  return jest.fn(() => ({
+    paymentIntents: {
+      retrieve: jest.fn().mockResolvedValue(mockPaymentIntent), // Mock implementation for retrieve
+      create: jest.fn(), // You can mock create if needed
+    },
+  }));
+});
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
+
 
 describe('Server Endpoints', () => {
   const mockConnection = db.getConnection(); // Get the mocked connection instance
@@ -1155,122 +1187,362 @@ describe('Server Endpoints', () => {
     });
   });
 
+  // Test GET /orders/:id
+  describe('GET /orders/:id', () => {
+    afterEach(() => {
+      jest.clearAllMocks(); // Clear mocks after each test
+    });
+  
+    it('should return order details when order exists', async () => {
+      const mockOrderId = 1;
+      const mockOrder = {
+        Order_ID: mockOrderId,
+        Total_Amount: 100,
+        Product_IDs: '101:optionA, 102:optionB',
+        First_Name: 'John',
+        Last_Name: 'Doe',
+        Mobile: '1234567890',
+        Email: 'john.doe@example.com',
+        Street_Address: '123 Main St',
+        Order_Type: 'Online',
+        status: 'Completed',
+        Order_Date: new Date().toISOString(),
+      };
+  
+      const mockProducts = [
+        { Product_ID: '101', Name: 'Product A', Price: 50 },
+        { Product_ID: '102', Name: 'Product B', Price: 50 },
+      ];
+  
+      // Mock the query response for the order
+      mockConnection.query.mockImplementationOnce((query, params, callback) => {
+        callback(null, [mockOrder]);
+      });
+  
+      // Mock the query response for the products
+      mockConnection.query.mockImplementationOnce((query, params, callback) => {
+        callback(null, mockProducts);
+      });
+  
+      const response = await request(app).get(`/orders/${mockOrderId}`);
+  
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        ...mockOrder,
+        products: [
+          { Product_ID: '101', Name: 'Product A', Price: 50, option: 'optionA' },
+          { Product_ID: '102', Name: 'Product B', Price: 50, option: 'optionB' },
+        ],
+      });
+    });
+  
+    it('should return 404 if the order does not exist', async () => {
+      const mockOrderId = 999;
+  
+      // Mock the query response to return no results
+      mockConnection.query.mockImplementationOnce((query, params, callback) => {
+        callback(null, []);
+      });
+  
+      const response = await request(app).get(`/orders/${mockOrderId}`);
+  
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({ error: 'Order not found' });
+    });
+  
+    it('should return 500 if there is a database error', async () => {
+      const mockOrderId = 1;
+  
+      // Mock the query to simulate a database error
+      mockConnection.query.mockImplementationOnce((query, params, callback) => {
+        callback(new Error('Database error'));
+      });
+  
+      const response = await request(app).get(`/orders/${mockOrderId}`);
+  
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({ error: 'Internal Server Error' });
+    });
+  });
+
+  // Test GET /orders
+  describe('GET /orders', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+  
+    it('should return all orders when no status is provided', async () => {
+      const mockOrders = [
+        {
+          Order_ID: 1,
+          Total_Amount: 100,
+          Product_IDs: '101:optionA, 102:optionB',
+          First_Name: 'John',
+          Last_Name: 'Doe',
+          Mobile: '1234567890',
+          Email: 'john.doe@example.com',
+          Street_Address: '123 Main St',
+          Order_Type: 'Online',
+          status: 'Completed',
+        },
+        {
+          Order_ID: 2,
+          Total_Amount: 200,
+          Product_IDs: '103:optionC',
+          First_Name: 'Jane',
+          Last_Name: 'Doe',
+          Mobile: '0987654321',
+          Email: 'jane.doe@example.com',
+          Street_Address: '456 Elm St',
+          Order_Type: 'In-Store',
+          status: 'Pending',
+        },
+      ];
+  
+      mockConnection.query.mockImplementation((query, params, callback) => {
+        callback(null, mockOrders);
+      });
+  
+      const response = await request(app).get('/orders');
+  
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockOrders);
+      expect(mockConnection.query).toHaveBeenCalledWith(expect.stringContaining('SELECT'), expect.anything(), expect.any(Function));
+    });
+  
+    it('should return filtered orders by status', async () => {
+      const mockOrders = [
+        {
+          Order_ID: 1,
+          Total_Amount: 100,
+          Product_IDs: '101:optionA',
+          First_Name: 'John',
+          Last_Name: 'Doe',
+          Mobile: '1234567890',
+          Email: 'john.doe@example.com',
+          Street_Address: '123 Main St',
+          Order_Type: 'Online',
+          status: 'Completed',
+        },
+      ];
+  
+      mockConnection.query.mockImplementation((query, params, callback) => {
+        expect(params[0]).toBe('Completed'); // Ensure the correct parameter is passed
+        callback(null, mockOrders);
+      });
+  
+      const response = await request(app).get('/orders?status=Completed');
+  
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockOrders);
+      expect(mockConnection.query).toHaveBeenCalledWith(expect.stringContaining('SELECT'), ['Completed'], expect.any(Function));
+    });
+  
+    it('should return 500 if there is a database error', async () => {
+      mockConnection.query.mockImplementation((query, params, callback) => {
+        callback(new Error('Database error'));
+      });
+  
+      const response = await request(app).get('/orders');
+  
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({ error: 'Internal Server Error' });
+    });
+  });
+
   // Test PUT /orders/:id
   describe('PUT /orders/:id', () => {
-    // Assuming there's no need to re-establish the database connection here
-    it('should update the order status and return success message', async () => {
-      const response = await request(app)
-        .put('/orders/existing_id') // Use a valid ID
-        .send({ status: 'completed' }); // Valid status
-
-      expect(response.status).toBe(200);
-      expect(response.body.message).toBe('Order status updated successfully.');
+    afterEach(() => {
+      jest.clearAllMocks();
     });
-
+  
     it('should return 400 if status is not provided', async () => {
-      const orderId = 1; // Replace with an actual order ID from your test database
-
-      await request(app)
-        .put(`/orders/${orderId}`)
-        .send({})
-        .expect('Content-Type', /json/)
-        .expect(400)
-        .expect({ error: 'Status is required' });
+      const response = await request(app).put('/orders/1').send({});
+  
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ error: 'Status is required' });
     });
-
-    it('should return 404 if order not found', async () => {
-      const invalidOrderId = 9999; // Use an ID that does not exist
-
-      await request(app)
-        .put(`/orders/${invalidOrderId}`)
-        .send({ status: 'Shipped' })
-        .expect('Content-Type', /json/)
-        .expect(404)
-        .expect({ error: 'Order not found' });
+  
+    it('should update order status successfully', async () => {
+      const orderId = 1;
+      const newStatus = 'Shipped';
+  
+      // Mocking the database update response
+      mockConnection.query.mockImplementation((query, params, callback) => {
+        expect(params[0]).toBe(newStatus); // Check that the correct new status is sent
+        expect(params[1]).toBe(orderId.toString()); // Check that the correct order ID is sent
+        callback(null, { affectedRows: 1 }); // Simulate successful update
+      });
+  
+      const response = await request(app).put(`/orders/${orderId}`).send({ status: newStatus });
+  
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ message: 'Order status updated successfully.' });
     });
-
+  
+    it('should return 404 if order does not exist', async () => {
+      const orderId = 1;
+      const newStatus = 'Shipped';
+  
+      // Mocking the database update response for a non-existent order
+      mockConnection.query.mockImplementation((query, params, callback) => {
+        callback(null, { affectedRows: 0 }); // Simulate no affected rows
+      });
+  
+      const response = await request(app).put(`/orders/${orderId}`).send({ status: newStatus });
+  
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({ error: 'Order not found' });
+    });
+  
     it('should return 500 if there is a database error', async () => {
-      const response = await request(app)
-        .put('/orders/existing_id')
-        .send({ status: 'error' }); // Triggering database error
-
+      const orderId = 1;
+      const newStatus = 'Shipped';
+  
+      // Mocking a database error
+      mockConnection.query.mockImplementation((query, params, callback) => {
+        callback(new Error('Database error'));
+      });
+  
+      const response = await request(app).put(`/orders/${orderId}`).send({ status: newStatus });
+  
       expect(response.status).toBe(500);
-      expect(response.body.error).toBe('Internal Server Error');
+      expect(response.body).toEqual({ error: 'Internal Server Error' });
     });
   });
 
   // Test POST /send-email
   describe('POST /send-email', () => {
-    it('should send an email successfully', async () => {
-      const response = await request(app)
-        .post('/send-email')
-        .send({
-          to: 'test@example.com',
-          subject: 'Test Email',
-          html: '<p>This is a test email</p>',
-        })
-        .expect('Content-Type', /json/)
-        .expect(200);
-
-      expect(response.body.message).toBe('Email sent successfully');
+    beforeEach(() => {
+      jest.clearAllMocks(); // Clear mock calls before each test
     });
-
-    it('should return 500 if email sending fails', async () => {
-      // You might need to mock the email sending failure for this test
-      await request(app)
-        .post('/send-email')
-        .send({
-          to: 'invalid-email', // or some other invalid data
-          subject: 'Test Email',
-          html: '<p>This is a test email</p>',
-        })
-        .expect('Content-Type', /json/)
-        .expect(500)
-        .expect({ error: 'Failed to send email' });
+  
+    test('should send email successfully and return 200', async () => {
+      nodemailer.createTransport.mockReturnValue(transporter);
+  
+      const response = await request(app).post('/send-email').send({
+        to: 'recipient@example.com',
+        subject: 'Test Subject',
+        html: '<p>This is a test email.</p>',
+      });
+  
+      expect(response.statusCode).toBe(200);
+      expect(response.body.message).toBe('Email sent successfully');
+      expect(transporter.sendMail).toHaveBeenCalledWith(
+        expect.objectContaining({
+          to: 'recipient@example.com',
+          subject: 'Test Subject',
+          html: '<p>This is a test email.</p>',
+        }),
+        expect.any(Function)
+      );
+    });
+  
+    test('should return 500 if sending email fails', async () => {
+      const mockSendMail = jest.fn((mailOptions, callback) => {
+        callback(new Error('Send mail error'));
+      });
+      
+      nodemailer.createTransport.mockReturnValue({
+        sendMail: mockSendMail,
+      });
+  
+      const response = await request(app).post('/send-email').send({
+        to: 'recipient@example.com',
+        subject: 'Test Subject',
+        html: '<p>This is a test email.</p>',
+      });
+  
+      expect(response.statusCode).toBe(500);
+      expect(response.body.error).toBe('Failed to send email');
+      expect(mockSendMail).toHaveBeenCalled();
     });
   });
 
   // Test POST /send-contact-email
   describe('POST /send-contact-email', () => {
-    it('should send a contact email successfully with valid reCAPTCHA', async () => {
-      axios.post.mockResolvedValue({
-        data: { success: true },
-      });
-
-      const response = await request(app)
-        .post('/send-contact-email')
-        .send({
-          first_name: 'John',
-          last_name: 'Doe',
-          email: 'john.doe@example.com',
-          mobile: '1234567890',
-          inquiry: 'Test inquiry',
-          captchaToken: 'valid-token', // Mock reCAPTCHA token
-        })
-        .expect('Content-Type', /json/)
-        .expect(200);
-
-      expect(response.body.message).toBe('Email sent successfully!');
+    beforeEach(() => {
+      jest.clearAllMocks(); // Clear mock calls before each test
     });
-
-    it('should return 400 if reCAPTCHA verification fails', async () => {
-      axios.post.mockResolvedValue({
-        data: { success: false, 'error-codes': ['invalid-input-response'] },
+  
+    test('should return 400 if captchaToken is missing', async () => {
+      const response = await request(app).post('/send-contact-email').send({
+        first_name: 'John',
+        last_name: 'Doe',
+        email: 'john.doe@example.com',
+        mobile: '1234567890',
+        inquiry: 'Hello!',
       });
-
-      const response = await request(app)
-        .post('/send-contact-email')
-        .send({
-          first_name: 'John',
-          last_name: 'Doe',
-          email: 'john.doe@example.com',
-          mobile: '1234567890',
-          inquiry: 'Test inquiry',
-          captchaToken: 'invalid-token',
-        })
-        .expect('Content-Type', /json/)
-        .expect(400)
-        .expect({ message: 'Captcha verification failed', errorCodes: ['invalid-input-response'] });
+      expect(response.statusCode).toBe(400);
+      expect(response.body.message).toBe('Captcha is required');
+    });
+  
+    test('should return 400 if reCAPTCHA verification fails', async () => {
+      axios.post.mockResolvedValueOnce({
+        data: {
+          success: false,
+          'error-codes': ['invalid-input-response'],
+        },
+      });
+  
+      const response = await request(app).post('/send-contact-email').send({
+        first_name: 'John',
+        last_name: 'Doe',
+        email: 'john.doe@example.com',
+        mobile: '1234567890',
+        inquiry: 'Hello!',
+        captchaToken: 'dummy-token',
+      });
+  
+      expect(response.statusCode).toBe(400);
+      expect(response.body.message).toBe('Captcha verification failed');
+    });
+  
+    test('should return 500 if nodemailer fails', async () => {
+      axios.post.mockResolvedValueOnce({
+        data: {
+          success: true,
+        },
+      });
+  
+      const mockSendMail = jest.fn((options, callback) => callback(new Error('Send mail error')));
+      nodemailer.createTransport.mockReturnValue({ sendMail: mockSendMail });
+  
+      const response = await request(app).post('/send-contact-email').send({
+        first_name: 'John',
+        last_name: 'Doe',
+        email: 'john.doe@example.com',
+        mobile: '1234567890',
+        inquiry: 'Hello!',
+        captchaToken: 'dummy-token',
+      });
+  
+      expect(response.statusCode).toBe(500);
+      expect(response.body.message).toBe('Error sending email');
+    });
+  
+    test('should return 200 if email is sent successfully', async () => {
+      axios.post.mockResolvedValueOnce({
+        data: {
+          success: true,
+        },
+      });
+  
+      nodemailer.createTransport.mockReturnValue({
+        sendMail: jest.fn((options, callback) => callback(null, { response: 'Email sent' })),
+      });
+  
+      const response = await request(app).post('/send-contact-email').send({
+        first_name: 'John',
+        last_name: 'Doe',
+        email: 'john.doe@example.com',
+        mobile: '1234567890',
+        inquiry: 'Hello!',
+        captchaToken: 'dummy-token',
+      });
+  
+      expect(response.statusCode).toBe(200);
+      expect(response.body.message).toBe('Email sent successfully!');
     });
   });
 
@@ -1322,41 +1594,141 @@ describe('Server Endpoints', () => {
 
   // Test GET /api/orders/details
   describe('GET /api/orders/details', () => {
-    it('should retrieve order details with valid client secret', async () => {
-      const validClientSecret = 'your_actual_client_secret'; // Replace with a real client secret
+    it('should return order details successfully', async () => {
+      const mockOrderResponse = {
+        Product_IDs: '1:2, 3:4',
+      };
+  
+      // Mocking the database query to return an order
+      jest.spyOn(mockConnection, 'query').mockImplementation((query, params, callback) => {
+        if (query.includes('SELECT * FROM orders WHERE client_secret = ?')) {
+          return callback(null, [mockOrderResponse]); // Simulating a successful order retrieval
+        }
+        callback(new Error('Query not recognized')); // Simulating an error for unrecognized queries
+      });
+  
+      // Mocking product retrieval
+      jest.spyOn(mockConnection, 'query').mockImplementation((query, params, callback) => {
+        if (query.includes('SELECT * FROM products WHERE Product_ID IN')) {
+          return callback(null, [
+            { id: 1, name: 'Product 1' },
+            { id: 2, name: 'Product 2' },
+            { id: 3, name: 'Product 3' },
+            { id: 4, name: 'Product 4' },
+          ]); // Simulating successful product retrieval
+        }
+        callback(new Error('Query not recognized')); // Simulating an error for unrecognized queries
+      });
+  
+      // Making a request to your endpoint
       const response = await request(app)
-        .get(`/api/orders/details?client_secret=${validClientSecret}`);
-
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('order');
-      expect(response.body).toHaveProperty('products');
-    });
-
-    it('should return 400 if client secret is missing', async () => {
-      await request(app)
         .get('/api/orders/details')
-        .expect('Content-Type', /json/)
-        .expect(400)
-        .expect({ error: 'Client secret is required' });
+        .query({ client_secret: 'secret_test' }); // Replace with your test case
+  
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('order', mockOrderResponse);
+      expect(response.body).toHaveProperty('products');
+      expect(response.body.products).toHaveLength(4); // Expecting 4 products based on mock data
     });
-
+  
+    it('should return 400 if client_secret is missing', async () => {
+      const response = await request(app).get('/api/orders/details'); // No query params
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ error: 'Client secret is required' });
+    });
+  
     it('should return 404 if payment not found or not successful', async () => {
+      // Adjust the mock to simulate payment intent not found
+      jest.clearAllMocks();
+      jest.mock('stripe', () => {
+        return jest.fn(() => ({
+          paymentIntents: {
+            retrieve: jest.fn().mockResolvedValue(null), // Simulate not found
+          },
+        }));
+      });
+  
       const response = await request(app)
-        .get('/api/orders/details?client_secret=invalid_secret');
-
+        .get('/api/orders/details')
+        .query({ client_secret: 'invalid_secret' });
+  
       expect(response.status).toBe(404);
-      expect(response.body.error).toBe('Payment not found or not successful');
+      expect(response.body).toEqual({ error: 'Payment not found or not successful' });
+    });
+  
+    it('should return 404 if order not found', async () => {
+      jest.clearAllMocks();
+      // Mock the payment intent as succeeded
+      jest.mock('stripe', () => {
+        const mockPaymentIntent = {
+          id: 'secret_test',
+          status: 'succeeded',
+        };
+  
+        return jest.fn(() => ({
+          paymentIntents: {
+            retrieve: jest.fn().mockResolvedValue(mockPaymentIntent),
+          },
+        }));
+      });
+  
+      // Mock the database query to return no orders
+      jest.spyOn(mockConnection, 'query').mockImplementation((query, params, callback) => {
+        if (query.includes('SELECT * FROM orders WHERE client_secret = ?')) {
+          return callback(null, []); // Simulating no orders found
+        }
+        callback(new Error('Query not recognized')); // Simulating an error for unrecognized queries
+      });
+  
+      const response = await request(app)
+        .get('/api/orders/details')
+        .query({ client_secret: 'pi_test_123_secret_test_secret' });
+  
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({ error: 'Order not found' });
     });
   });
 
-  // Mock sendEmail function
-  const sendEmail = jest.fn();
-  app.post('/submit-form', upload.single('file'), async (req, res) => {
-    try {
-      const formData = req.body;
-      const file = req.file;
-
-      const formDataObj = {
+  // Test POST /submit-form
+  describe('POST /submit-form', () => {
+    afterEach(() => {
+      jest.clearAllMocks(); // Clear mock calls after each test
+    });
+  
+    it('should submit the form and send an email successfully', async () => {
+      // Arrange: Set up the mock implementation of sendEmail
+      sendEmail.mockResolvedValueOnce(); // Resolve sendEmail promise
+  
+      const formData = {
+        colorType: 'Solid',
+        color: 'Red',
+        customColor: 'Bright Red',
+        width: '100',
+        wicking: 'Yes',
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@example.com',
+        comment: 'No comments',
+      };
+  
+      // Act: Send the POST request
+      const response = await request(app)
+        .post('/submit-form')
+        .field('colorType', formData.colorType)
+        .field('color', formData.color)
+        .field('customColor', formData.customColor)
+        .field('width', formData.width)
+        .field('wicking', formData.wicking)
+        .field('firstName', formData.firstName)
+        .field('lastName', formData.lastName)
+        .field('email', formData.email)
+        .field('comment', formData.comment)
+        .attach('file', Buffer.from('test file content'), 'test-file.txt'); // Attach a mock file
+  
+      // Assert: Check the response
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ message: 'Form submitted and email sent successfully' });
+      expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({
         colorType: formData.colorType,
         color: formData.color,
         customColor: formData.customColor,
@@ -1366,143 +1738,259 @@ describe('Server Endpoints', () => {
         lastName: formData.lastName,
         email: formData.email,
         comment: formData.comment,
-        file: file || null
-      };
-
-      await sendEmail(formDataObj); // Call mocked sendEmail
-      res.status(200).json({ message: 'Form submitted and email sent successfully' });
-    } catch (error) {
-      console.error('Error in form submission:', error);
-      res.status(500).json({ message: 'Error in form submission' });
-    }
-  });
-
-  // Test POST /submit-form
-  describe('POST /submit-form', () => {
-    it('should submit form and send email successfully', async () => {
-      sendEmail.mockResolvedValueOnce({ success: true }); // Mock successful email sending
-
-      const response = await request(app)
-        .post('/submit-form')
-        .field('colorType', 'testType')
-        .field('color', 'red')
-        .field('customColor', 'blue')
-        .field('width', '10')
-        .field('wicking', 'yes')
-        .field('firstName', 'John')
-        .field('lastName', 'Doe')
-        .field('email', 'john.doe@example.com')
-        .field('comment', 'No comment')
-        .attach('file', 'path/to/file.txt'); // Mock file attachment
-
-      expect(response.status).toBe(200);
-      expect(response.body.message).toBe('Form submitted and email sent successfully');
-      expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({
+        file: expect.any(Object), // Expecting a file object
+      }));
+    });
+  
+    it('should return an error if no file is uploaded', async () => {
+      // Arrange: Override the upload middleware to simulate no file uploaded
+      uploadFile.single = jest.fn((fieldName) => (req, res, next) => {
+        req.file = null; // Simulate no file uploaded
+        next();
+      });
+  
+      const formData = {
+        colorType: 'Solid',
+        color: 'Red',
+        customColor: 'Bright Red',
+        width: '100',
+        wicking: 'Yes',
         firstName: 'John',
         lastName: 'Doe',
         email: 'john.doe@example.com',
-      }));
-    });
-
-    it('should return 500 if email sending fails', async () => {
-      sendEmail.mockRejectedValueOnce(new Error('Email sending failed')); // Mock email sending failure
-
+        comment: 'No comments',
+      };
+  
+      // Act: Send the POST request without a file
       const response = await request(app)
         .post('/submit-form')
-        .send({
-          // All necessary fields without file for simplicity
-          colorType: 'testType',
-          color: 'red',
-          customColor: 'blue',
-          width: '10',
-          wicking: 'yes',
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john.doe@example.com',
-          comment: 'No comment'
-        });
-
+        .field('colorType', formData.colorType)
+        .field('color', formData.color)
+        .field('customColor', formData.customColor)
+        .field('width', formData.width)
+        .field('wicking', formData.wicking)
+        .field('firstName', formData.firstName)
+        .field('lastName', formData.lastName)
+        .field('email', formData.email)
+        .field('comment', formData.comment);
+  
+      // Assert: Check the response for no file error
+      expect(response.status).toBe(400); // Expecting 400 Bad Request for missing file
+      expect(response.body).toEqual({ message: 'No file uploaded' }); // Adjusted message for clarity
+      expect(sendEmail).not.toHaveBeenCalled(); // Ensure sendEmail was not called
+    });
+  
+    it('should handle errors during form submission', async () => {
+      // Arrange: Mock sendEmail to throw an error
+      sendEmail.mockRejectedValueOnce(new Error('Email sending failed'));
+  
+      const formData = {
+        colorType: 'Solid',
+        color: 'Red',
+        customColor: 'Bright Red',
+        width: '100',
+        wicking: 'Yes',
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@example.com',
+        comment: 'No comments',
+      };
+  
+      // Act: Send the POST request with a file
+      const response = await request(app)
+        .post('/submit-form')
+        .field('colorType', formData.colorType)
+        .field('color', formData.color)
+        .field('customColor', formData.customColor)
+        .field('width', formData.width)
+        .field('wicking', formData.wicking)
+        .field('firstName', formData.firstName)
+        .field('lastName', formData.lastName)
+        .field('email', formData.email)
+        .field('comment', formData.comment)
+        .attach('file', Buffer.from('test file content'), 'test-file.txt'); // Attach a mock file
+  
+      // Assert: Check the response for error handling
       expect(response.status).toBe(500);
-      expect(response.body.message).toBe('Error in form submission');
+      expect(response.body).toEqual({ message: 'Error in form submission' });
     });
   });
 
   // Test GET /api/search
   describe('GET /api/search', () => {
-    it('should return products matching the query', async () => {
-      const query = 'sample';
-
-      const response = await request(app)
-        .get(`/api/search?query=${query}`);
-
-      expect(response.status).toBe(200);
-      expect(response.body).toBeInstanceOf(Array); // Check that the response is an array
+    // Mock the connection.query method
+    beforeEach(() => {
+      jest.clearAllMocks();
     });
-
-    it('should return 400 if no query is provided', async () => {
-      const response = await request(app)
-        .get('/api/search');
-
+  
+    it('should return 400 if query parameter is missing', async () => {
+      const response = await request(app).get('/api/search');
+  
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe('Query parameter is required');
+      expect(response.body).toEqual({ error: 'Query parameter is required' });
+    });
+  
+    it('should return results when a valid query is provided', async () => {
+      const mockResults = [
+        { Product_Name: 'Test Product 1', Description: 'A sample product' },
+        { Product_Name: 'Test Product 2', Description: 'Another sample product' },
+      ];
+  
+      // Mock the database query
+      mockConnection.query = jest.fn((sql, values, callback) => {
+        callback(null, mockResults); // Simulate a successful database query
+      });
+  
+      const response = await request(app).get('/api/search').query({ query: 'Test' });
+  
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockResults);
+      expect(mockConnection.query).toHaveBeenCalledWith(
+        expect.stringContaining('SELECT * FROM products'),
+        [`%Test%`, `%Test%`],
+        expect.any(Function)
+      );
+    });
+  
+    it('should return 500 if there is a database error', async () => {
+      // Mock the database query to simulate an error
+      mockConnection.query = jest.fn((sql, values, callback) => {
+        callback(new Error('Database query error'), null); // Simulate a database error
+      });
+  
+      const response = await request(app).get('/api/search').query({ query: 'Test' });
+  
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({ error: 'Internal server error' });
     });
   });
 
   // Test GET /reviews/:id
   describe('GET /reviews/:id', () => {
-    it('should return reviews for a product', async () => {
-      const productId = 1; // Replace with a valid product ID
-
-      const response = await request(app)
-        .get(`/reviews/${productId}`);
-
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('reviews');
-      expect(response.body).toHaveProperty('ratings');
-      expect(response.body).toHaveProperty('reviewCount');
-      expect(response.body).toHaveProperty('averageRating');
+    beforeEach(() => {
+      jest.clearAllMocks();
     });
-
-    it('should return 404 if no reviews found for the product', async () => {
-      const productId = 999; // Replace with an invalid product ID
-
-      const response = await request(app)
-        .get(`/reviews/${productId}`);
-
+  
+    it('should return 404 if no reviews are found for the product', async () => {
+      const productId = 1;
+  
+      // Mock the database query to return no reviews
+      mockConnection.query = jest.fn((sql, values, callback) => {
+        callback(null, []); // Simulate no reviews found
+      });
+  
+      const response = await request(app).get(`/reviews/${productId}`);
+  
       expect(response.status).toBe(404);
-      expect(response.body.error).toBe('No reviews found for this product');
+      expect(response.body).toEqual({ error: 'No reviews found for this product' });
+    });
+  
+    it('should return reviews, ratings, review count, and average rating when reviews are found', async () => {
+      const productId = 1;
+  
+      // Mock the database queries
+      const mockReviews = [
+        { review_id: 1, product_id: productId, rating: 4, comment: 'Great product!', first_name: 'John' },
+        { review_id: 2, product_id: productId, rating: 5, comment: 'Excellent!', first_name: 'Jane' },
+      ];
+      const mockRatings = [
+        { rating: 4 },
+        { rating: 5 },
+      ];
+      const mockCountResults = [{ review_count: 2 }];
+      const mockAvgResults = [{ average_rating: 4.5 }];
+  
+      mockConnection.query = jest.fn((sql, values, callback) => {
+        if (sql.includes('SELECT r.review_id')) {
+          callback(null, mockReviews); // Return mock reviews
+        } else if (sql.includes('SELECT rating')) {
+          callback(null, mockRatings); // Return mock ratings
+        } else if (sql.includes('SELECT COUNT')) {
+          callback(null, mockCountResults); // Return mock count
+        } else if (sql.includes('SELECT AVG')) {
+          callback(null, mockAvgResults); // Return mock average
+        }
+      });
+  
+      const response = await request(app).get(`/reviews/${productId}`);
+  
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        reviews: mockReviews,
+        ratings: [4, 5],
+        reviewCount: 2,
+        averageRating: 4.5,
+      });
+    });
+  
+    it('should return 500 if there is a database error', async () => {
+      const productId = 1;
+  
+      // Mock the database query to simulate an error
+      mockConnection.query = jest.fn((sql, values, callback) => {
+        callback(new Error('Database error'), null); // Simulate a database error
+      });
+  
+      const response = await request(app).get(`/reviews/${productId}`);
+  
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({ error: 'Internal Server Error' });
     });
   });
 
   // Test POST /reviews
   describe('POST /reviews', () => {
-    it('should create a new review successfully', async () => {
-      const reviewData = {
-        productId: 1, // Replace with a valid product ID
-        rating: 5,
-        comment: 'Excellent product!',
-      };
-
-      const response = await request(app)
-        .post('/reviews')
-        .send(reviewData);
-
-      expect(response.status).toBe(201);
-      expect(response.body.message).toBe('Review created successfully');
+    beforeEach(() => {
+      jest.clearAllMocks();
     });
-
-    it('should return 400 if required fields are missing', async () => {
-      const reviewData = {
-        productId: 1, // Missing rating and comment
-      };
-
+  
+    it('should return 400 if any required field is missing', async () => {
       const response = await request(app)
         .post('/reviews')
-        .send(reviewData);
-
+        .send({ productId: 1, rating: 5 }); // Missing comment
+  
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe('All fields are required');
+      expect(response.body).toEqual({ error: 'All fields are required' });
+    });
+  
+    it('should create a review and return 201', async () => {
+      const newReview = {
+        productId: 1,
+        rating: 5,
+        comment: 'Great product!',
+      };
+  
+      // Mock the database query to simulate successful insertion
+      mockConnection.query = jest.fn((query, params, callback) => {
+        callback(null, { insertId: 1 }); // Simulate successful insert
+      });
+  
+      const response = await request(app)
+        .post('/reviews')
+        .send(newReview);
+  
+      expect(response.status).toBe(201);
+      expect(response.body).toEqual({ message: 'Review created successfully' });
+    });
+  
+    it('should return 500 if there is a database error', async () => {
+      const newReview = {
+        productId: 1,
+        rating: 5,
+        comment: 'Great product!',
+      };
+  
+      // Mock the database query to simulate a database error
+      mockConnection.query = jest.fn((query, params, callback) => {
+        callback(new Error('Database error'), null); // Simulate database error
+      });
+  
+      const response = await request(app)
+        .post('/reviews')
+        .send(newReview);
+  
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({ error: 'Internal Server Error' });
     });
   });
-
 });
