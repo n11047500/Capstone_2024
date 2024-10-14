@@ -69,6 +69,18 @@ const ReviewPage = () => {
     fetchReviews();
   }, [productId]);
 
+  
+  const addReview = (newReview, newRating) => {
+    // Add the new review and rating to the existing state
+    setReviews((prevReviews) => [newReview, ...prevReviews]);
+    setRatings((prevRatings) => [newRating, ...prevRatings]);
+    setReviewCount((prevCount) => prevCount + 1);
+
+    // Update average rating
+    const totalRatings = (averageRating * reviewCount) + newRating;
+    setAverageRating(totalRatings / (reviewCount + 1));
+  };
+  
   // Handle error for product loading
   if (productError) {
     return <div>Error: {productError}</div>;
@@ -120,7 +132,7 @@ const ReviewPage = () => {
             <div className="review-small">
               <span className="star product-page">⭐</span> {ratingFormatter.format(averageRating)} · {reviewCount} reviews
             </div>
-            <ReviewForm productId={productId} />
+            <ReviewForm productId={productId} addReview={addReview} />
           </div>
         </div>
       </div>
