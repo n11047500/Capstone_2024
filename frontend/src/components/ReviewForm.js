@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './ReviewForm.css'
 import { Filter } from 'bad-words';   // Importing Filter for profanity checks
 
-const ReviewForm = ({ productId }) => {
+const ReviewForm = ({ productId, addReview }) => {
   // State variables for star rating, comments and error handling
   const [rating, setRating] = useState('');
   const [comment, setComment] = useState('');
@@ -41,6 +41,7 @@ const ReviewForm = ({ productId }) => {
   
       const data = await response.json();
       console.log('Review submitted:', data);
+      addReview(data.review, parseInt(rating));   // Add the new review to the list
       setRating('');
       setComment('');
       setError('');
