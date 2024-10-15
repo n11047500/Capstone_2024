@@ -209,7 +209,7 @@ button:hover {
   }
 
   .summary-image {
-    width: 17%; /* Adjust the image size as needed */
+    width: 17%; 
     height: auto;
     margin-right: 15px; /* Space between the image and details */
   }

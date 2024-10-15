@@ -25,11 +25,11 @@ html {
   align-items: center; /* Centers content horizontally */
   justify-content: center; /* Centers content vertically if needed */
   text-align: center; /* Ensures text within is centered */
-  padding: 10px; /* Optional: adds padding around the content */
+  padding: 10px; 
 }
 
 .footer-logo img {
-  width: 180px;  /* Adjust size accordingly */
+  width: 180px;  
   height: auto;
 }
 
@@ -51,9 +51,9 @@ html {
 }
 
 .footer-businesses img {
-  width: 100px; /* Adjust width as necessary to make logos smaller */
+  width: 100px; 
   padding: 5px; /* Adds space around each logo */
-  height: auto; /* Adjust height automatically to maintain aspect ratio */
+  height: auto; 
 }
 
 
@@ -87,7 +87,7 @@ html {
 
   }
   .footer-logo img {
-    width: 10vw;  /* Adjust size accordingly */
+    width: 10vw; 
     height: auto;
   }
 }
