@@ -128,25 +128,27 @@ app.get('/products/:id', (req, res) => {
 app.post('/register', async (req, res) => {
   const { firstName, lastName, email, password, mobileNumber, dateOfBirth, role = 'customer', captchaToken } = req.body;
 
-  // Check if the reCAPTCHA token is present
-  if (!captchaToken) {
-    return res.status(400).json({ message: 'reCAPTCHA is required' });
-  }
-
   try {
-    // Verify reCAPTCHA token with Google API
-    const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
-      params: {
-        secret: process.env.RECAPTCHA_SECRET_KEY,
-        response: captchaToken
+    // Only perform CAPTCHA validation if it's enabled
+    if (process.env.CAPTCHA_ENABLED === 'true') {
+      // Check if the reCAPTCHA token is present
+      if (!captchaToken) {
+        return res.status(400).json({ message: 'reCAPTCHA is required' });
       }
-    });
+      // Verify reCAPTCHA token with Google API
+      const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
+        params: {
+          secret: process.env.RECAPTCHA_SECRET_KEY,
+          response: captchaToken
+        }
+      });
 
-    const { success, 'error-codes': errorCodes } = response.data;
+      const { success, 'error-codes': errorCodes } = response.data;
 
-    // If reCAPTCHA verification fails, return an error
-    if (!success) {
-      return res.status(400).json({ message: 'Captcha verification failed', errorCodes });
+      // If reCAPTCHA verification fails, return an error
+      if (!success) {
+        return res.status(400).json({ message: 'Captcha verification failed', errorCodes });
+      }
     }
 
     // Check if the user already exists in the database
@@ -191,24 +193,28 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
   const { email, password, captchaToken } = req.body;
 
-  // Verify the reCAPTCHA token
-  if (!captchaToken) {
-    return res.status(400).json({ message: 'Captcha is required' });
-  }
-
   try {
-    // Verify reCAPTCHA token with Google API
-    const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
-      params: {
-        secret: process.env.RECAPTCHA_SECRET_KEY, // Your reCAPTCHA secret key
-        response: captchaToken
+    // Only perform CAPTCHA validation if it's enabled
+    if (process.env.CAPTCHA_ENABLED === 'true') {
+      console.log('CAPTCHA_ENABLED:', process.env.CAPTCHA_ENABLED);
+
+      // Verify the reCAPTCHA token
+      if (captchaToken) {
+        return res.status(400).json({ message: 'Captcha is required' });
       }
-    });
 
-    const { success, 'error-codes': errorCodes } = response.data;
+      // Verify reCAPTCHA token with Google API
+      const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
+        params: {
+          secret: process.env.RECAPTCHA_SECRET_KEY, // Your reCAPTCHA secret key
+          response: captchaToken
+        }
+      });
 
-    if (!success) {
-      return res.status(400).json({ message: 'Captcha verification failed', errorCodes });
+      const { success, 'error-codes': errorCodes } = response.data;
+      if (!success) {
+        return res.status(400).json({ message: 'Captcha verification failed', errorCodes });
+      }
     }
 
     const query = 'SELECT * FROM users WHERE email = ?';
@@ -736,26 +742,38 @@ app.post('/send-email', (req, res) => {
 
 // Contact us email sending function
 app.post('/send-contact-email', async (req, res) => {
-  const { first_name, last_name, email, mobile, inquiry, captchaToken } = req.body;
+  const { first_name, last_name, email, mobile, inquiry } = req.body;
 
-  // Verify the reCAPTCHA token
-  if (!captchaToken) {
-    return res.status(400).json({ message: 'Captcha is required' });
+  const captchaEnabled = process.env.CAPTCHA_ENABLED === 'true'; // Check if CAPTCHA is enabled
+  let captchaToken = null;
+
+  if (captchaEnabled) {
+    captchaToken = req.body.captchaToken; // Only get captchaToken if CAPTCHA is enabled
+    // Verify the reCAPTCHA token
+    if (!captchaToken) {
+      return res.status(400).json({ message: 'Captcha is required' });
+    }
   }
 
   try {
-    // Verify reCAPTCHA token with Google API
-    const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
-      params: {
-        secret: process.env.RECAPTCHA_SECRET_KEY, // Your reCAPTCHA secret key
-        response: captchaToken
+    if (captchaEnabled) {
+      // Verify reCAPTCHA token with Google API only if CAPTCHA is enabled
+      const response = await axios.post(
+        `https://www.google.com/recaptcha/api/siteverify`,
+        null,
+        {
+          params: {
+            secret: process.env.RECAPTCHA_SECRET_KEY, // Your reCAPTCHA secret key
+            response: captchaToken
+          }
+        }
+      );
+
+      const { success, 'error-codes': errorCodes } = response.data;
+
+      if (!success) {
+        return res.status(400).json({ message: 'Captcha verification failed', errorCodes });
       }
-    });
-
-    const { success, 'error-codes': errorCodes } = response.data;
-
-    if (!success) {
-      return res.status(400).json({ message: 'Captcha verification failed', errorCodes });
     }
 
     const transporter = nodemailer.createTransport({

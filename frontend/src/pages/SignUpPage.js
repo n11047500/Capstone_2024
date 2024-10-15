@@ -6,6 +6,8 @@ import Footer from '../components/Footer';
 import './SignUpPage.css';
 
 const SignUpPage = () => {
+  // Check if CAPTCHA is enabled based on the environment variable
+  const isCaptchaEnabled = process.env.REACT_APP_CAPTCHA_ENABLED === 'true';
   // Navigation function for redirecting users
   const navigate = useNavigate();
   // State to manage form data inputs
@@ -40,7 +42,9 @@ const SignUpPage = () => {
     e.preventDefault();
     try {
       // Combine form data with the CAPTCHA token
-      const totalForm = { ...formData, captchaToken };
+      const totalForm = isCaptchaEnabled
+        ? { ...formData, captchaToken }
+        : formData;
 
       // Send registration data to the backend API
       const response = await fetch(`${process.env.REACT_APP_API_URL}/register`, {
@@ -132,11 +136,13 @@ const SignUpPage = () => {
               onChange={handleChange}
             />
             {/* Google reCAPTCHA component for verification */}
-            <ReCAPTCHA
-              sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
-              onChange={handleCaptcha}
-              className='captcha-signup-container'
-            />
+            {isCaptchaEnabled && (            
+              <ReCAPTCHA
+                sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
+                onChange={handleCaptcha}
+                className='captcha-signup-container'
+              />
+            )}
             <button type="submit" className="signup-button">Sign Up</button>
           </form>
         </div>

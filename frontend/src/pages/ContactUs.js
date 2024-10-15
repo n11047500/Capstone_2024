@@ -9,6 +9,9 @@ import phone from "../assets/phone_img.png";
 import email from "../assets/email_img.png";
 
 function ContactUs() {
+  // Check if CAPTCHA is enabled from environment variable
+  const isCaptchaEnabled = process.env.REACT_APP_CAPTCHA_ENABLED === 'true';
+
   // State for storing form data
   const [formData, setFormData] = useState({
     first_name: '',
@@ -24,7 +27,8 @@ function ContactUs() {
 
   // Handler for reCAPTCHA, sets the token when completed
   const handleCaptcha = (token) => {
-    setCaptchaToken(token);
+    setCaptchaToken(token); // Set the reCAPTCHA token
+    if (handleCaptcha) handleCaptcha(token);
   };
 
   // Handle form input changes and update state
@@ -36,15 +40,11 @@ function ContactUs() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if the CAPTCHA is completed
-    if (!captchaToken) {
-      setMessage('Please complete the CAPTCHA.');
-      return;
-    }
-
     try {
-      // Combine form data with CAPTCHA token
-      const totalForm = { ...formData, captchaToken };
+      // Prepare the request payload, including captchaToken only if CAPTCHA is enabled
+      const totalForm = isCaptchaEnabled
+        ? { ...formData, captchaToken }
+        : formData;
 
       // Send form data to the backend API
       const response = await fetch(`${process.env.REACT_APP_API_URL}/send-contact-email`, {
@@ -144,10 +144,12 @@ function ContactUs() {
               </table>
               <div className='captcha-submit-container'>
                 {/* Google reCAPTCHA for validation */}
-                <ReCAPTCHA
-                  sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
-                  onChange={handleCaptcha}
-                />
+                {isCaptchaEnabled && (
+                  <ReCAPTCHA
+                    sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
+                    onChange={handleCaptcha}
+                  />
+                )}
                 <button type="submit" className="submit-button">Submit Form</button>
               </div>
             </form>
