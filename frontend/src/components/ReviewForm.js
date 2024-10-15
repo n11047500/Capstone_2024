@@ -83,6 +83,7 @@ const ReviewForm = ({ productId, onReviewSubmit }) => {
       <label className="review-description-title" htmlFor="comment">Comments:</label>
       <br />
       <textarea
+        id="comment"
         className="comment-text"
         cols="70"
         rows="8"

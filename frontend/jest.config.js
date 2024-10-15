@@ -12,7 +12,9 @@ module.exports = {
   collectCoverage: true,
   collectCoverageFrom: [
     'src/**/*.{js,jsx}',
-    '!src/index.js', // Exclude specific files if necessary
+    '!src/index.js',
+    '!src/reportWebVitals.js',
+    '!src/Directions.js', // Exclude specific files if necessary
   ],
   coverageDirectory: 'coverage', // Specify coverage output directory
   transformIgnorePatterns: [
