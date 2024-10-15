@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import ForgotPassword from '../src/pages/ForgotPassword'; // Adjust the import as necessary
+import ForgotPassword from '../src/pages/ForgotPassword';
 import fetchMock from 'jest-fetch-mock'; // Mock fetch for testing
-import { CartContext } from '../src/context/CartContext'; // Adjust the import based on your folder structure
+import { CartContext } from '../src/context/CartContext'; 
 import { BrowserRouter } from 'react-router-dom'; // Import BrowserRouter
 
 // Enable fetch mocking

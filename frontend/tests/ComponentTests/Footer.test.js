@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Footer from '../../src/components/Footer'; // Adjust the import path as necessary
+import Footer from '../../src/components/Footer';
 import { MemoryRouter } from 'react-router-dom';
 
 // Mock image imports

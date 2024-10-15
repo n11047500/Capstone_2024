@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import Search from '../../src/components/Search'; // Adjust the import path as necessary
+import Search from '../../src/components/Search';
 
 describe('Search Component', () => {
   const mockOnSearch = jest.fn(); // Mock function for onSearch prop

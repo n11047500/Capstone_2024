@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom'; // Needed for routing
-import ProductCard from '../../src/components/ProductCard'; // Adjust the import path as necessary
+import { MemoryRouter } from 'react-router-dom';
+import ProductCard from '../../src/components/ProductCard'; 
 
 describe('ProductCard Component', () => {
   const mockProduct = {

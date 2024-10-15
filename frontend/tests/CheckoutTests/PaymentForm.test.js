@@ -1,9 +1,8 @@
-// PaymentForm.test.js
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { useStripe, useElements } from '@stripe/react-stripe-js';
 import PaymentForm from '../../src/pages/Checkout/PaymentForm';
-import { MemoryRouter } from 'react-router-dom'; import { CartContext } from '../../src/context/CartContext'; // Your CartContext import
+import { MemoryRouter } from 'react-router-dom'; import { CartContext } from '../../src/context/CartContext';
 
 // Mocking CartContext for the test
 const mockClearCart = jest.fn();
@@ -91,7 +90,7 @@ describe('PaymentForm', () => {
   test('shows an error when payment fails', async () => {
 
     const mockData = {
-      totalAmount: 100, // Adjust according to your component's needs
+      totalAmount: 100, 
     };
     const mockStripe = {
       createPaymentMethod: jest.fn().mockResolvedValue({
@@ -103,7 +102,7 @@ describe('PaymentForm', () => {
     useStripe.mockReturnValue(mockStripe);
 
     renderWithContext(<PaymentForm data={mockData} onBack={jest.fn()} onChange={jest.fn()} />, {
-      providerProps: { clearCart: jest.fn() }, // Adjust as needed
+      providerProps: { clearCart: jest.fn() },
     });
 
     // Trigger the form submission

@@ -17,7 +17,7 @@ jest.mock('mysql2', () => {
 console.log = jest.fn(); // Mock console.log to track calls
 
 // Import your database module after mocking
-const { connect, getConnection } = require('../database'); // Adjust the path as necessary
+const { connect, getConnection } = require('../database');
 
 describe('Database Connection Module', () => {
   let mockConnection;

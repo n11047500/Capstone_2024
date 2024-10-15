@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import AdditionalInformation from '../../src/pages/CustomOrder/additionalInformation'; // Adjust the import path as needed
+import AdditionalInformation from '../../src/pages/CustomOrder/additionalInformation';
 import { useNavigate } from 'react-router-dom';
 
 jest.mock('react-router-dom', () => ({

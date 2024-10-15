@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import Slideshow from '../../src/components/Slideshow'; // Adjust the import path as necessary
+import Slideshow from '../../src/components/Slideshow';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 // Mock the image imports

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import Gallery from '../src/pages/Gallery'; // Adjust the import based on your file structure
+import Gallery from '../src/pages/Gallery';
 
 // Mock the Header and Footer components since we're not testing them here
 jest.mock('../src/components/Header', () => () => <div>Mock Header</div>);

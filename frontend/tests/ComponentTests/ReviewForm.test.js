@@ -51,7 +51,7 @@ describe('ReviewForm', () => {
     fireEvent.change(screen.getByPlaceholderText(/enter your comment/i), { target: { value: 'This is a badword' } });
 
     // Select the rating by clicking the radio button for rating 5
-    fireEvent.click(screen.getByLabelText(/5/i)); // Adjust if the label text differs
+    fireEvent.click(screen.getByLabelText(/5/i));
 
     // Click the submit button
     fireEvent.click(screen.getByRole('button', { name: /submit/i }));

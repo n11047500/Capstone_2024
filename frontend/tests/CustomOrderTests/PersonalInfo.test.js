@@ -1,7 +1,7 @@
 // PersonalInfoForm.test.js
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import PersonalInfoForm from '../../src/pages/CustomOrder/personalInfo'; // Adjust the path as needed
+import PersonalInfoForm from '../../src/pages/CustomOrder/personalInfo';
 
 describe('PersonalInfoForm', () => {
   const mockOnChange = jest.fn();
