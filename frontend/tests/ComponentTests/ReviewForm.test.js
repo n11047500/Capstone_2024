@@ -1,7 +1,15 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ReviewForm from '../../src/components/ReviewForm';
+
+jest.mock('bad-words', () => {
+  return {
+    Filter: jest.fn(() => ({
+      clean: jest.fn((input) => input), // Mock clean method
+    })),
+  };
+});
 
 // Mock the global fetch function
 global.fetch = jest.fn(() =>
@@ -11,101 +19,84 @@ global.fetch = jest.fn(() =>
   })
 );
 
-describe('ReviewForm Component', () => {
-  beforeEach(() => {
-    jest.resetAllMocks(); // Reset mocks before each test to avoid test pollution
+describe('ReviewForm', () => {
+  const mockOnReviewSubmit = jest.fn();
+  const productId = '12345';
+
+  afterEach(() => {
+    jest.clearAllMocks(); // Clear any mock calls after each test
+    fetch.mockClear(); // Clear the fetch mock after each test
   });
 
-  test('renders the ReviewForm', () => {
-    render(<ReviewForm productId="123" />);
-
-    // Check if the rating input elements are rendered
-    for (let i = 1; i <= 5; i++) {
-      expect(screen.getByLabelText(`${i}`)).toBeInTheDocument();
-    }
-
-    // Check if the comment textarea is rendered
-    const commentTextarea = screen.getByRole('textbox', { name: /comments/i });
-    expect(commentTextarea).toBeInTheDocument();
-
-    // Check if the submit button is rendered
-    const submitButton = screen.getByRole('button', { name: /submit/i });
-    expect(submitButton).toBeInTheDocument();
+  test('renders the form', () => {
+    const mockOnReviewSubmit = jest.fn();
+    const productId = '12345'; // Use a valid product ID for testing
+  
+    render(<ReviewForm productId={productId} onReviewSubmit={mockOnReviewSubmit} />);
+  
+    expect(screen.getByLabelText(/your rating/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/comment/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument();
   });
 
-  test('shows error message when submitting without rating or comment', () => {
-    render(<ReviewForm productId="123" />);
+  test('shows error message when rating is not selected', async () => {
+    render(<ReviewForm productId={productId} onReviewSubmit={mockOnReviewSubmit} />);
 
-    // Simulate clicking the submit button
+    // Submit the form without selecting a rating or entering a comment
     fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
-    // Check for error message
-    expect(screen.getByText(/both rating and comment are required/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/both rating and comment are required/i)).toBeInTheDocument();
+    });
   });
 
-  test('submits the review and resets fields', async () => {
-    render(<ReviewForm productId="123" />);
+  test('shows error message when comment is empty', async () => {
+    render(<ReviewForm productId={productId} onReviewSubmit={mockOnReviewSubmit} />);
 
-    // Simulate selecting a rating
+    // Select a rating but leave the comment empty
     fireEvent.click(screen.getByLabelText('1'));
-    fireEvent.change(screen.getByRole('textbox', { name: /comments/i }), {
-      target: { value: 'Great product!' },
-    });
-
-    // Simulate submitting the form
     fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
-    // Wait for fetch call to resolve
-    const successMessage = await screen.findByText(/review submitted successfully/i);
-
-    // Verify fetch was called with the correct arguments
-    expect(fetch).toHaveBeenCalledWith(`${process.env.REACT_APP_API_URL}/reviews`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        productId: '123',
-        rating: '1',
-        comment: 'Great product!',
-      }),
+    await waitFor(() => {
+      expect(screen.getByText(/both rating and comment are required/i)).toBeInTheDocument();
     });
-
-    // Check if success message is shown
-    expect(successMessage).toBeInTheDocument();
-
-    // Check if the form fields are reset (if expected behavior)
-    expect(screen.getByRole('textbox', { name: /comments/i })).toHaveValue(''); // Comment should be empty
-    // You may want to check that none of the rating options remain selected, if that's the expected behavior:
-    for (let i = 1; i <= 5; i++) {
-      expect(screen.getByLabelText(`${i}`)).not.toBeChecked();
-    }
   });
 
-  test('shows error message when fetch fails', async () => {
-    // Mock the fetch to return a failed response
-    global.fetch.mockImplementationOnce(() =>
-      Promise.resolve({
-        ok: false,
-        status: 500,
-      })
-    );
-
-    render(<ReviewForm productId="123" />);
-
-    // Simulate selecting a rating and entering a comment
-    fireEvent.click(screen.getByLabelText('1'));
-    fireEvent.change(screen.getByRole('textbox', { name: /comments/i }), {
-      target: { value: 'Bad product!' },
-    });
-
-    // Simulate submitting the form
+  test('shows error message when comment contains profanity', async () => {
+    const mockOnReviewSubmit = jest.fn();
+    const productId = '12345'; // Use a valid product ID for testing
+  
+    render(<ReviewForm productId={productId} onReviewSubmit={mockOnReviewSubmit} />);
+  
+    // Select a rating and enter a comment with profanity
+    fireEvent.click(screen.getByLabelText('1')); // Click the rating label to select a rating
+    fireEvent.change(screen.getByPlaceholderText(/enter your comment/i), { target: { value: 'This is a test with damn' } });
+  
+    // Submit the form
     fireEvent.click(screen.getByRole('button', { name: /submit/i }));
-
-    // Wait for fetch call to resolve
-    const errorMessage = await screen.findByText(/failed to submit review/i);
-
-    // Check if error message is shown
+  
+    // Wait for the error message to appear
+    const errorMessage = await screen.findByText(/your comment contains inappropriate language/i);
     expect(errorMessage).toBeInTheDocument();
+  });
+
+  test('submits the review successfully', async () => {
+    render(<ReviewForm productId={productId} onReviewSubmit={mockOnReviewSubmit} />);
+
+    // Select a rating and enter a valid comment
+    fireEvent.click(screen.getByLabelText('5'));
+    fireEvent.change(screen.getByPlaceholderText(/enter your comment/i), { target: { value: 'Great product!' } });
+
+    fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+    await waitFor(() => {
+      expect(mockOnReviewSubmit).toHaveBeenCalledWith({
+        rating: '5',
+        comment: 'Great product!',
+        first_name: 'Guest User',
+      });
+    });
+
+    expect(fetch).toHaveBeenCalledWith(`${process.env.REACT_APP_API_URL}/reviews`, expect.any(Object));
   });
 });

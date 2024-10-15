@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../../context/CartContext'; // Import CartContext
@@ -9,6 +9,7 @@ const PaymentForm = ({ data, onBack, onChange }) => {
   const elements = useElements();
   const navigate = useNavigate();
   const { clearCart } = useContext(CartContext); // Access clearCart from context
+  const [error, setError] = useState(null);
 
   // Handle form submission for payment
   const handleSubmit = async (event) => {
@@ -35,6 +36,7 @@ const PaymentForm = ({ data, onBack, onChange }) => {
     
     if (error) {
       console.error('Payment failed:', error);
+      setError(error.message);
       return;
     }
     
@@ -150,6 +152,7 @@ const PaymentForm = ({ data, onBack, onChange }) => {
         <div className="payment-form__card-element-container">
           <CardElement className="payment-form__card-element" options={cardElementOptions} data-testid="stripe-card-element" />
         </div>
+        {error && <div className="payment-form__error" role="alert">{error}</div>}
         <div className="button-group">
           <button type="button" onClick={onBack} className="back-payment-button">
             Back

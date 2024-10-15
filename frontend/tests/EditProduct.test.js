@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import EditProduct from '../src/pages/EditProduct';
 
@@ -33,6 +33,7 @@ describe('EditProduct Component', () => {
     // Mock window.location.reload
     delete window.location;
     window.location = { reload: jest.fn() };
+    jest.clearAllMocks();
   });
 
   test('renders the EditProduct component', async () => {
@@ -50,19 +51,15 @@ describe('EditProduct Component', () => {
     expect(fetch).toHaveBeenCalledWith(`${process.env.REACT_APP_API_URL}/products/${productId}`);
 
     // Assert the input values using waitFor
-    await waitFor(() => {
-      expect(screen.getByLabelText(/Product Name/i)).toHaveValue(mockProductData.Product_Name);
-      expect(screen.getByLabelText(/Product Price/i)).toHaveValue(mockProductData.Product_Price);
-      expect(screen.getByLabelText(/Quantity Available/i)).toHaveValue(mockProductData.Quantity_Available);
-      expect(screen.getByLabelText(/Description/i)).toHaveValue(mockProductData.Description);
-    });
+    await waitFor(() => expect(screen.getByLabelText(/Product Name/i)).toHaveValue(mockProductData.Product_Name));
+    await waitFor(() => expect(screen.getByLabelText(/Product Price/i)).toHaveValue(mockProductData.Product_Price));
+    await waitFor(() => expect(screen.getByLabelText(/Quantity Available/i)).toHaveValue(mockProductData.Quantity_Available));
+    await waitFor(() => expect(screen.getByLabelText(/Description/i)).toHaveValue(mockProductData.Description));
   });
 
   test('handles form input changes', async () => {
     // Render the component
-    await act(async () => {
-      render(<EditProduct productId={1} />);
-    });
+    render(<EditProduct productId={1} />);
   
     // Find the input element
     const nameInput = screen.getByLabelText(/Product Name/i); // Ensure this matches the label for the input
@@ -74,68 +71,99 @@ describe('EditProduct Component', () => {
     expect(nameInput).toHaveValue('Updated Product');
   });
 
-  
-test('submits the form and updates the product', async () => {
-  const mockFetch = jest.fn(() =>
-    Promise.resolve({
-      json: () => Promise.resolve({}),
-    })
-  );
+  test('submits the form and updates the product', async () => {
+    render(<EditProduct productId={productId} />);
 
-  global.fetch = mockFetch;
+    // Wait for the product data to be displayed in the form
+    await waitFor(() => expect(fetch).toHaveBeenCalledWith(`${process.env.REACT_APP_API_URL}/products/${productId}`));
 
-  // Render the component
-  await act(async () => {
-    render(<EditProduct productId={123} />);
+    // Fill out the form
+    fireEvent.change(screen.getByTestId('product-name-input'), { target: { value: 'Updated Product' } });
+    fireEvent.change(screen.getByTestId('price-input'), { target: { value: '150' } });
+    fireEvent.change(screen.getByTestId('quantity-input'), { target: { value: '20' } });
+    fireEvent.change(screen.getByTestId('description-input'), { target: { value: 'Updated Description' } });
+    fireEvent.change(screen.getByTestId('width-input'), { target: { value: '150' } });
+    fireEvent.change(screen.getByTestId('depth-input'), { target: { value: '250' } });
+    fireEvent.change(screen.getByTestId('height-input'), { target: { value: '350' } });
+    fireEvent.change(screen.getByTestId('options-input'), { target: { value: 'Color: Blue' } });
+    fireEvent.change(screen.getByTestId('image-url-input'), { target: { value: 'http://example.com/new-image.jpg' } });
+
+    // Mock window.confirm to always return true
+    window.confirm = jest.fn(() => true);
+
+    // Submit the form
+    fireEvent.click(screen.getByTestId('update-product-button'));
+
+    // Check that fetch was called with the correct URL and body
+    expect(fetch).toHaveBeenCalledWith(
+      `${process.env.REACT_APP_API_URL}/products/${productId}`,
+      expect.objectContaining({
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'Updated Product',
+          price: '150',
+          quantity: '20',
+          description: 'Updated Description',
+          dimensions: '150mm (width) x 250mm (depth) x 350mm (height)',
+          options: 'Color: Blue',
+          imageUrl: 'http://example.com/new-image.jpg',
+        }),
+      })
+    );
+
+    // Ensure success message is displayed
+    expect(await screen.findByText('Product updated successfully')).toBeInTheDocument();
   });
 
-  // Simulate input changes
-  const nameInput = screen.getByLabelText(/Product Name/i);
-  const priceInput = screen.getByLabelText(/Price/i);
-  const quantityInput = screen.getByLabelText(/Quantity/i);
-  const descriptionInput = screen.getByLabelText(/Description/i);
-  const widthInput = screen.getByLabelText(/Width/i);
-  const depthInput = screen.getByLabelText(/Depth/i);
-  const heightInput = screen.getByLabelText(/Height/i);
-  const optionsInput = screen.getByLabelText(/Options/i);
-  const imageUrlInput = screen.getByLabelText(/Image URL/i);
+  test('displays an error message on failed update', async () => {
+    // Mock the initial fetch response for product data
+    const mockProductData = {
+      Product_Name: 'Sample Product',
+      Product_Price: '100',
+      Quantity_Available: '10',
+      Description: 'Sample Description',
+      Product_Options: 'Color: Red',
+      Product_Image_URL: 'http://example.com/sample-image.jpg',
+      Product_Dimensions: '100mm x 200mm x 300mm'
+    };
 
-  await act(async () => {
-    fireEvent.change(nameInput, { target: { value: 'Updated Product' } });
-  fireEvent.change(priceInput, { target: { value: '150' } });
-  fireEvent.change(quantityInput, { target: { value: '20' } });
-  fireEvent.change(descriptionInput, { target: { value: 'Updated Description' } });
-  fireEvent.change(widthInput, { target: { value: '150' } });
-  fireEvent.change(depthInput, { target: { value: '250' } });
-  fireEvent.change(heightInput, { target: { value: '350' } });
-  fireEvent.change(optionsInput, { target: { value: 'Color: Blue' } });
-  fireEvent.change(imageUrlInput, { target: { value: 'http://example.com/new-image.jpg' } });
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockProductData,
+    });
+
+    // Mock the failed update response
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ message: 'Failed to update product.' }),
+    });
+
+    render(<EditProduct productId={productId} />);
+
+    // Wait for the product data to be displayed in the form
+    await waitFor(() => expect(fetch).toHaveBeenCalledWith(`${process.env.REACT_APP_API_URL}/products/${productId}`));
+
+    // Fill out the form with new product details
+    fireEvent.change(screen.getByTestId('product-name-input'), { target: { value: 'Updated Product' } });
+    fireEvent.change(screen.getByTestId('price-input'), { target: { value: '150' } });
+    fireEvent.change(screen.getByTestId('quantity-input'), { target: { value: '20' } });
+    fireEvent.change(screen.getByTestId('description-input'), { target: { value: 'Updated Description' } });
+    fireEvent.change(screen.getByTestId('width-input'), { target: { value: '150' } });
+    fireEvent.change(screen.getByTestId('depth-input'), { target: { value: '250' } });
+    fireEvent.change(screen.getByTestId('height-input'), { target: { value: '350' } });
+    fireEvent.change(screen.getByTestId('options-input'), { target: { value: 'Color: Blue' } });
+    fireEvent.change(screen.getByTestId('image-url-input'), { target: { value: 'http://example.com/new-image.jpg' } });
+
+    // Mock window.confirm to always return true
+    window.confirm = jest.fn(() => true);
+
+    // Submit the form
+    fireEvent.click(screen.getByTestId('update-product-button'));
+
+    // Ensure error message is displayed
+    expect(await screen.findByText('Failed to update product.')).toBeInTheDocument();
   });
-
-  // Submit the form
-  const submitButton = screen.getByText(/Update Product/i);
-  await act(async () => {
-    fireEvent.click(submitButton);
-  });
-
-  // Assert that fetch was called with the correct arguments
-  expect(mockFetch).toHaveBeenCalledWith(
-    'http://localhost:4000/products/123',
-    expect.objectContaining({
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: 'Updated Product',
-        price: '150',
-        quantity: '20',
-        description: 'Updated Description',
-        dimensions: '150mm (width) x 250mm (depth) x 350mm (height)',
-        options: 'Color: Blue',
-        imageUrl: 'http://example.com/new-image.jpg',
-      }),
-    })
-  );
-});
 
   test('resets the form data', async () => {
     render(<EditProduct productId={productId} />);
@@ -151,22 +179,50 @@ test('submits the form and updates the product', async () => {
   });
 
   test('handles error during product update', async () => {
-    fetch.mockImplementationOnce(() =>
-      Promise.resolve({
-        ok: false,
-        json: () => Promise.resolve({ message: 'Failed to update product.' }),
-      })
-    );
+    // Mock the initial fetch response for product data
+    const mockProductData = {
+      Product_Name: 'Sample Product',
+      Product_Price: '100',
+      Quantity_Available: '10',
+      Description: 'Sample Description',
+      Product_Options: 'Color: Red',
+      Product_Image_URL: 'http://example.com/sample-image.jpg',
+      Product_Dimensions: '100mm x 200mm x 300mm',
+    };
 
-    window.confirm = jest.fn(() => true); // Mock window.confirm to always return true
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockProductData,
+    });
+
+    // Mock the update to throw an error
+    fetch.mockImplementationOnce(() => {
+      throw new Error('Network error');
+    });
 
     render(<EditProduct productId={productId} />);
 
-    fireEvent.change(screen.getByLabelText(/Product Name/i), { target: { value: 'Updated Product' } });
-    fireEvent.click(screen.getByText(/Update Product/i));
+    // Wait for the product data to be displayed in the form
+    await waitFor(() => expect(fetch).toHaveBeenCalledWith(`${process.env.REACT_APP_API_URL}/products/${productId}`));
 
-    await waitFor(() => {
-      expect(screen.getByText(/Failed to update product./i)).toBeInTheDocument();
-    });
+    // Fill out the form with new product details
+    fireEvent.change(screen.getByTestId('product-name-input'), { target: { value: 'Updated Product' } });
+    fireEvent.change(screen.getByTestId('price-input'), { target: { value: '150' } });
+    fireEvent.change(screen.getByTestId('quantity-input'), { target: { value: '20' } });
+    fireEvent.change(screen.getByTestId('description-input'), { target: { value: 'Updated Description' } });
+    fireEvent.change(screen.getByTestId('width-input'), { target: { value: '150' } });
+    fireEvent.change(screen.getByTestId('depth-input'), { target: { value: '250' } });
+    fireEvent.change(screen.getByTestId('height-input'), { target: { value: '350' } });
+    fireEvent.change(screen.getByTestId('options-input'), { target: { value: 'Color: Blue' } });
+    fireEvent.change(screen.getByTestId('image-url-input'), { target: { value: 'http://example.com/new-image.jpg' } });
+
+    // Mock window.confirm to always return true
+    window.confirm = jest.fn(() => true);
+
+    // Submit the form
+    fireEvent.click(screen.getByTestId('update-product-button'));
+
+    // Ensure error message is displayed
+    expect(await screen.findByText('An error occurred while updating the product.')).toBeInTheDocument();
   });
 });

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './OrderManagement.css';
 
 // Helper function to group products by ID and options
-const groupProducts = (productIds, productDetails = []) => {
+export const groupProducts = (productIds, productDetails = []) => {
   if (!productDetails || productDetails.length === 0) {
     console.error('No product details provided.');
     return [];
@@ -15,7 +15,7 @@ const groupProducts = (productIds, productDetails = []) => {
   );
 
   // Parsing product IDs and options from a string
-  const productPairs = productIds.split(',').map(pair => {
+  const productPairs = (productIds || '').split(',').map(pair => {
     const [productId, option] = pair.split(':').map(item => item.trim());
     return { productId, option };
   });

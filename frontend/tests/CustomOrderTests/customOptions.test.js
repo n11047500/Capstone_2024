@@ -20,22 +20,47 @@ describe('CustomOptions Component', () => {
         mockOnNext.mockClear();
     });
 
-    test('renders CustomOptions component with standard colors by default', () => {
+    test('renders with standard colors by default', () => {
         render(<CustomOptions data={defaultData} onChange={mockOnChange} onNext={mockOnNext} />);
 
-        // Check that the headings and labels are rendered
-        expect(screen.getByText(/custom options/i)).toBeInTheDocument();
-        expect(screen.getByText(/select colour/i)).toBeInTheDocument();
+        // Check if the "Select Colour" label is in the document
+        expect(screen.getByText(/Select Colour:/i)).toBeInTheDocument();
 
-        // Check that the "Standard Ezee Colours" and "Custom Colours" options are rendered
-        expect(screen.getByText(/standard ezee colours/i)).toBeInTheDocument();
-        expect(screen.getByText(/custom colours/i)).toBeInTheDocument();
+        // Check if "Standard Ezee Colours" is selected
+        expect(screen.getByText(/Standard Ezee Colours/i).parentElement).toHaveClass('selected');
 
-        // Check that the standard color dropdown is rendered with default "Select a color" text
-        expect(screen.getByText(/select a color/i)).toBeInTheDocument();
+        // Check if the dropdown for standard colors is present
+        const dropdown = screen.getByText(/Select a color/i);
+        expect(dropdown).toBeInTheDocument();
 
-        // Check that the width input is rendered
-        expect(screen.getByPlaceholderText(/enter width in cm/i)).toBeInTheDocument();
+        // Simulate opening the dropdown
+        fireEvent.click(dropdown);
+
+        // Verify if the color options are displayed
+        const colorOptions = [
+            'Surfmist',
+            'Domain',
+            'Paperbark',
+            'Riversand',
+            'Jasper',
+            'Bushland',
+            'Pale Eucalypt',
+            'Wilderness',
+            'Shale Grey',
+            'Windspray',
+            'Wallaby',
+            'Basalt',
+            'Woodland Grey',
+            'Grey Ridge',
+            'Ironstone',
+            'Monument',
+            'Satin Black',
+            'Pearl White'
+        ];
+
+        colorOptions.forEach(color => {
+            expect(screen.getByText(color)).toBeInTheDocument();
+        });
     });
 
     test('allows selecting a standard color', () => {
@@ -55,48 +80,40 @@ describe('CustomOptions Component', () => {
     });
 
     test('switches between standard and custom color options', async () => {
-        const mockOnChange = jest.fn();
-        const mockOnNext = jest.fn();
-      
-        const initialData = { colorType: 'standard', width: 100, customColor: '', color: '', wicking: 'no' };
-      
-        // Render the CustomOptions component
-        const { rerender } = render(<CustomOptions data={initialData} onChange={mockOnChange} onNext={mockOnNext} />);
-        
-        // Log the entire rendered output for debugging
-        screen.debug();
-      
-        const standardColorOption = screen.getByText(/standard ezee colours/i);
-        const customColorOption = screen.getByText(/custom colours/i);
-      
-        // Log the class names for debugging
-        console.log('Initial Standard Option Class:', standardColorOption.className);
-        console.log('Initial Custom Option Class:', customColorOption.className);
-      
-        expect(standardColorOption).toHaveClass('selected');
-        expect(customColorOption).not.toHaveClass('selected');
-      
-        fireEvent.click(customColorOption);
-      
-        // After clicking, rerender with updated colorType
-        rerender(<CustomOptions data={{ ...initialData, colorType: 'custom' }} onChange={mockOnChange} onNext={mockOnNext} />);
-      
+        render(<CustomOptions data={defaultData} />);
+
+        const standardOption = screen.getByText('Standard Ezee Colours');
+        const customOption = screen.getByText('Custom Colours');
+
+        // Verify initial state
+        expect(standardOption).toHaveClass('selected'); // Expect standard option to be selected initially
+        expect(customOption).not.toHaveClass('selected');
+
+        // Simulate click to switch to custom option
+        fireEvent.click(customOption);
+
+        // Wait for DOM update and verify the custom option is now selected
         await waitFor(() => {
-          console.log('Updated Standard Option Class:', standardColorOption.className);
-          console.log('Updated Custom Option Class:', customColorOption.className);
-          expect(customColorOption).toHaveClass('selected');
+            expect(customOption).toHaveClass('selected');
         });
-      
-        expect(standardColorOption).not.toHaveClass('selected');
-      
-        expect(screen.getByPlaceholderText(/enter custom color/i)).toBeInTheDocument();
-      
-        fireEvent.change(screen.getByPlaceholderText(/enter custom color/i), { target: { value: 'Blue' } });
-        expect(mockOnChange).toHaveBeenCalledWith(expect.objectContaining({ customColor: 'Blue' }));
-      
-        fireEvent.click(screen.getByText(/next/i));
-        expect(mockOnNext).toHaveBeenCalled();
-      });
+
+        await waitFor(() => {
+            expect(standardOption).not.toHaveClass('selected');
+        });
+        // Check if custom color input is rendered
+        await waitFor(() => {
+            const customColorInput = screen.queryByPlaceholderText(/Enter Custom Color/i);
+            expect(customColorInput).toBeInTheDocument();
+        });
+
+        // Switch back to standard
+        fireEvent.click(standardOption);
+
+        await waitFor(() => {
+            const customColorInput = screen.queryByPlaceholderText(/Enter Custom Color/i);
+            expect(customColorInput).not.toBeInTheDocument();
+        });
+    });
 
     test('changes the width input', () => {
         render(<CustomOptions data={defaultData} onChange={mockOnChange} onNext={mockOnNext} />);
@@ -126,12 +143,50 @@ describe('CustomOptions Component', () => {
     });
 
     test('calls onNext when the "Next" button is clicked', () => {
-        render(<CustomOptions data={defaultData} onChange={mockOnChange} onNext={mockOnNext} />);
+        const mockOnNext = jest.fn(); // Create a mock function
+        const mockOnChange = jest.fn(); // Create a mock function for onChange
 
-        // Click the "Next" button
-        fireEvent.click(screen.getByText(/next/i));
+        // Render the component with initial props
+        render(
+            <CustomOptions
+                data={{ colorType: 'standard', width: 1, wicking: 'yes' }} // Initial state
+                onNext={mockOnNext}
+                onChange={mockOnChange}
+            />
+        );
 
-        // Check if onNext has been called
+        // Simulate selecting a color type
+        fireEvent.click(screen.getByText('Standard Ezee Colours')); // Click to select standard color type
+        fireEvent.click(screen.getByText('Select a color')); // Click to open color selection dropdown
+        fireEvent.click(screen.getByText('Surfmist')); // Click to select the first color
+
+        // Simulate entering width and selecting wicking
+        fireEvent.change(screen.getByPlaceholderText('Enter width in cm'), { target: { value: 10 } }); // Enter width
+        fireEvent.click(screen.getByText('Yes')); // Select "Yes" for wicking
+
+        // Simulate clicking the "Next" button
+        fireEvent.click(screen.getByText('Next'));
+
+        // Verify that onNext was called once
         expect(mockOnNext).toHaveBeenCalledTimes(1);
+    });
+
+    test('does not call onNext if validation fails', () => {
+        const mockOnNext = jest.fn();
+        const mockOnChange = jest.fn();
+
+        render(
+            <CustomOptions
+                data={{ colorType: '', width: null, wicking: null }} // No valid data
+                onNext={mockOnNext}
+                onChange={mockOnChange}
+            />
+        );
+
+        // Simulate clicking the "Next" button
+        fireEvent.click(screen.getByText('Next'));
+
+        // Verify that onNext was not called due to validation
+        expect(mockOnNext).toHaveBeenCalledTimes(0);
     });
 });

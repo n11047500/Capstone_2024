@@ -61,9 +61,9 @@ const ReviewForm = ({ productId, onReviewSubmit }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label className='review-description-title'>Your Rating:</label>
+      <label className='review-description-title' id="rating-label">Your Rating:</label>
       <br />
-      <div className="rating">
+      <div className="rating" role="group" aria-labelledby="rating-label">
         {[1, 2, 3, 4, 5].map((star) => (
           <React.Fragment key={star}>
             <input
@@ -80,7 +80,7 @@ const ReviewForm = ({ productId, onReviewSubmit }) => {
       </div>
         <br />
         <br />
-      <label className="review-description-title">Comments:</label>
+      <label className="review-description-title" htmlFor="comment">Comments:</label>
       <br />
       <textarea
         className="comment-text"
@@ -88,11 +88,12 @@ const ReviewForm = ({ productId, onReviewSubmit }) => {
         rows="8"
         value={comment}
         onChange={(e) => setComment(e.target.value)}
+        placeholder="Enter your comment"
       ></textarea>
       <br />
       <br />
 
-      {error && <p className="error">{error}</p>}
+      {error && <div role="alert">{error}</div>}
 
       <button className="submit-review" type="submit">Submit</button>
     </form>

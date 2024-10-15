@@ -11,8 +11,11 @@ module.exports = {
   },
   collectCoverage: true,
   collectCoverageFrom: [
-    "src/**/*.{js,jsx}",
-    "!src/index.js", // Exclude specific files if necessary
+    'src/**/*.{js,jsx}',
+    '!src/index.js', // Exclude specific files if necessary
   ],
-  coverageDirectory: "coverage", // Specify coverage output directory      
-};  
+  coverageDirectory: 'coverage', // Specify coverage output directory
+  transformIgnorePatterns: [
+    '/node_modules/(?!bad-words)', // Ignore everything in node_modules except bad-words
+  ],
+};
