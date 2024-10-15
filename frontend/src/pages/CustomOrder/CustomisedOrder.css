@@ -199,7 +199,6 @@ button:hover {
     min-height: 34px;
     /* Standard select height */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    /* Optional: subtle shadow for the dropdown */
 }
 
 .color-selected {

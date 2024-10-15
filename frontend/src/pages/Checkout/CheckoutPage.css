@@ -122,7 +122,7 @@
   font-weight: bold;
   margin-top: 20px; /* Add some space above the total */
   padding-top: 10px;
-  border-top: 1px solid #ddd; /* Optional: Add a subtle top border for separation */
+  border-top: 1px solid #ddd; /* Add a border above the total */
 }
 
 .product-option {

@@ -182,7 +182,6 @@ describe('OrderManagement', () => {
       expect(screen.getByText(/Order Details for Order #1/i)).toBeInTheDocument();
     });
 
-    // Optional: You can also check for other details to ensure they are displayed correctly
     expect(screen.getByText(/Email:/i)).toHaveTextContent('john.doe@example.com');
     expect(screen.getByText(/Total Amount:/i)).toHaveTextContent('$100');
     expect(screen.getByText(/Delivery/i)).toBeInTheDocument();

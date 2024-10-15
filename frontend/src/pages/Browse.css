@@ -20,7 +20,7 @@ body, html {
   align-items: center;
   justify-content: space-between; /* Space between search and sort controls */
   width: 100%; /* Ensure the container takes full width */
-  max-width: 1200px; /* Optional: set a maximum width for larger screens */
+  max-width: 1200px; /* Limit the width of the container */
 }
 
 /* Search container styling */
@@ -137,7 +137,7 @@ body, html {
   .browse-sort-dropdown {
     font-size: 16px; /* Set font size for filter dropdown to match search input */
     padding: 10px; /* Add padding for better appearance */
-    border-radius: 4px; /* Optional: add border-radius for consistency */
+    border-radius: 4px; /* Add border radius for better appearance */
     border: 1px solid #ccc; /* Add border for better styling */
   }
 }

@@ -83,7 +83,7 @@ html {
   .image-links-container img {
     width: 5.9vw; /* Set image width to 1.5vw */
     height: auto; /* Maintain aspect ratio */
-    border-radius: 4px; /* Optional: add some border radius for styling */
+    border-radius: 4px; 
 
   }
   .footer-logo img {

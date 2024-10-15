@@ -149,8 +149,7 @@ describe('AdditionalInformation', () => {
             comment: 'This is a comment.',
             file: null // File input can remain null for this test
         });
-
-        // Optionally, you can test navigation if needed
+        
         const backButton = screen.getByRole('button', { name: /back/i });
         fireEvent.click(backButton);
 
