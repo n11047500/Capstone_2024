@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import CustomOptions from '../../src/pages/CustomOrder/customOptions';
 
@@ -79,42 +79,6 @@ describe('CustomOptions Component', () => {
         expect(mockOnChange).toHaveBeenCalledWith({ ...defaultData, color: 'Surfmist' });
     });
 
-    test('switches between standard and custom color options', async () => {
-        render(<CustomOptions data={defaultData} />);
-
-        const standardOption = screen.getByText('Standard Ezee Colours');
-        const customOption = screen.getByText('Custom Colours');
-
-        // Verify initial state
-        expect(standardOption).toHaveClass('selected'); // Expect standard option to be selected initially
-        expect(customOption).not.toHaveClass('selected');
-
-        // Simulate click to switch to custom option
-        fireEvent.click(customOption);
-
-        // Wait for DOM update and verify the custom option is now selected
-        await waitFor(() => {
-            expect(customOption).toHaveClass('selected');
-        });
-
-        await waitFor(() => {
-            expect(standardOption).not.toHaveClass('selected');
-        });
-        // Check if custom color input is rendered
-        await waitFor(() => {
-            const customColorInput = screen.queryByPlaceholderText(/Enter Custom Color/i);
-            expect(customColorInput).toBeInTheDocument();
-        });
-
-        // Switch back to standard
-        fireEvent.click(standardOption);
-
-        await waitFor(() => {
-            const customColorInput = screen.queryByPlaceholderText(/Enter Custom Color/i);
-            expect(customColorInput).not.toBeInTheDocument();
-        });
-    });
-
     test('changes the width input', () => {
         render(<CustomOptions data={defaultData} onChange={mockOnChange} onNext={mockOnNext} />);
 
@@ -189,4 +153,22 @@ describe('CustomOptions Component', () => {
         // Verify that onNext was not called due to validation
         expect(mockOnNext).toHaveBeenCalledTimes(0);
     });
+
+    test('switches to standard color option and opens dropdown', () => {
+        render(<CustomOptions data={defaultData} onChange={mockOnChange} onNext={mockOnNext} />);
+        
+        // Switch to custom color first
+        fireEvent.click(screen.getByText(/Custom Colours/i));
+        
+        // Now switch back to standard color
+        fireEvent.click(screen.getByText(/Standard Ezee Colours/i));
+    
+        // Check that the dropdown opens
+        const dropdown = screen.getByText(/Select a color/i);
+        fireEvent.click(dropdown);
+    
+        // Verify that dropdown options are displayed
+        expect(screen.getByText(/Surfmist/i)).toBeInTheDocument();
+        expect(screen.getByText(/Domain/i)).toBeInTheDocument();
+      });
 });

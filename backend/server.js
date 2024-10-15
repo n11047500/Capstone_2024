@@ -920,7 +920,6 @@ app.post('/api/orders', async (req, res) => {
   }
 });
 
-
 app.get('/api/orders/details', async (req, res) => {
   const clientSecret = req.query.client_secret;
 
@@ -1131,7 +1130,6 @@ app.post('/submit-form', uploadFile.single('file'), async (req, res) => {
   }
 });
 
-
 // Search route
 app.get('/api/search', (req, res) => {
   const query = req.query.query;  // Get the query from the request
@@ -1152,7 +1150,6 @@ app.get('/api/search', (req, res) => {
     res.json(results);  // Send back the results as JSON
   });
 });
-
 
 // Fetch reviews for a product
 app.get('/reviews/:id', (req, res) => {

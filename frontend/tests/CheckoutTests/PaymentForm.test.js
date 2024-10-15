@@ -45,7 +45,7 @@ describe('PaymentForm', () => {
     jest.clearAllMocks(); // Clear all mocks before each test
   });
 
-  it('renders the PaymentForm correctly', () => {
+  test('renders the PaymentForm correctly', () => {
     renderWithContext(<PaymentForm data={{}} onBack={jest.fn()} onChange={jest.fn()} />, {
       providerProps: { clearCart: mockClearCart },
     });
@@ -55,7 +55,7 @@ describe('PaymentForm', () => {
     expect(screen.getByRole('button', { name: /Pay/i })).toBeInTheDocument();
   });
 
-  it('handles successful payment submission', async () => {
+  test('handles successful payment submission', async () => {
     const mockData = {
       totalAmount: 100,
       cart: [{ Product_ID: '1', quantity: 2, selectedOption: 'option1' }],
@@ -88,7 +88,7 @@ describe('PaymentForm', () => {
     await waitFor(() => expect(mockClearCart).toHaveBeenCalled());
     expect(await screen.findByText(/Payment is processed securely using Stripe/i)).toBeInTheDocument();
   });
-  it('shows an error when payment fails', async () => {
+  test('shows an error when payment fails', async () => {
 
     const mockData = {
       totalAmount: 100, // Adjust according to your component's needs

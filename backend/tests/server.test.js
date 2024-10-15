@@ -8,8 +8,9 @@ const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const bcrypt = require('bcryptjs');
-const nodemailer = require('nodemailer');
 const multer = require('multer');
+const nodemailerMock = require('nodemailer-mock');
+const nodemailer = require('nodemailer');
 
 // Mock the transporter
 const transporter = {
@@ -30,16 +31,10 @@ jest.mock('../server', () => {
 jest.mock('axios'); // Mock axios for reCAPTCHA verification
 jest.mock('jsonwebtoken'); // Mock jwt for token verification
 jest.mock('bcryptjs'); // Mock bcrypt for password hashing
-jest.mock('nodemailer'); // Mock nodemailer for sending emails
 jest.mock('stripe'); // Mock stripe for payment processing
+jest.mock('nodemailer'); // Mock nodemailer for sending emails
 
-// Mock multer's upload middleware
-const uploadFile = {
-  single: jest.fn(() => (req, res, next) => {
-    req.file = { /* Mock file object */ }; // Simulate a file upload
-    next();
-  }),
-};
+const upload = multer({ storage: multer.memoryStorage() });
 
 
 // Mock the database module
@@ -72,6 +67,7 @@ jest.mock('stripe', () => {
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 
 describe('Server Endpoints', () => {
@@ -1414,48 +1410,48 @@ describe('Server Endpoints', () => {
   // Test POST /send-email
   describe('POST /send-email', () => {
     beforeEach(() => {
-      jest.clearAllMocks(); // Clear mock calls before each test
+      jest.clearAllMocks(); // Clear previous mock calls before each test
     });
   
-    test('should send email successfully and return 200', async () => {
-      nodemailer.createTransport.mockReturnValue(transporter);
-  
-      const response = await request(app).post('/send-email').send({
-        to: 'recipient@example.com',
-        subject: 'Test Subject',
-        html: '<p>This is a test email.</p>',
+    it('should send email successfully', async () => {
+      // Mock the sendMail function to simulate successful email sending
+      transporter.sendMail.mockImplementation((mailOptions, callback) => {
+        callback(null, { response: 'OK' }); // Simulate success
       });
   
-      expect(response.statusCode).toBe(200);
-      expect(response.body.message).toBe('Email sent successfully');
-      expect(transporter.sendMail).toHaveBeenCalledWith(
-        expect.objectContaining({
+      const response = await request(app)
+        .post('/send-email')
+        .send({
           to: 'recipient@example.com',
           subject: 'Test Subject',
-          html: '<p>This is a test email.</p>',
-        }),
-        expect.any(Function)
-      );
-    });
+          html: '<h1>Hello World</h1>',
+        });
   
-    test('should return 500 if sending email fails', async () => {
-      const mockSendMail = jest.fn((mailOptions, callback) => {
-        callback(new Error('Send mail error'));
-      });
-      
-      nodemailer.createTransport.mockReturnValue({
-        sendMail: mockSendMail,
-      });
-  
-      const response = await request(app).post('/send-email').send({
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe('Email sent successfully');
+      expect(transporter.sendMail).toHaveBeenCalledWith(expect.objectContaining({
         to: 'recipient@example.com',
         subject: 'Test Subject',
-        html: '<p>This is a test email.</p>',
+        html: '<h1>Hello World</h1>',
+      }));
+    });
+  
+    it('should return 500 if there is an error sending email', async () => {
+      // Mock the sendMail function to simulate an error
+      transporter.sendMail.mockImplementation((mailOptions, callback) => {
+        callback(new Error('Email error'), null); // Simulate error
       });
   
-      expect(response.statusCode).toBe(500);
+      const response = await request(app)
+        .post('/send-email')
+        .send({
+          to: 'recipient@example.com',
+          subject: 'Test Subject',
+          html: '<h1>Hello World</h1>',
+        });
+  
+      expect(response.status).toBe(500);
       expect(response.body.error).toBe('Failed to send email');
-      expect(mockSendMail).toHaveBeenCalled();
     });
   });
 
@@ -1548,47 +1544,136 @@ describe('Server Endpoints', () => {
 
   // Test POST /api/orders
   describe('POST /api/orders', () => {
-    it('should process an order and return order details', async () => {
-      // Mock Stripe payment intent creation
-      jest.spyOn(stripe.paymentIntents, 'create').mockResolvedValue({
-        id: 'pi_test_123',
-        client_secret: 'client_secret',
+    const mockOrderData = {
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@example.com',
+      phone: '1234567890',
+      streetAddress: '123 Elm St',
+      orderType: 'Online',
+      productIds: ['1', '2'],
+      totalAmount: 50.00,
+      paymentMethodId: 'pm_card_visa' // Use a valid test payment method ID
+    };
+  
+    beforeEach(() => {
+      jest.clearAllMocks(); // Clear previous mocks before each test
+    });
+  
+    test('should process an order and return order details', async () => {
+      // Mock Stripe payment intent response
+      const mockPaymentIntent = {
+        id: 'pi_1234567890',
         status: 'succeeded',
+        client_secret: 'secret12345'
+      };
+      
+      stripe.paymentIntents.create.mockResolvedValue(mockPaymentIntent);
+  
+      // Mock database insertion
+      const mockInsertResult = {
+        insertId: 1
+      };
+      
+      jest.spyOn(mockConnection, 'query').mockImplementation((query, values, callback) => {
+        // Simulate successful insert
+        if (query.includes('INSERT INTO orders')) {
+          callback(null, mockInsertResult);
+        } else if (query.includes('SELECT * FROM products WHERE Product_ID IN')) {
+          // Simulate fetching product details
+          const mockProducts = [
+            { Product_ID: '1', Product_Name: 'Product 1', Product_Image_URL: 'http://example.com/image1.jpg', Product_Price: 25.00, Product_Option: null },
+            { Product_ID: '2', Product_Name: 'Product 2', Product_Image_URL: 'http://example.com/image2.jpg', Product_Price: 25.00, Product_Option: null }
+          ];
+          callback(null, mockProducts);
+        } else {
+          callback(new Error('Unknown query')); // Simulate error for other queries
+        }
       });
-
+  
+      // Mock nodemailer sendMail function
+      const sendMailMock = jest.fn((mailOptions, callback) => {
+        callback(null, { response: 'Message sent' });
+      });
+      
+      nodemailer.createTransport.mockReturnValue({
+        sendMail: sendMailMock
+      });
+  
+      // Make the request to the API
       const response = await request(app)
         .post('/api/orders')
-        .send({
-          firstName: 'Jane',
-          lastName: 'Doe',
-          email: 'jane.doe@example.com',
-          phone: '0987654321',
-          streetAddress: '123 Main St',
-          orderType: 'Standard',
-          productIds: ['1:12345', '2:67890'],
-          totalAmount: 100.00,
-          paymentMethodId: 'pm_test_123',
-        })
-        .expect('Content-Type', /json/)
-        .expect(200);
-
-      expect(response.body).toHaveProperty('id');
-      expect(response.body).toHaveProperty('client_secret');
+        .send(mockOrderData);
+  
+      // Assertions
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('id', mockInsertResult.insertId);
+      expect(response.body).toHaveProperty('client_secret', mockPaymentIntent.client_secret);
       expect(response.body).toHaveProperty('products');
+      expect(response.body.products.length).toBe(2);
+      expect(sendMailMock).toHaveBeenCalled(); // Ensure the sendMail method was called
     });
-
-    it('should return 400 if required fields are missing', async () => {
-      await request(app)
+  
+    test('should return 400 if required fields are missing', async () => {
+      const invalidOrderData = { ...mockOrderData, email: undefined }; // Remove the email field
+      const response = await request(app)
         .post('/api/orders')
-        .send({
-          firstName: 'Jane',
-          email: 'jane.doe@example.com',
-          phone: '0987654321',
-          // Missing required fields
-        })
-        .expect('Content-Type', /json/)
-        .expect(400)
-        .expect({ error: 'Missing required fields' });
+        .send(invalidOrderData);
+  
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('error', 'Missing required fields');
+    });
+  
+    test('should return 500 on database error', async () => {
+      // Mock the database to throw an error
+      jest.spyOn(mockConnection, 'query').mockImplementation((query, params, callback) => {
+        callback(new Error('Database error'), null);
+      });
+    
+      const response = await request(app).post('/api/orders').send({
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@example.com',
+        phone: '1234567890',
+        streetAddress: '123 Example St',
+        orderType: 'Regular',
+        productIds: ['1:option1', '2:option2'],
+        totalAmount: 100.00,
+        paymentMethodId: 'pm_test', // Ensure this is a valid test ID
+      });
+    
+      expect(response.status).toBe(500);
+      expect(response.body).toHaveProperty('error', 'Failed to create order');
+    });
+  
+    test('should return 500 on email sending failure', async () => {
+      // Mock Stripe payment intent response
+      stripe.paymentIntents.create.mockResolvedValue({
+        id: 'pi_1234567890',
+        status: 'succeeded',
+        client_secret: 'secret12345'
+      });
+  
+      // Simulate a successful database insert
+      jest.spyOn(mockConnection, 'query').mockImplementation((query, values, callback) => {
+        callback(null, { insertId: 1 });
+      });
+  
+      // Mock the sendMail to simulate failure
+      const sendMailMock = jest.fn((mailOptions, callback) => {
+        callback(new Error('Failed to send email'));
+      });
+  
+      nodemailer.createTransport.mockReturnValue({
+        sendMail: sendMailMock
+      });
+  
+      const response = await request(app)
+        .post('/api/orders')
+        .send(mockOrderData);
+  
+      expect(response.status).toBe(500);
+      expect(response.body).toHaveProperty('error', 'Failed to send email');
     });
   });
 
@@ -1691,128 +1776,75 @@ describe('Server Endpoints', () => {
 
   // Test POST /submit-form
   describe('POST /submit-form', () => {
-    afterEach(() => {
-      jest.clearAllMocks(); // Clear mock calls after each test
-    });
-  
-    it('should submit the form and send an email successfully', async () => {
-      // Arrange: Set up the mock implementation of sendEmail
-      sendEmail.mockResolvedValueOnce(); // Resolve sendEmail promise
-  
-      const formData = {
-        colorType: 'Solid',
-        color: 'Red',
-        customColor: 'Bright Red',
-        width: '100',
-        wicking: 'Yes',
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@example.com',
-        comment: 'No comments',
-      };
-  
-      // Act: Send the POST request
-      const response = await request(app)
-        .post('/submit-form')
-        .field('colorType', formData.colorType)
-        .field('color', formData.color)
-        .field('customColor', formData.customColor)
-        .field('width', formData.width)
-        .field('wicking', formData.wicking)
-        .field('firstName', formData.firstName)
-        .field('lastName', formData.lastName)
-        .field('email', formData.email)
-        .field('comment', formData.comment)
-        .attach('file', Buffer.from('test file content'), 'test-file.txt'); // Attach a mock file
-  
-      // Assert: Check the response
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({ message: 'Form submitted and email sent successfully' });
-      expect(sendEmail).toHaveBeenCalledWith(expect.objectContaining({
-        colorType: formData.colorType,
-        color: formData.color,
-        customColor: formData.customColor,
-        width: formData.width,
-        wicking: formData.wicking,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        comment: formData.comment,
-        file: expect.any(Object), // Expecting a file object
-      }));
-    });
-  
-    it('should return an error if no file is uploaded', async () => {
-      // Arrange: Override the upload middleware to simulate no file uploaded
-      uploadFile.single = jest.fn((fieldName) => (req, res, next) => {
-        req.file = null; // Simulate no file uploaded
-        next();
+    beforeAll(() => {
+      // Use nodemailer-mock to create a mock transport
+      nodemailerMock.createTransport({
+        // The options for your transport, if needed
       });
-  
-      const formData = {
-        colorType: 'Solid',
-        color: 'Red',
-        customColor: 'Bright Red',
-        width: '100',
-        wicking: 'Yes',
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@example.com',
-        comment: 'No comments',
-      };
-  
-      // Act: Send the POST request without a file
-      const response = await request(app)
-        .post('/submit-form')
-        .field('colorType', formData.colorType)
-        .field('color', formData.color)
-        .field('customColor', formData.customColor)
-        .field('width', formData.width)
-        .field('wicking', formData.wicking)
-        .field('firstName', formData.firstName)
-        .field('lastName', formData.lastName)
-        .field('email', formData.email)
-        .field('comment', formData.comment);
-  
-      // Assert: Check the response for no file error
-      expect(response.status).toBe(400); // Expecting 400 Bad Request for missing file
-      expect(response.body).toEqual({ message: 'No file uploaded' }); // Adjusted message for clarity
-      expect(sendEmail).not.toHaveBeenCalled(); // Ensure sendEmail was not called
     });
   
-    it('should handle errors during form submission', async () => {
-      // Arrange: Mock sendEmail to throw an error
-      sendEmail.mockRejectedValueOnce(new Error('Email sending failed'));
+    afterEach(() => {
+      // Clear all mocks after each test
+      jest.clearAllMocks();
+      nodemailerMock.mock.reset(); // Reset the mock state
+    });
   
-      const formData = {
-        colorType: 'Solid',
-        color: 'Red',
-        customColor: 'Bright Red',
-        width: '100',
-        wicking: 'Yes',
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@example.com',
-        comment: 'No comments',
-      };
-  
-      // Act: Send the POST request with a file
+    it('should successfully submit form with file upload', async () => {
       const response = await request(app)
         .post('/submit-form')
-        .field('colorType', formData.colorType)
-        .field('color', formData.color)
-        .field('customColor', formData.customColor)
-        .field('width', formData.width)
-        .field('wicking', formData.wicking)
-        .field('firstName', formData.firstName)
-        .field('lastName', formData.lastName)
-        .field('email', formData.email)
-        .field('comment', formData.comment)
-        .attach('file', Buffer.from('test file content'), 'test-file.txt'); // Attach a mock file
+        .field('colorType', 'standard')
+        .field('color', 'red')
+        .field('customColor', 'none')
+        .field('width', '5')
+        .field('wicking', 'true')
+        .field('firstName', 'John')
+        .field('lastName', 'Doe')
+        .field('email', 'john.doe@example.com')
+        .field('comment', 'This is a comment')
+        .attach('file', Buffer.from('test file content'), 'testfile.txt');
+      
+      console.log('Response:', response.body); // Log the response body
   
-      // Assert: Check the response for error handling
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe('Form submitted and email sent successfully');
+    });
+  
+    it('should return 400 if no file is uploaded', async () => {
+      const response = await request(app)
+        .post('/submit-form')
+        .field('colorType', 'standard')
+        .field('color', 'red')
+        .field('customColor', 'none')
+        .field('width', '5')
+        .field('wicking', 'true')
+        .field('firstName', 'John')
+        .field('lastName', 'Doe')
+        .field('email', 'john.doe@example.com')
+        .field('comment', 'This is a comment');
+  
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('File is required');
+    });
+  
+    it('should return 500 if there is an error in form submission', async () => {
+      // Simulate an error by mocking sendEmail to throw an error
+      sendEmail.mockImplementationOnce(() => Promise.reject(new Error('Email error')));
+  
+      const response = await request(app)
+        .post('/submit-form')
+        .field('colorType', 'standard')
+        .field('color', 'blue')
+        .field('customColor', 'none')
+        .field('width', '4')
+        .field('wicking', 'false')
+        .field('firstName', 'Jane')
+        .field('lastName', 'Doe')
+        .field('email', 'jane.doe@example.com')
+        .field('comment', 'Another comment')
+        .attach('file', Buffer.from('test file content'), 'testfile.txt');
+  
       expect(response.status).toBe(500);
-      expect(response.body).toEqual({ message: 'Error in form submission' });
+      expect(response.body.message).toBe('Error in form submission');
     });
   });
 

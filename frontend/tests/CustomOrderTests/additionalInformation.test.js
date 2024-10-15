@@ -46,7 +46,7 @@ describe('AdditionalInformation', () => {
         delete global.alert; // Clean up global alert
     });
 
-    it('renders the form with all necessary fields', () => {
+    test('renders the form with all necessary fields', () => {
         render(
             <AdditionalInformation
                 data={initialData}
@@ -88,7 +88,7 @@ describe('AdditionalInformation', () => {
         });
     });
 
-    it('handles textarea change', () => {
+    test('handles textarea change', () => {
         render(
             <AdditionalInformation
                 data={initialData}
@@ -106,7 +106,7 @@ describe('AdditionalInformation', () => {
         expect(mockOnChange).toHaveBeenCalledWith({ ...initialData, comment });
     });
 
-    it('calls onBack when back button is clicked', () => {
+    test('calls onBack when back button is clicked', () => {
         render(
             <AdditionalInformation
                 data={initialData}

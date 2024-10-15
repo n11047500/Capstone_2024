@@ -19,7 +19,7 @@ const MockCartProvider = ({ children }) => {
 };
 
 describe('ConfirmationPage', () => {
-    it('renders the confirmation message', () => {
+    test('renders the confirmation message', () => {
         // Mocking the location state
         const mockLocation = {
             state: {
@@ -42,7 +42,7 @@ describe('ConfirmationPage', () => {
         expect(screen.getByText(/Your customized order has been sent to Ezee Planter/i)).toBeInTheDocument();
     });
 
-    it('renders the Header and Footer components', () => {
+    test('renders the Header and Footer components', () => {
         const mockLocation = {
             state: {},
         };

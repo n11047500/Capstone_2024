@@ -1,8 +1,7 @@
 // PersonalInfoForm.js
-import {useState, React} from 'react';
+import React from 'react';
 
 const PersonalInfoForm = ({ data, onNext, onBack, onChange }) => {
-  const [errors, setErrors] = useState({});
 
 
   const validatePhoneNumber = (phone) => {

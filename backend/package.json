@@ -29,6 +29,7 @@
   "devDependencies": {
     "concurrently": "^8.2.2",
     "jest": "^29.7.0",
+    "nodemailer-mock": "^2.0.6",
     "sinon": "^19.0.2"
   }
 }

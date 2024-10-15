@@ -11,7 +11,7 @@ describe('groupProducts', () => {
     { Product_ID: '102', Product_Price: '50', Product_Name: 'Product B', Product_Image_URL: 'http://example.com/imageB.jpg' },
   ];
 
-  it('should group products by ID and option', () => {
+  test('should group products by ID and option', () => {
     const productIds = '101:Default, 102:Custom';
 
     const result = groupProducts(productIds, productDetails);
@@ -38,7 +38,7 @@ describe('groupProducts', () => {
     ]);
   });
 
-  it('should handle multiple quantities of the same product', () => {
+  test('should handle multiple quantities of the same product', () => {
     const productIds = '101:Default, 101:Default, 102:Custom';
 
     const result = groupProducts(productIds, productDetails);
@@ -65,7 +65,7 @@ describe('groupProducts', () => {
     ]);
   });
 
-  it('should return an empty array if no product details are provided', () => {
+  test('should return an empty array if no product details are provided', () => {
     const productIds = '101:Default';
     
     const result = groupProducts(productIds, []);
@@ -73,7 +73,7 @@ describe('groupProducts', () => {
     expect(result).toEqual([]);
   });
 
-  it('should handle invalid product IDs gracefully', () => {
+  test('should handle invalid product IDs gracefully', () => {
     const productIds = '999:Default';  // Product ID 999 does not exist in productDetails
     
     const result = groupProducts(productIds, productDetails);
@@ -92,7 +92,7 @@ describe('OrderManagement', () => {
     jest.clearAllMocks();
   });
 
-  it('renders order list with mock data', async () => {
+  test('renders order list with mock data', async () => {
     const mockOrders = [
       {
         Order_ID: '1',
@@ -124,7 +124,7 @@ describe('OrderManagement', () => {
     });
   });
 
-  it('displays order details when View Details is clicked', async () => {
+  test('displays order details when View Details is clicked', async () => {
     const mockOrder = {
       Order_ID: '1',
       First_Name: 'John',
@@ -177,7 +177,7 @@ describe('OrderManagement', () => {
     expect(screen.getByText(/Delivery/i)).toBeInTheDocument();
   });
 
-  it('handles error when fetching orders fails', async () => {
+  test('handles error when fetching orders fails', async () => {
     fetch.mockRejectedValueOnce(new Error('Failed to fetch orders'));
 
     render(<OrderManagement setActiveForm={jest.fn()} />);
@@ -188,88 +188,79 @@ describe('OrderManagement', () => {
   });
 
   test('marks an order as completed', async () => {
-    // Mock response for orders
-    fetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => [
-        {
-          Order_ID: '1',
-          First_Name: 'John',
-          Last_Name: 'Doe',
-          Email: 'john.doe@example.com',
-          status: 'Pending',
-          Order_Type: 'Delivery',
-          Product_IDs: '1:Option1',
-          products: [
-            {
-              Product_ID: '1',
-              Product_Name: 'Sample Product',
-              Product_Price: '20.00',
-              Product_Image_URL: 'http://example.com/image.jpg'
-            }
-          ]
-        }
-      ]
-    });
-
-    // Mock response for order details
-    fetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        Order_ID: '1',
+    // Mocking API responses
+    const mockOrders = [
+      {
+        Order_ID: 1,
         First_Name: 'John',
         Last_Name: 'Doe',
-        Email: 'john.doe@example.com',
-        Mobile: '1234567890',
-        Order_Date: new Date(),
-        Street_Address: '123 Street',
-        Total_Amount: '20.00',
+        Email: 'john@example.com',
+        status: 'Pending',
         Order_Type: 'Delivery',
+        Mobile: '1234567890',
+        Total_Amount: 100,
+        Order_Date: '2024-10-01',
+        Street_Address: '123 Main St',
+        Product_IDs: '1:Option1,2:Option2',
         products: [
           {
-            Product_ID: '1',
-            Product_Name: 'Sample Product',
-            Product_Price: '20.00',
-            Product_Image_URL: 'http://example.com/image.jpg'
-          }
-        ]
-      })
-    });
+            Product_ID: 1,
+            Product_Name: 'Product 1',
+            Product_Price: 50,
+            Product_Image_URL: 'https://example.com/image1.jpg',
+          },
+          {
+            Product_ID: 2,
+            Product_Name: 'Product 2',
+            Product_Price: 50,
+            Product_Image_URL: 'https://example.com/image2.jpg',
+          },
+        ],
+      },
+    ];
 
-    // Mock successful order update response
     fetch.mockResolvedValueOnce({
       ok: true,
+      json: jest.fn().mockResolvedValueOnce(mockOrders),
+    });
+    
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: jest.fn().mockResolvedValueOnce(mockOrders[0]), // Simulating the order details fetch
     });
 
-    render(<OrderManagement />);
+    // Render the OrderManagement component
+    render(<OrderManagement setActiveForm={jest.fn()} />);
 
     // Wait for the orders to load
-    await waitFor(() => expect(screen.getByText('John Doe')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Order Management')).toBeInTheDocument());
 
-    // Click on the order to view details
-    fireEvent.click(screen.getByText('View Details'));
+    // Click the "View Details" button for the first order
+    await fireEvent.click(screen.getByText('View Details'));
 
-    // Select a carrier and mark as completed
-    fireEvent.change(screen.getByLabelText('Select Carrier:'), { target: { value: 'Australia Post' } });
+    // Ensure the order details are displayed
+    expect(screen.getByText('Order Details for Order #1')).toBeInTheDocument();
 
-    // Mock window.confirm to always return true
-    window.confirm = jest.fn(() => true);
-    // Mock window.prompt to return a dummy tracking number
-    window.prompt = jest.fn(() => '123456');
+    // Select a carrier
+    fireEvent.change(screen.getByLabelText(/Select Carrier/i), { target: { value: 'Australia Post' } });
 
     // Click the "Mark as Completed" button
-    fireEvent.click(screen.getByText('Mark as Completed'));
+    fireEvent.click(screen.getByRole('button', { name: /Mark as Completed/i }));
 
-    // Wait for the order to be marked as completed
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledTimes(3); // Ensure all fetch calls were made
-      expect(fetch).toHaveBeenLastCalledWith(
-        expect.stringContaining('/orders/1'), // URL check
-        expect.objectContaining({
-          method: 'PUT',
-          body: JSON.stringify({ status: 'Completed' }), // Ensure status update is sent
-        })
-      );
+    // Mocking the completion response
+    fetch.mockResolvedValueOnce({ ok: true });
+
+    // Wait for a confirmation dialog (mocked)
+    window.confirm = jest.fn(() => true); // Simulate user confirming the action
+
+    // Ensure that the fetch call to update the order status was made
+    expect(fetch).toHaveBeenCalledWith(`${process.env.REACT_APP_API_URL}/orders/1`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'Completed' }),
     });
+
+    // Ensure that the order status was updated in the UI
+    await waitFor(() => expect(screen.getByText('Completed')).toBeInTheDocument());
   });
 });
